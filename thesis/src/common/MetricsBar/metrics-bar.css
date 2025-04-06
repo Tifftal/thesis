@@ -19,7 +19,8 @@
 }
 
 .metrics-bar__container.open {
-  width: var(--metrics-bar-width);
+  min-width: var(--metrics-bar-width);
+  width: fit-content;
 }
 
 .metrics-bar__container.collapsed {
@@ -48,7 +49,9 @@
   position: absolute;
   top: 0;
   right: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .icon-transition.hidden {
@@ -70,7 +73,6 @@
   cursor: default;
 }
 
-
 .metrics-bar__content {
   display: flex;
   flex-direction: column;
@@ -85,9 +87,14 @@
 .metrics-bar__content__empty {
   align-self: center;
   margin-top: 20px;
-  color: var(--color-grey5)
+  color: var(--color-grey5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 }
 
+.metrics-bar__content__empty.collapsed,
 .metrics-bar__content.collapsed {
   display: none;
 }
@@ -109,6 +116,7 @@
 }
 
 .table tbody td {
+  white-space: nowrap;
   font-family: 'Inter Medium';
   font-size: 13px;
   color: var(--color-grey7);
