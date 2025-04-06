@@ -1,0 +1,23 @@
+.empty-data-alert {
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.empty-data-alert img {
+	height: 120px;
+	width: 120px;
+}
+
+.empty-data-alert__description {
+	margin-top: 18px;
+	font-family: 'Inter Regular';
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 150%;
+	letter-spacing: -0.176px;
+	text-align: center;
+	color: var(--color-grey4)
+}

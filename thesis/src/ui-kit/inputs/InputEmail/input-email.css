@@ -1,0 +1,41 @@
+.input-email .ant-input-status-error {
+  border-color: var(--color-red) !important;
+}
+
+.input-email .ant-input-status-error:not(.ant-input-disabled):focus,
+.input-email .ant-input-outlined:focus,
+.input-email .ant-input-outlined:focus-within {
+  outline: none;
+  box-shadow: none;
+}
+
+.input-email {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.input-email .ant-input {
+  font-family: 'Inter Regular';
+  border-radius: 16px;
+}
+
+.input-email__label {
+  margin-bottom: 4px;
+  font-family: 'Inter Regular';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 170%;
+  letter-spacing: -0.084px;
+  color: var(--color-grey5);
+}
+
+.input-email__error {
+  position: absolute;
+  color: var(--color-red);
+  font-size: 12px;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+}

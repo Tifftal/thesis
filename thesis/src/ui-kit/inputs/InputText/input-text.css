@@ -1,0 +1,56 @@
+.input-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.input-text .ant-input {
+	font-family: 'Inter Regular';
+	border-radius: 16px;
+}
+
+.input-text .ant-input-status-error:not(.ant-input-disabled):focus,
+.input-text .ant-input-outlined:focus,
+.input-text .ant-input-outlined:focus-within {
+	outline: none;
+	box-shadow: none;
+}
+
+.input-text .ant-input-affix-wrapper {
+	font-family: 'Inter Regular';
+	border-radius: 16px;
+}
+
+.input-text .ant-input-affix-wrapper .ant-input-suffix {
+	font-size: 16px;
+	color: var(--color-grey7);
+}
+
+.input-text .ant-input-password {
+	font-family: 'Inter Regular';
+	border-radius: 16px;
+}
+
+.input-text .ant-input-status-error {
+	border-color: var(--color-red) !important;
+}
+
+.input-text .ant-input-disabled {
+	background-color: var(--color-grey0);
+	border-radius: 16px;
+}
+
+.input-text .licard-icon-lock {
+	color: var(--color-grey7);
+	font-size: 24px;
+}
+
+.input-text__label {
+	margin-bottom: 4px;
+	font-family: 'Inter Regular';
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 170%;
+	letter-spacing: -0.084px;
+	color: var(--color-grey5);
+}

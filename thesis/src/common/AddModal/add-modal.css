@@ -1,0 +1,17 @@
+.add-modal__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.add-modal__actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-modal__image {
+  width: 100%;
+  object-fit: contain;
+}

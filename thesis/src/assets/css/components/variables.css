@@ -1,0 +1,12 @@
+:root {
+  --page-container-padding-horizontal: 32px;
+  --page-container-padding-vertical: 10px;
+  --page-container-padding: 32px;
+
+  --navbar-height: 90px;
+
+  --sidebar-width: 350px;
+  --metrics-bar-width: 450px;
+
+  --icon-button-size: 28px;
+}

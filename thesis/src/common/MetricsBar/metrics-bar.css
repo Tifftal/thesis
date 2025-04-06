@@ -1,0 +1,129 @@
+.metrics-bar__container {
+  background-color: var(--color-grey2);
+  width: var(--metrics-bar-width);
+  height: calc(100vh - var(--navbar-height) - 4vh);
+  position: absolute;
+  right: 0;
+  top: calc(var(--navbar-height) + 2vh);
+  z-index: 10;
+  box-sizing: border-box;
+  border-radius: 12px 0 0 12px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.25);
+  border-left: 1px solid var(--color-grey3);
+  border-top: 1px solid var(--color-grey3);
+  border-bottom: 1px solid var(--color-grey3);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease-in-out;
+  padding: 24px 15px;
+}
+
+.metrics-bar__container.open {
+  width: var(--metrics-bar-width);
+}
+
+.metrics-bar__container.collapsed {
+  width: 70px;
+  overflow: hidden;
+  height: fit-content;
+  align-items: center;
+  justify-content: center;
+}
+
+.metrics-bar__header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.metrics-bar__icon-wrapper {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.icon-transition {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.icon-transition.hidden {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.icon-transition.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.metrics-bar__header__title {
+  font-family: 'Inter Bold';
+  font-size: 15px;
+  color: var(--color-grey7);
+  padding: 2px 4px;
+  border-radius: 4px;
+  cursor: default;
+}
+
+
+.metrics-bar__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+  padding: 0 4px;
+  padding-top: 20px;
+}
+
+.metrics-bar__content__empty {
+  align-self: center;
+  margin-top: 20px;
+  color: var(--color-grey5)
+}
+
+.metrics-bar__content.collapsed {
+  display: none;
+}
+
+.table {
+  width: 100%;
+  border: none;
+  border-collapse: separate;
+  border-spacing: 8px 6px;
+}
+
+.table thead th {
+  font-family: 'Inter Light';
+  font-size: 12px;
+  color: var(--color-grey5);
+  text-align: left;
+  vertical-align: top;
+  padding-bottom: 6px;
+}
+
+.table tbody td {
+  font-family: 'Inter Medium';
+  font-size: 13px;
+  color: var(--color-grey7);
+  text-align: left;
+}
+
+.table__input-note {
+  width: 130px;
+}
+
+.metrics-bar__actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}

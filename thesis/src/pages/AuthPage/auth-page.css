@@ -1,0 +1,67 @@
+.auth-page {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-page__container {
+  width: 35%;
+  background-color: var(--color-white1);
+  padding: 32px;
+  border-radius: 16px;
+  display: flex;
+  flex-flow: column;
+  gap: 20px;
+}
+
+.auth-page__container__header {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.auth-page__container__logo,
+.auth-page__container__title {
+  font-size: 20px;
+  line-height: 32px;
+  text-align: left;
+  color: var(--color-grey7);
+  font-family: 'Inter Bold';
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  gap: 4px;
+}
+
+.auth-page__container__logo img {
+  width: 24px;
+}
+
+.auth-page__container__actions {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  gap: 20px;
+  font-size: 14px;
+}
+
+.auth-page__container__actions__no-account {
+  color: var(--color-grey5)
+}
+
+.auth-page__container__actions__no-account button {
+  color: var(--color-green-light);
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.auth-page__container__actions__no-account button:hover {
+  text-decoration: underline;
+}

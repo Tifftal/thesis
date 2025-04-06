@@ -1,0 +1,16 @@
+.main-page__container {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-page__image {
+  position: absolute;
+  top: var(--navbar-height);
+  bottom: 0;
+  width: 100%;
+  height: calc(100% - 90px);
+  z-index: 1;
+  overflow: auto;
+}

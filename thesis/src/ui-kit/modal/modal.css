@@ -1,0 +1,21 @@
+.ant-modal-title {
+	background: var(--color-grey1);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.ant-modal .ant-modal-content {
+	border-radius: 20px;
+	background: var(--color-grey1);
+	padding: 24px;
+}
+
+.ant-modal .ant-modal-content .ant-modal-close {
+	color: var(--color-grey7);
+}
+
+.ant-modal-mask {
+	background-color: var(--color-overlay) !important;
+	opacity: 60% !important;
+}

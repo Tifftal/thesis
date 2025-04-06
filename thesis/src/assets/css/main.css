@@ -1,0 +1,20 @@
+@import './components/fonts.css';
+@import './components/atomic.css';
+@import './components/color-theme.css';
+@import './components/variables.css';
+
+body {
+	height: 100vh;
+	overflow: hidden;
+	background-color: var(--color-grey1);
+	font-family: 'Inter Regular';
+	margin: 0;
+}
+
+.page__container {
+	box-sizing: border-box;
+	padding: var(--page-container-padding-vertical) var(--page-container-padding-horizontal);
+	background-color: var(--color-grey1);
+	overflow: hidden;
+	height: 100vh;
+}
