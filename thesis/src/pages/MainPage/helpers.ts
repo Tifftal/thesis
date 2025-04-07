@@ -1,4 +1,7 @@
 /* eslint-disable no-mixed-operators */
+
+import { Point } from 'services/zustand/types';
+
 /**
  * Вычисляет расстояние между двумя точками
  * @param {Object} p1 - Первая точка с координатами x и y
@@ -37,4 +40,26 @@ export const calculateDistance = (
   const dy = p2.y - p1.y;
 
   return Math.sqrt(dx * dx + dy * dy).toFixed(2);
+};
+
+//TODO: описание
+
+export const calculatePolylineLength = (points: Point[]): number => {
+  if (points.length < 2) return 0; // Для линии нужно минимум 2 точки
+
+  let totalLength = 0;
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const currentPoint = points[i];
+    const nextPoint = points[i + 1];
+
+    // Вычисляем расстояние между текущей и следующей точкой
+    const dx = nextPoint.x - currentPoint.x;
+    const dy = nextPoint.y - currentPoint.y;
+    const segmentLength = Math.sqrt(dx * dx + dy * dy);
+
+    totalLength += segmentLength;
+  }
+
+  return totalLength;
 };

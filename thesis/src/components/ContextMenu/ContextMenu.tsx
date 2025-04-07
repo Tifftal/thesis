@@ -1,40 +1,65 @@
 import useStore from 'services/zustand/store';
-import { Point, SavedLine, ZustandStoreStateType } from 'services/zustand/types';
+import { Point, SavedBrokenLine, SavedLine, ZustandStoreStateType } from 'services/zustand/types';
 
-import { defaultContextMenu } from 'pages/MainPage/constants';
-
-import { calculateDistance } from 'pages/MainPage/helpers';
+import { calculateDistance, calculatePolylineLength } from 'pages/MainPage/helpers';
 
 type Props = {
   contextMenu: { type: string; visible: boolean; x: number; y: number; currentObject: any };
-  setContextMenu: (value: {
-    type: string;
-    visible: boolean;
-    x: number;
-    y: number;
-    currentObject: any;
-  }) => void;
+  closeContextMenu: () => void;
   setCurrentLinePoints: (value: Point[]) => void;
+  setCurrentBrokenLine: (value: Point[]) => void;
+  onCompleteBrokenLine: () => void;
+  onCompletePolygon: () => void;
 };
 
 export const ContextMenu = (props: Props) => {
-  const { contextMenu, setContextMenu, setCurrentLinePoints } = props;
+  const {
+    contextMenu,
+    closeContextMenu,
+    setCurrentLinePoints,
+    setCurrentBrokenLine,
+    onCompleteBrokenLine,
+    onCompletePolygon,
+  } = props;
 
-  const { lines, setLines, setSavedLines, savedLines } = useStore((state: ZustandStoreStateType) => state);
+  const {
+    lines,
+    setLines,
+    savedLines,
+    setSavedLines,
+    brokenLines,
+    setBrokenLines,
+    savedBrokenLines,
+    setSavedBrokenLines,
+  } = useStore((state: ZustandStoreStateType) => state);
 
+  const handleClearBrokenLine = () => {
+    if (contextMenu.currentObject) {
+      const newBrokenLines = brokenLines.filter(
+        line => JSON.stringify(line) !== JSON.stringify(contextMenu.currentObject),
+      );
+      setBrokenLines(newBrokenLines);
+    } else {
+      setCurrentBrokenLine([]);
+    }
+
+    closeContextMenu();
+  };
   const handleClearLine = () => {
     if (!contextMenu.currentObject) return;
 
     const newLines = lines.filter(line => JSON.stringify(line) !== JSON.stringify(contextMenu.currentObject));
     setLines(newLines);
 
-    setContextMenu(defaultContextMenu);
+    closeContextMenu();
   };
 
   const handleClearAll = () => {
     setLines([]);
     setCurrentLinePoints([]);
-    setContextMenu(defaultContextMenu);
+    setBrokenLines([]);
+    setCurrentBrokenLine([]);
+    closeContextMenu();
   };
 
   const saveLine = () => {
@@ -46,7 +71,20 @@ export const ContextMenu = (props: Props) => {
     const newSavedLines = [...savedLines, newLine];
 
     setSavedLines(newSavedLines);
-    setContextMenu(defaultContextMenu);
+    closeContextMenu();
+  };
+
+  const saveBrokenLine = () => {
+    const newBrokenLine: SavedBrokenLine = {
+      brokenLine: contextMenu.currentObject,
+      distance: `${calculatePolylineLength(contextMenu.currentObject).toFixed(2)}`,
+      note: '',
+    };
+
+    const newSavedBrokenLines = [...savedBrokenLines, newBrokenLine];
+
+    setSavedBrokenLines(newSavedBrokenLines);
+    closeContextMenu();
   };
 
   const saveAll = () => {
@@ -57,7 +95,7 @@ export const ContextMenu = (props: Props) => {
     }));
 
     setSavedLines(newSavedLines);
-    setContextMenu(defaultContextMenu);
+    closeContextMenu();
   };
 
   const renderContent = () => {
@@ -71,6 +109,51 @@ export const ContextMenu = (props: Props) => {
             <div className='context-menu__item' onClick={handleClearLine}>
               Удалить прямую
             </div>
+          </>
+        );
+
+      case 'BROKEN_LINE':
+        return (
+          <>
+            {!contextMenu.currentObject && (
+              <div className='context-menu__item' onClick={onCompleteBrokenLine}>
+                Завершить ломаную
+              </div>
+            )}
+            {contextMenu.currentObject && (
+              <>
+                <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+                  Общая длина: {calculatePolylineLength(contextMenu.currentObject).toFixed(2)}
+                </div>
+                <div className='context-menu__item' onClick={saveBrokenLine}>
+                  Сохранить измерение
+                </div>
+              </>
+            )}
+
+            <div className='context-menu__item' onClick={handleClearBrokenLine}>
+              Удалить ломаную
+            </div>
+          </>
+        );
+      case 'POLYGON':
+        return (
+          <>
+            {!contextMenu.currentObject && (
+              <div className='context-menu__item' onClick={onCompletePolygon}>
+                Завершить многоугольник
+              </div>
+            )}
+            {contextMenu.currentObject && (
+              <>
+                {/* <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+                  Общая длина: {calculatePolylineLength(contextMenu.currentObject).toFixed(2)}
+                </div> */}
+                <div className='context-menu__item'>Сохранить измерение</div>
+              </>
+            )}
+
+            <div className='context-menu__item'>Удалить многоугольник</div>
           </>
         );
       default:

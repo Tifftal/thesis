@@ -11,10 +11,13 @@ import { InputNote } from 'ui-kit/inputs/InputNote';
 export const MetricsBar = () => {
   const [open, setOpen] = useState<boolean>(true);
 
-  const { savedLines, setSavedLines } = useStore((state: ZustandStoreStateType) => state);
+  const { savedLines, setSavedLines, savedBrokenLines, setSavedBrokenLines } = useStore(
+    (state: ZustandStoreStateType) => state,
+  );
 
   const handleClearMetrics = () => {
     setSavedLines([]);
+    setSavedBrokenLines([]);
   };
 
   return (
@@ -34,7 +37,8 @@ export const MetricsBar = () => {
           />
         </div>
       </div>
-      {savedLines.length === 0 ? (
+      {/*  TODO: тут разделить на две таблицы */}
+      {savedBrokenLines.length === 0 ? (
         <div className={`metrics-bar__content__empty ${open ? '' : 'collapsed'}`}>
           Пока не добавлено измерений...
         </div>
@@ -57,6 +61,21 @@ export const MetricsBar = () => {
                   </td>
                   <td>
                     ({savedLine.line[1].x.toFixed(1)}, {savedLine.line[1].y.toFixed(1)})
+                  </td>
+                  <td>{savedLine.distance} нм</td>
+                  <td className='table__input-note'>
+                    <InputNote placeholder='Примечание' value={savedLine.note} onChange={() => {}} />
+                  </td>
+                </tr>
+              ))}
+              {savedBrokenLines.map((savedLine, index) => (
+                <tr key={index}>
+                  <td>
+                    ({savedLine.brokenLine[0].x.toFixed(1)}, {savedLine.brokenLine[0].y.toFixed(1)})
+                  </td>
+                  <td>
+                    ({savedLine.brokenLine[savedLine.brokenLine.length - 1].x.toFixed(1)},{' '}
+                    {savedLine.brokenLine[savedLine.brokenLine.length - 1].y.toFixed(1)})
                   </td>
                   <td>{savedLine.distance} нм</td>
                   <td className='table__input-note'>

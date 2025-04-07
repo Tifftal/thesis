@@ -8,7 +8,11 @@ export type UserInfoType = {
 
 export type Point = { x: number; y: number };
 export type Line = [Point, Point];
+export type BrokenLine = Point[];
+export type Polygon = Point[];
+
 export type SavedLine = { line: Line; distance: string | null; note: string };
+export type SavedBrokenLine = { brokenLine: BrokenLine; distance: string | null; note: string };
 
 export type ZustandStoreStateType = {
   typeOfAuthForm: 'login' | 'registration';
@@ -24,9 +28,15 @@ export type ZustandStoreStateType = {
 
   //Редактор
   lines: Line[];
+  brokenLines: BrokenLine[];
+  polygons: Polygon[];
   setLines: (lines: Line[]) => void;
+  setBrokenLines: (brokenLines: BrokenLine[]) => void;
+  setPolygons: (brokenLines: Polygon[]) => void;
 
   //Метрики
   savedLines: SavedLine[];
+  savedBrokenLines: SavedBrokenLine[];
   setSavedLines: (savedLines: SavedLine[]) => void;
+  setSavedBrokenLines: (savedBrokenLines: SavedBrokenLine[]) => void;
 };

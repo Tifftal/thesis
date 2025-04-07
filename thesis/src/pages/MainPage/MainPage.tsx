@@ -1,22 +1,24 @@
 /* eslint-disable no-mixed-operators */
 import { useEffect, useState } from 'react';
-import React from 'react';
 
-import { Layer, Stage, Image, Circle, Line } from 'react-konva';
+import { Layer, Stage, Image } from 'react-konva';
 import useImage from 'use-image';
 
 import useStore from 'services/zustand/store';
 import { Point, Line as LineType, ZustandStoreStateType } from 'services/zustand/types';
 
 import { ContextMenu } from 'components/ContextMenu';
+import { BrokenLineLayer } from 'components/MainPage/BrokenLineLayer';
 import { LineLayer } from 'components/MainPage/LineLayer';
+import { PolygonLayer } from 'components/MainPage/PolygonLayer';
 
 import { defaultContextMenu } from './constants';
 
 import Breast from 'assets/images/mock/breast_cancer.jpg';
 
 export const MainPage = () => {
-  const { selectedImage, selectedTool, lines, setLines } = useStore((state: ZustandStoreStateType) => state);
+  const { selectedImage, selectedTool, lines, setLines, brokenLines, setBrokenLines, polygons, setPolygons } =
+    useStore((state: ZustandStoreStateType) => state);
 
   const [imageUrl, setImageUrl] = useState<string>('');
   const [contextMenu, setContextMenu] = useState<{
@@ -26,9 +28,11 @@ export const MainPage = () => {
     y: number;
     currentObject: any;
   }>(defaultContextMenu);
+  const [blockCloseContextMenu, setBlockCloseContextMenu] = useState(false);
   const [currentLinePoints, setCurrentLinePoints] = useState<Point[]>([]);
-  const [brokenLines, setBrokenLines] = useState<Point[][]>([]); // Все ломаные линии
-  const [currentBrokenLine, setCurrentBrokenLine] = useState<Point[]>([]); // Текущая создаваемая ломаная
+  const [currentBrokenLine, setCurrentBrokenLine] = useState<Point[]>([]);
+  const [currentPolygon, setCurrentPolygon] = useState<Point[]>([]);
+  const [isPolygonComplete, setIsPolygonComplete] = useState(false);
 
   const windowSize = {
     width: window.innerWidth,
@@ -39,14 +43,10 @@ export const MainPage = () => {
   const [image] = useImage(imageUrl ?? '');
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
 
-  // Закрытие контекстного меню при клике вне его
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setContextMenu(defaultContextMenu);
-    };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, []);
+  const closeContextMenu = () => {
+    setContextMenu(defaultContextMenu);
+    setBlockCloseContextMenu(false);
+  };
 
   useEffect(() => {
     if (selectedImage) {
@@ -65,13 +65,24 @@ export const MainPage = () => {
     }
   }, [image]);
 
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (!blockCloseContextMenu) {
+        closeContextMenu();
+      }
+      setBlockCloseContextMenu(false);
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [blockCloseContextMenu]);
+
   const handleRightClick = (e: any, type: string, currentObject?: any) => {
     e.evt.preventDefault();
     const stage = e.target.getStage();
     const pointer = stage.getPointerPosition();
 
     if (type === 'DEFAULT' && e.target.getClassName() !== 'Image') return;
-    if (lines.length === 0) return;
+    if (selectedTool === 'line' && lines.length === 0) return;
 
     setContextMenu({
       type: type,
@@ -135,68 +146,58 @@ export const MainPage = () => {
 
       if (selectedTool === 'broken-line') {
         setCurrentBrokenLine(prev => [...prev, newPoint]);
+        if (currentBrokenLine.length > 0) {
+          setBlockCloseContextMenu(true);
+          setContextMenu({
+            visible: true,
+            type: 'BROKEN_LINE',
+            x: pointer.x + window.scrollX,
+            y: pointer.y + window.scrollY,
+            currentObject: null,
+          });
+        }
+      }
+
+      if (selectedTool === 'polygon') {
+        if (isPolygonComplete) {
+          // Начинаем новый многоугольник
+          setCurrentPolygon([newPoint]);
+          setIsPolygonComplete(false);
+        } else {
+          setCurrentPolygon(prev => [...prev, newPoint]);
+          // Открываем контекстное меню после первого сегмента
+          if (currentPolygon.length > 1) {
+            setBlockCloseContextMenu(true);
+            setContextMenu({
+              visible: true,
+              type: 'POLYGON',
+              x: pointer.x + window.scrollX,
+              y: pointer.y + window.scrollY,
+              currentObject: null,
+            });
+          }
+        }
       }
     }
   };
 
-  // Завершение текущей ломаной линии
-  const completeCurrentBrokenLine = () => {
-    if (currentBrokenLine.length > 1) {
-      setBrokenLines(prev => [...prev, currentBrokenLine]);
+  const completeCurrentPolygon = () => {
+    if (currentPolygon.length > 2) {
+      const newPolygons = [...polygons, [...currentPolygon, currentPolygon[0]]];
+      setPolygons(newPolygons);
     }
-    setCurrentBrokenLine([]);
+    setIsPolygonComplete(true);
+    setCurrentPolygon([]);
+    setContextMenu(defaultContextMenu);
   };
 
-  const renderBrokenLines = () => {
-    return (
-      <>
-        {/* Рендер всех сохраненных ломаных линий */}
-        {brokenLines.map((line, lineIndex) => (
-          <React.Fragment key={`broken-line-${lineIndex}`}>
-            <Line
-              points={line.flatMap(point => [
-                point.x * scale + imagePosition.x,
-                point.y * scale + imagePosition.y,
-              ])}
-              stroke='blue'
-              strokeWidth={2}
-            />
-            {line.map((point, pointIndex) => (
-              <Circle
-                key={`point-${lineIndex}-${pointIndex}`}
-                x={point.x * scale + imagePosition.x}
-                y={point.y * scale + imagePosition.y}
-                radius={4}
-                fill='blue'
-              />
-            ))}
-          </React.Fragment>
-        ))}
-
-        {/* Рендер текущей создаваемой ломаной линии */}
-        {currentBrokenLine.length > 0 && (
-          <>
-            <Line
-              points={currentBrokenLine.flatMap(point => [
-                point.x * scale + imagePosition.x,
-                point.y * scale + imagePosition.y,
-              ])}
-              stroke='blue'
-              strokeWidth={2}
-            />
-            {currentBrokenLine.map((point, index) => (
-              <Circle
-                key={`current-point-${index}`}
-                x={point.x * scale + imagePosition.x}
-                y={point.y * scale + imagePosition.y}
-                radius={4}
-                fill='blue'
-              />
-            ))}
-          </>
-        )}
-      </>
-    );
+  const completeCurrentBrokenLine = () => {
+    if (currentBrokenLine.length > 1) {
+      const newBrokenLine = [...brokenLines, currentBrokenLine];
+      setBrokenLines(newBrokenLine);
+    }
+    setCurrentBrokenLine([]);
+    setContextMenu(defaultContextMenu);
   };
 
   return (
@@ -222,7 +223,22 @@ export const MainPage = () => {
                 currentLinePoints={currentLinePoints}
               />
             )}
-            {selectedTool === 'broken-line' && <Layer>{renderBrokenLines()}</Layer>}
+            {selectedTool === 'broken-line' && (
+              <BrokenLineLayer
+                scale={scale}
+                imagePosition={imagePosition}
+                handleRightClick={handleRightClick}
+                currentBrokenLine={currentBrokenLine}
+              />
+            )}
+            {selectedTool === 'polygon' && (
+              <PolygonLayer
+                scale={scale}
+                imagePosition={imagePosition}
+                currentPolygon={currentPolygon}
+                isPolygonComplete={isPolygonComplete}
+              />
+            )}
           </Stage>
         </div>
       ) : (
@@ -232,13 +248,11 @@ export const MainPage = () => {
       {contextMenu.visible && (
         <ContextMenu
           contextMenu={contextMenu}
-          setContextMenu={setContextMenu}
+          closeContextMenu={closeContextMenu}
           setCurrentLinePoints={setCurrentLinePoints}
-          // onClearBrokenLines={() => {
-          //   setBrokenLines([]);
-          //   setCurrentBrokenLine([]);
-          // }}
-          // onCompleteBrokenLine={completeCurrentBrokenLine}
+          onCompleteBrokenLine={completeCurrentBrokenLine}
+          setCurrentBrokenLine={setCurrentBrokenLine}
+          onCompletePolygon={completeCurrentPolygon}
         />
       )}
     </div>

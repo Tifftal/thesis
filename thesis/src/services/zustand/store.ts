@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 
-import { Line, SavedLine, UserInfoType, ZustandStoreStateType } from './types';
+import {
+  BrokenLine,
+  Line,
+  Polygon,
+  SavedBrokenLine,
+  SavedLine,
+  UserInfoType,
+  ZustandStoreStateType,
+} from './types';
 
 const useStore = create<ZustandStoreStateType>(set => ({
   typeOfAuthForm: 'login',
@@ -23,11 +31,19 @@ const useStore = create<ZustandStoreStateType>(set => ({
 
   // Редактор
   lines: [],
+  brokenLines: [],
+  polygons: [],
+
   setLines: (lines: Line[]) => set({ lines }),
+  setBrokenLines: (brokenLines: BrokenLine[]) => set({ brokenLines }),
+  setPolygons: (polygons: Polygon[]) => set({ polygons }),
 
   //Метрики
   savedLines: [],
+  savedBrokenLines: [],
+
   setSavedLines: (savedLines: SavedLine[]) => set({ savedLines }),
+  setSavedBrokenLines: (savedBrokenLines: SavedBrokenLine[]) => set({ savedBrokenLines }),
 }));
 
 export default useStore;
