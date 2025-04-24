@@ -1,31 +1,113 @@
+import { useEffect, useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 
+import { AUTH_API } from 'services/API/AUTH_API';
 import useStore from 'services/zustand/store';
 import { ZustandStoreStateType } from 'services/zustand/types';
 
-import { Button } from 'ui-kit/button';
-import { InputEmail } from 'ui-kit/inputs/InputEmail';
-import { InputText } from 'ui-kit/inputs/InputText';
+import { LoginForm } from 'components/AuthForms/LoginForm';
+import { RegisterForm } from 'components/AuthForms/RegisterForm';
+
+import { LoginDataType, RegisterDataType } from './types';
 
 import Logo from 'assets/images/logo/Logo.png';
 
+import useToast from 'hooks/useToast';
+
 export const AuthPage = () => {
   const navigate = useNavigate();
+  const { onMessage } = useToast();
 
-  const { typeOfAuthForm, setTypeOfAuthForm } = useStore((state: ZustandStoreStateType) => state);
+  const { typeOfAuthForm, setTypeOfAuthForm, setUserInfo } = useStore(
+    (state: ZustandStoreStateType) => state,
+  );
+
+  const [registerData, setRegisterData] = useState<RegisterDataType>({
+    firstName: '',
+    lastName: '',
+    password: '',
+    patronymic: '',
+    username: '',
+  });
+
+  const [loginData, setLoginData] = useState<LoginDataType>({
+    username: '',
+    password: '',
+  });
+
+  useEffect(() => {
+    if (localStorage.getItem('token')) navigate('/main');
+  }, [localStorage.getItem('token')]);
 
   const handleChangeTypeOfAuthForm = (type: 'login' | 'registration') => {
     setTypeOfAuthForm(type);
   };
 
-  const handleLogin = () => {
-    localStorage.setItem('token', '123');
-    navigate('/main');
+  const handleChangeData = (key: string, value: string) => {
+    switch (typeOfAuthForm) {
+      case 'registration': {
+        const newData = { ...registerData, [key]: value };
+        setRegisterData(newData as RegisterDataType);
+        break;
+      }
+      case 'login': {
+        const newData = { ...loginData, [key]: value };
+        setLoginData(newData as LoginDataType);
+        break;
+      }
+      default:
+        return null;
+    }
+  };
+
+  const handleLogin = (data?: LoginDataType) => {
+    AUTH_API.Login(data || loginData)
+      .then(response => {
+        localStorage.setItem('token', response.data.accessToken);
+        setUserInfo(response.data.user);
+      })
+      .catch(e => {
+        onMessage(`${e}`, 'error', 'Ошибка входа');
+      });
   };
 
   const handleRegister = () => {
-    localStorage.setItem('token', '123');
-    navigate('/main');
+    AUTH_API.Register(registerData)
+      .then(() => {
+        handleLogin({
+          username: registerData.username,
+          password: registerData.password,
+        });
+      })
+      .catch(e => {
+        onMessage(`${e}`, 'error', 'Ошибка регистрации');
+      });
+  };
+
+  const renderForm = () => {
+    switch (typeOfAuthForm) {
+      case 'login':
+        return (
+          <LoginForm
+            loginData={loginData}
+            handleChangeData={handleChangeData}
+            handleLogin={() => handleLogin()}
+            handleChangeTypeOfAuthForm={() => handleChangeTypeOfAuthForm('registration')}
+          />
+        );
+      case 'registration':
+        return (
+          <RegisterForm
+            registerData={registerData}
+            handleChangeData={handleChangeData}
+            handleRegister={handleRegister}
+            handleChangeTypeOfAuthForm={() => handleChangeTypeOfAuthForm('login')}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -40,60 +122,7 @@ export const AuthPage = () => {
             {typeOfAuthForm === 'registration' ? 'Регистрация в системе' : 'Вход в систему'}
           </div>
         </div>
-        {typeOfAuthForm === 'login' ? (
-          <>
-            <InputEmail
-              label='Электронная почта'
-              placeholder='Введите электронную почту'
-              value={undefined}
-              onChange={() => {}}
-            />
-            <InputText
-              placeholder='Введите пароль'
-              label='Пароль'
-              type='password'
-              value={undefined}
-              onChange={() => {}}
-            />
-            <div className='auth-page__container__actions'>
-              <Button stretched onClick={handleLogin}>
-                Войти
-              </Button>
-              <div className='auth-page__container__actions__no-account'>
-                Нет аккаунта?{' '}
-                <button onClick={() => handleChangeTypeOfAuthForm('registration')}>Зарегестрироваться</button>
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <InputText placeholder='Иванов' label='Фамилия' value={undefined} onChange={() => {}} />
-            <InputText placeholder='Иван' label='Имя' value={undefined} onChange={() => {}} />
-            <InputText placeholder='Иванович' label='Отчество' value={undefined} onChange={() => {}} />
-            <InputEmail
-              label='Электронная почта'
-              placeholder='Введите электронную почту'
-              value={undefined}
-              onChange={() => {}}
-            />
-            <InputText
-              placeholder='Введите пароль'
-              label='Пароль'
-              type='password'
-              value={undefined}
-              onChange={() => {}}
-            />
-            <InputText placeholder='Повторите пароль' type='password' value={undefined} onChange={() => {}} />
-            <div className='auth-page__container__actions'>
-              <Button stretched onClick={handleRegister}>
-                Зарегестрироваться
-              </Button>
-              <div className='auth-page__container__actions__no-account'>
-                Уже есть аккаунт? <button onClick={() => handleChangeTypeOfAuthForm('login')}>Войти</button>
-              </div>
-            </div>
-          </>
-        )}
+        {renderForm()}
       </div>
     </div>
   );

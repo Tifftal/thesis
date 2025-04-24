@@ -4,7 +4,7 @@ import cn from 'classnames';
 
 type Props = {
   className?: string;
-  type?: 'primary' | 'secondary' | 'grey';
+  type?: 'primary' | 'secondary' | 'grey' | 'red';
   size?: 's' | 'm' | 'l';
   onClick?: () => void;
   stretched?: boolean;

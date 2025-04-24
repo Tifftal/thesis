@@ -28,9 +28,10 @@
       "services/*": ["src/services/*"],
       "ui-kit/*": ["src/ui-kit/*"],
       "types/*": ["src/types/*"],
+      "utils/*": ["src/utils/*"],
       "constants/*": ["src/constants/*"],
       "helpers/*": ["src/helpers/*"],
-      "hooks/*": ["src/hooks/*"],
+      "hooks/*": ["src/utils/hooks/*"],
       "components/*": ["src/components/*"],
       "common/*": ["src/common/*"],
       "assets/*": ["src/assets/*"]

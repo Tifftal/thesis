@@ -11,7 +11,7 @@ type Props = {
   label?: string | ReactElement;
   placeholder?: string | undefined;
   value: valueType | undefined;
-  onChange: (e: InputTextChangeValueType) => void;
+  onChange: (value: string) => void;
   type?: string;
   status?: 'warning' | 'error' | undefined;
   height?: number;
@@ -49,7 +49,7 @@ export const InputEmail = (props: Props) => {
 
     setValidationError(errorMessage || '');
     onValidationChange?.(errorMessage || '');
-    onChange(e);
+    onChange(e.target.value);
   };
 
   const renderSuffix = () => {

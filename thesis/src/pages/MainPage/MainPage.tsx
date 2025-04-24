@@ -5,22 +5,30 @@ import { Layer, Stage, Image } from 'react-konva';
 import useImage from 'use-image';
 
 import useStore from 'services/zustand/store';
-import { Point, Line as LineType, ZustandStoreStateType } from 'services/zustand/types';
+import { Point, Line as LineType, ZustandStoreStateType, Rectangle } from 'services/zustand/types';
 
 import { ContextMenu } from 'components/ContextMenu';
 import { BrokenLineLayer } from 'components/MainPage/BrokenLineLayer';
 import { LineLayer } from 'components/MainPage/LineLayer';
 import { PolygonLayer } from 'components/MainPage/PolygonLayer';
+import { RectangleLayer } from 'components/MainPage/RectangleLayer';
 
 import { defaultContextMenu } from './constants';
 
-import Breast from 'assets/images/mock/breast_cancer.jpg';
-
 export const MainPage = () => {
-  const { selectedImage, selectedTool, lines, setLines, brokenLines, setBrokenLines, polygons, setPolygons } =
-    useStore((state: ZustandStoreStateType) => state);
+  const {
+    selectedImageURL,
+    selectedTool,
+    lines,
+    setLines,
+    brokenLines,
+    setBrokenLines,
+    polygons,
+    setPolygons,
+    rectangles,
+    setRectangles,
+  } = useStore((state: ZustandStoreStateType) => state);
 
-  const [imageUrl, setImageUrl] = useState<string>('');
   const [contextMenu, setContextMenu] = useState<{
     type: string;
     visible: boolean;
@@ -33,6 +41,8 @@ export const MainPage = () => {
   const [currentBrokenLine, setCurrentBrokenLine] = useState<Point[]>([]);
   const [currentPolygon, setCurrentPolygon] = useState<Point[]>([]);
   const [isPolygonComplete, setIsPolygonComplete] = useState(false);
+  const [currentRectangle, setCurrentRectangle] = useState<Rectangle | null>(null);
+  const [isDrawingRectangle, setIsDrawingRectangle] = useState(false);
 
   const windowSize = {
     width: window.innerWidth,
@@ -40,22 +50,16 @@ export const MainPage = () => {
   };
 
   const [scale, setScale] = useState(1);
-  const [image] = useImage(imageUrl ?? '');
+
+  const fullImageUrl = selectedImageURL?.startsWith('http') ? selectedImageURL : `http://${selectedImageURL}`;
+  const [image] = useImage(encodeURI(fullImageUrl || '') || '');
+
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
 
   const closeContextMenu = () => {
     setContextMenu(defaultContextMenu);
     setBlockCloseContextMenu(false);
   };
-
-  useEffect(() => {
-    if (selectedImage) {
-      const url = URL.createObjectURL(selectedImage);
-      setImageUrl(Breast);
-      return () => URL.revokeObjectURL(url);
-    }
-    setImageUrl('');
-  }, [selectedImage]);
 
   useEffect(() => {
     if (image) {
@@ -178,6 +182,25 @@ export const MainPage = () => {
           }
         }
       }
+
+      if (selectedTool === 'rectangle') {
+        if (!isDrawingRectangle) {
+          // Начинаем рисовать прямоугольник
+          setCurrentRectangle({
+            x: newPoint.x,
+            y: newPoint.y,
+            width: 0,
+            height: 0,
+          });
+          setIsDrawingRectangle(true);
+        } else {
+          // Завершаем рисование прямоугольника
+          const newRectangles = [...rectangles, currentRectangle!];
+          setRectangles(newRectangles);
+          setCurrentRectangle(null);
+          setIsDrawingRectangle(false);
+        }
+      }
     }
   };
 
@@ -200,15 +223,46 @@ export const MainPage = () => {
     setContextMenu(defaultContextMenu);
   };
 
+  const handleMouseMove = (e: any) => {
+    if (!isDrawingRectangle || selectedTool !== 'rectangle') return;
+
+    const stage = e.target.getStage();
+    const pointer = stage.getPointerPosition();
+    if (!pointer || !image || !currentRectangle) return;
+
+    const x = (pointer.x - imagePosition.x) / scale;
+    const y = (pointer.y - imagePosition.y) / scale;
+
+    setCurrentRectangle({
+      x: currentRectangle.x,
+      y: currentRectangle.y,
+      width: x - currentRectangle.x,
+      height: y - currentRectangle.y,
+    });
+  };
+
+  const handleRectangleDragEnd = (index: number, rect: Rectangle) => {
+    const newRectangles = [...rectangles];
+    newRectangles[index] = rect;
+    setRectangles(newRectangles);
+  };
+
+  const handleRectangleTransformEnd = (index: number, rect: Rectangle) => {
+    const newRectangles = [...rectangles];
+    newRectangles[index] = rect;
+    setRectangles(newRectangles);
+  };
+
   return (
     <div className='page__container main-page__container' style={{ overflow: 'hidden' }}>
-      {selectedImage ? (
+      {selectedImageURL ? (
         <div className='main-page__image'>
           <Stage
             width={windowSize.width}
             height={windowSize.height}
             onClick={handleStageClick}
             onWheel={handleWheel}
+            onMouseMove={handleMouseMove}
             onContextMenu={e => handleRightClick(e, 'DEFAULT')}>
             <Layer>
               {image && (
@@ -237,6 +291,16 @@ export const MainPage = () => {
                 imagePosition={imagePosition}
                 currentPolygon={currentPolygon}
                 isPolygonComplete={isPolygonComplete}
+              />
+            )}
+            {selectedTool === 'rectangle' && (
+              <RectangleLayer
+                scale={scale}
+                imagePosition={imagePosition}
+                currentRectangle={currentRectangle}
+                rectangles={rectangles}
+                onDragEnd={handleRectangleDragEnd}
+                onTransformEnd={handleRectangleTransformEnd}
               />
             )}
           </Stage>

@@ -2,8 +2,11 @@ import { create } from 'zustand';
 
 import {
   BrokenLine,
+  LayerType,
   Line,
   Polygon,
+  ProjectType,
+  Rectangle,
   SavedBrokenLine,
   SavedLine,
   UserInfoType,
@@ -13,30 +16,36 @@ import {
 const useStore = create<ZustandStoreStateType>(set => ({
   typeOfAuthForm: 'login',
   userInfo: {
-    id: 1,
-    lastName: 'Преображенский',
-    firstName: 'Виктор',
-    middleName: 'Васильевич',
-    email: 'preobr@mail.ru',
+    id: null,
+    lastName: '',
+    firstName: '',
+    patronymic: '',
+    username: '',
   },
-  selectedProjectId: null,
-  selectedImage: null,
+  selectedProject: null,
+  selectedImageURL: null,
+  selectedLayer: null,
   selectedTool: null,
+  projects: [],
 
   setTypeOfAuthForm: (typeOfAuthForm: 'login' | 'registration') => set({ typeOfAuthForm }),
   setUserInfo: (userInfo: UserInfoType) => set({ userInfo }),
-  setSelectedProjectId: (selectedProjectId: number | null) => set({ selectedProjectId }),
-  setSelectedImage: (selectedImage: File | null) => set({ selectedImage }),
+  setSelectedProject: (selectedProject: ProjectType | null) => set({ selectedProject }),
+  setSelectedImageURL: (selectedImageURL: string | null) => set({ selectedImageURL }),
+  setSelectedLayer: (selectedLayer: LayerType | null) => set({ selectedLayer }),
   setSelectedTool: (selectedTool: string | null) => set({ selectedTool }),
+  setProjects: (projects: ProjectType[]) => set({ projects }),
 
   // Редактор
   lines: [],
   brokenLines: [],
   polygons: [],
+  rectangles: [],
 
   setLines: (lines: Line[]) => set({ lines }),
   setBrokenLines: (brokenLines: BrokenLine[]) => set({ brokenLines }),
   setPolygons: (polygons: Polygon[]) => set({ polygons }),
+  setRectangles: (rectangles: Rectangle[]) => set({ rectangles }),
 
   //Метрики
   savedLines: [],

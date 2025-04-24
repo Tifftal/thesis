@@ -56,7 +56,9 @@
   position: absolute;
   top: 0;
   left: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .icon-transition.hidden {
@@ -115,7 +117,6 @@
   align-self: center;
 }
 
-
 .projects-bar__content__upload-btn.collapsed {
   display: none;
 }
@@ -159,14 +160,31 @@
   font-size: 16px;
 }
 
-.projects-bar__content__item span {
+.projects-bar__content__item__number {
   font-family: 'Inter Light';
   font-size: 16px;
-  color: var(--color-grey3)
+  color: var(--color-grey3);
+}
+
+.projects-bar__content__item__name {
+  width: calc(100% - 48px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.projects-bar__content__item__image {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: calc(100% - 30px);
 }
 
 .projects-bar__content__item img {
   height: 38px;
+  width: 38px;
+  object-fit: cover;
 }
 
 .projects-bar__content__item.collapsed {

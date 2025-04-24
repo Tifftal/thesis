@@ -1,0 +1,134 @@
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+  min-width: max-content;
+  max-width: 50%;
+}
+
+.toast {
+  height: auto;
+  border-radius: 10px;
+  border: 1.3px solid transparent;
+  background-color: var(--color-white1);
+  padding: 12px;
+  box-sizing: border-box;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 6px;
+}
+
+.toast__content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.toast__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.toast__label {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 10px;
+}
+
+.toast__label span {
+  font-family: 'Inter Regular';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -0.176px;
+  line-height: 24px;
+}
+
+.toast__close-btn {
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-grey7);
+}
+
+.toast__close-btn:hover {
+  background-color: var(--color-grey1);
+}
+
+.toast_description {
+  font-family: 'Inter Regular';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: -0.176px;
+  line-height: 24px;
+  color: var(--color-grey5);
+}
+
+.toast_actions {
+  cursor: pointer;
+}
+
+.toast_actions .licard-icon-cross {
+  font-size: 16px;
+}
+
+@media screen and (max-width: 768px) {
+  .toast-container {
+    max-width: 90%;
+  }
+
+  .toast {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .toast__content {
+    gap: 12px;
+  }
+
+  .toast_icon .licard-icon-info {
+    font-size: 20px;
+  }
+
+  .toast_actions .licard-icon-cross {
+    font-size: 14px;
+  }
+
+  .toast_description {
+    font-size: 14px;
+    line-height: 140%;
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .toast-container {
+    max-width: 100%;
+  }
+
+  .toast {
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  .toast__content {
+    gap: 8px;
+  }
+
+  .toast_icon .licard-icon-info {
+    font-size: 18px;
+  }
+
+  .toast_actions .licard-icon-cross {
+    font-size: 12px;
+  }
+
+  .toast_description {
+    font-size: 12px;
+    line-height: 130%;
+  }
+}

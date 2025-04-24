@@ -61,6 +61,22 @@ button.c-button--type-grey:active {
   background-color: var(--color-grey5);
 }
 
+.c-button--type-red {
+  border: 1px solid var(--color-red);
+  background-color: var(--color-red);
+  color: var(--color-white1);
+}
+
+button.c-button--type-red:hover {
+  border: 1px solid var(--color-red-dark);
+  background-color: var(--color-red-dark);
+}
+
+button.c-button--type-red:active {
+  border: 1px solid var(--color-red-dark);
+  background-color: var(--color-red-dark);
+}
+
 button.c-button--type-primary:disabled {
   border: 1px solid var(--color-grey0);
   background-color: var(--color-grey0);
@@ -88,7 +104,6 @@ button.c-button--type-secondary:disabled:hover {
 .c-button--stretched {
   width: 100%;
 }
-
 
 .c-button--size-s {
   min-width: 125px;

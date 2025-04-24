@@ -6,6 +6,7 @@ import { ProjectsBar } from 'common/ProjectsBar';
 
 export const RouteLayout = () => {
   useNavigate();
+
   const token = localStorage.getItem('token');
 
   if (!token) return <Outlet />;

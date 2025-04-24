@@ -11,7 +11,7 @@ type Props = {
   label?: string | ReactElement;
   placeholder?: string | undefined;
   value: valueType | undefined;
-  onChange: (e: InputTextChangeValueType) => void;
+  onChange: (value: string) => void;
   type?: string;
   status?: 'warning' | 'error' | undefined;
   height?: number;
@@ -38,7 +38,7 @@ export const InputText = (props: Props) => {
 
   const handleChange = (e: InputTextChangeValueType) => {
     if (!disabled) {
-      onChange(e);
+      onChange(e.target.value);
     }
   };
 

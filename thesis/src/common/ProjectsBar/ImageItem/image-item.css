@@ -1,0 +1,142 @@
+.image-item__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.image-item__title {
+  padding: 10px;
+  background-color: var(--color-grey0);
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Inter Light';
+  font-size: 16px;
+}
+
+.image-item__title img {
+  height: 38px;
+  width: 38px;
+  object-fit: cover;
+}
+
+.image-item__title.collapsed {
+  padding: 10px 9px;
+  justify-content: center !important;
+}
+
+.image-item__title.active {
+  background-color: var(--color-green-light);
+}
+
+.image-item__title:hover {
+  background-color: var(--color-green-hover);
+}
+
+.image-item__content__item__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.image-item__content__item__image {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: calc(100% - 60px);
+}
+
+.image-item__layers__container {
+  height: 0;
+  overflow: hidden;
+  transition: 0.3s;
+  background-color: var(--color-grey0);
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0px 10px 0px 40px;
+
+  font-family: 'Inter Light';
+  font-size: 14px;
+}
+
+.image-item__layers__container.active {
+  height: fit-content;
+  padding: 6px 10px 6px 40px;
+}
+
+.image-item__layers__container button {
+  font-family: 'Inter Medium';
+  color: var(--color-green-main);
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  transition: 0.3s;
+  width: fit-content;
+  margin-bottom: 4px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.image-item__layers__container button:hover {
+  background-color: var(--color-green-hover);
+}
+
+.image-item__layers__add-input {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.image-item__layers__add-input .ant-input {
+  font-size: 14px;
+  font-family: 'Inter Light';
+  border-radius: 6px;
+}
+
+.image-item__layers__add-input svg {
+  padding: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--color-green-dark);
+}
+
+.image-item__layers__add-input svg:hover {
+  background-color: var(--color-green-hover);
+}
+
+.image-item__layers__item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.image-item__layers__item span {
+  color: var(--color-grey3);
+}
+
+.image-item__layers__item.active {
+  font-family: 'Inter Medium';
+  color: var(--color-green-dark);
+  background-color: var(--color-green-hover);
+}

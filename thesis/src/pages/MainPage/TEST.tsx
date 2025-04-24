@@ -27,47 +27,47 @@ export const MainPage = () => {
     height: window.innerHeight - 90,
   };
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      setKeyState({
-        ctrl: e.ctrlKey,
-        meta: e.metaKey,
-      });
-    };
+  // useEffect(() => {
+  //   const handleKeyDown = (e: KeyboardEvent) => {
+  //     setKeyState({
+  //       ctrl: e.ctrlKey,
+  //       meta: e.metaKey,
+  //     });
+  //   };
 
-    const handleKeyUp = (e: KeyboardEvent) => {
-      setKeyState({
-        ctrl: e.ctrlKey,
-        meta: e.metaKey,
-      });
-    };
+  //   const handleKeyUp = (e: KeyboardEvent) => {
+  //     setKeyState({
+  //       ctrl: e.ctrlKey,
+  //       meta: e.metaKey,
+  //     });
+  //   };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+  //   window.addEventListener('keydown', handleKeyDown);
+  //   window.addEventListener('keyup', handleKeyUp);
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('keydown', handleKeyDown);
+  //     window.removeEventListener('keyup', handleKeyUp);
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    if (selectedImage) {
-      const url = URL.createObjectURL(selectedImage);
-      setImageUrl(Vreast);
-      return () => URL.revokeObjectURL(url);
-    }
-    setImageUrl('');
-  }, [selectedImage]);
+  // useEffect(() => {
+  //   if (selectedImage) {
+  //     const url = URL.createObjectURL(selectedImage);
+  //     setImageUrl(Vreast);
+  //     return () => URL.revokeObjectURL(url);
+  //   }
+  //   setImageUrl('');
+  // }, [selectedImage]);
 
-  // Центрируем изображение при первой загрузке
-  useEffect(() => {
-    if (image) {
-      const x = (windowSize.width - image.width * scale) / 2;
-      const y = (windowSize.height - image.height * scale) / 2;
-      setImagePosition({ x, y });
-    }
-  }, [image, windowSize]);
+  // // Центрируем изображение при первой загрузке
+  // useEffect(() => {
+  //   if (image) {
+  //     const x = (windowSize.width - image.width * scale) / 2;
+  //     const y = (windowSize.height - image.height * scale) / 2;
+  //     setImagePosition({ x, y });
+  //   }
+  // }, [image, windowSize]);
 
   // Обработчик колесика мыши
   const handleWheel = (e: any) => {
