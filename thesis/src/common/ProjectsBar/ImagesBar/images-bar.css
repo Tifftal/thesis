@@ -1,0 +1,32 @@
+.images-bar__content__upload-btn {
+  align-self: center;
+}
+
+.images-bar__content__upload-btn.collapsed {
+  display: none;
+}
+
+.images-bar__content__add-btn {
+  font-family: 'Inter Medium';
+  color: var(--color-green-dark);
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  transition: 0.3s;
+  width: fit-content;
+  margin-bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.images-bar__content__add-btn:hover {
+  background-color: var(--color-green-light);
+}

@@ -140,3 +140,17 @@
   color: var(--color-green-dark);
   background-color: var(--color-green-hover);
 }
+
+.context_menu__item {
+  font-size: 12px;
+  font-family: 'Inter Regular';
+  border-radius: 4px;
+  flex-grow: 1;
+  padding: 4px;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.context_menu__item:hover {
+  background-color: var(--color-green-hover);
+}

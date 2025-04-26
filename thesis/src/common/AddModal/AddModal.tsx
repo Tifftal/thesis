@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import { IMAGE_API } from 'services/API/IMAGE_API';
+import { LAYER_API } from 'services/API/LAYER_API';
 import { PROJECT_API } from 'services/API/PROJECT_API';
 import useStore from 'services/zustand/store';
-import { ProjectType, ZustandStoreStateType } from 'services/zustand/types';
+import { ZustandStoreStateType } from 'services/zustand/types';
 
 import { Button } from 'ui-kit/button';
 import { InputText } from 'ui-kit/inputs/InputText';
@@ -41,15 +42,28 @@ export const AddModal = (props: Props) => {
         image: file,
       })
         .then(response => {
-          setSelectedImageURL(response.data.url);
-          const updatedImages = selectedProject.images
-            ? [...selectedProject.images, response.data]
-            : [response.data];
+          let newImage = response.data;
+          setSelectedImageURL(newImage.url);
 
-          setSelectedProject({
-            ...selectedProject,
-            images: updatedImages,
-          });
+          LAYER_API.CreateLayer({
+            imageID: newImage.id,
+            name: 'Новый слой',
+          })
+            .then(response => {
+              newImage = { ...newImage, layers: [response.data] };
+
+              const updatedImages = selectedProject.images
+                ? [...selectedProject.images, newImage]
+                : [newImage];
+
+              setSelectedProject({
+                ...selectedProject,
+                images: updatedImages,
+              });
+            })
+            .catch(e => {
+              onMessage(`${e}`, 'error', 'Ошибка добавления слоя');
+            });
         })
         .catch(e => {
           onMessage(`${e}`, 'error', 'Ошибка добавления изображения');

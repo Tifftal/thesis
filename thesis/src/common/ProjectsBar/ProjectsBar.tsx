@@ -2,19 +2,19 @@ import { ReactElement, useEffect, useState } from 'react';
 
 import { IconArrowBarToLeft, IconArrowBarToRight, IconEditCircle, IconPlus } from '@tabler/icons-react';
 import { Breadcrumb } from 'antd';
-import cn from 'classnames';
 
 import { PROJECT_API } from 'services/API/PROJECT_API';
 import useStore from 'services/zustand/store';
 import { ImageType, ProjectType, ZustandStoreStateType } from 'services/zustand/types';
 
 import { Tooltip } from 'ui-kit/tooltip';
-import { UploadFiles } from 'ui-kit/upload-files';
 
 import { AddModal } from 'common/AddModal';
 import { EditModal } from 'common/EditModal/EditModal';
 
-import { ImageItem } from './ImageItem/ImageItem';
+import { EditModalItemType, EditModalType } from 'common/EditModal/types';
+
+import { ImagesBar } from './ImagesBar/ImagesBar';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -27,8 +27,11 @@ export const ProjectsBar = () => {
 
   const [open, setOpen] = useState<boolean>(true);
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
-  const [editedItem, setEditedItem] = useState<ImageType | ProjectType | null>(null);
+  const [editModal, setEditModal] = useState<{ open: boolean; type: EditModalType }>({
+    open: false,
+    type: null,
+  });
+  const [editedItem, setEditedItem] = useState<EditModalItemType>(null);
   const [file, setFile] = useState<File | null>(null);
 
   const defaultBreadcrumbItem = {
@@ -76,10 +79,10 @@ export const ProjectsBar = () => {
       });
   };
 
-  const handleOpenEditModal = (e: any, item: ImageType | ProjectType) => {
+  const handleOpenEditModal = (e: any, item: EditModalItemType, type: EditModalType) => {
     e.stopPropagation();
     setEditedItem(item);
-    setOpenEditModal(true);
+    setEditModal({ open: true, type: type });
   };
 
   const renderBarContent = () => {
@@ -102,7 +105,7 @@ export const ProjectsBar = () => {
                       width={20}
                       height={20}
                       stroke={1.5}
-                      onClick={e => handleOpenEditModal(e, item)}
+                      onClick={e => handleOpenEditModal(e, item, 'PROJECT')}
                     />
                   </>
                 </>
@@ -117,31 +120,13 @@ export const ProjectsBar = () => {
     return (
       <>
         <div className='projects-bar__content'>
-          <UploadFiles
-            accept='.png,.jpeg,.jpg'
-            beforeUpload={file => {
-              setFile(file);
-              setOpenModal(true);
-              return false;
-            }}
-            showUploadList={false}
-            onChange={() => {}}
-            className={cn('projects-bar__content__upload-btn', { collapsed: !open })}>
-            <div className='projects-bar__content__add-btn'>
-              <IconPlus width={14} height={14} stroke={3} />
-              Добавить изображение
-            </div>
-          </UploadFiles>
-
-          {selectedProject?.images?.map((item, index) => (
-            <ImageItem
-              key={index}
-              image={item}
-              open={open}
-              setOpen={setOpen}
-              handleOpenEditModal={handleOpenEditModal}
-            />
-          ))}
+          <ImagesBar
+            setOpenModal={setOpenModal}
+            handleOpenEditModal={handleOpenEditModal}
+            setFile={setFile}
+            open={open}
+            setOpen={setOpen}
+          />
         </div>
       </>
     );
@@ -175,7 +160,7 @@ export const ProjectsBar = () => {
       </div>
       {renderBarContent()}
       <AddModal open={openModal} setOpen={setOpenModal} file={file} setFile={setFile} />
-      <EditModal open={openEditModal} setOpen={setOpenEditModal} item={editedItem} />
+      <EditModal editModal={editModal} setEditModal={setEditModal} item={editedItem} />
     </div>
   );
 };

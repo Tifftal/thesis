@@ -1,4 +1,4 @@
-import { CreateChangeImageProjectVariablesType } from './types';
+import { ChangeNameVariablesType, CreateProjectVariablesType } from './types';
 
 import apiClient from './utils/axiosInterceptor';
 
@@ -11,13 +11,13 @@ export class PROJECT_API {
     return apiClient.get(`/project/${id}`);
   }
 
-  static CreateProject(variables: CreateChangeImageProjectVariablesType) {
+  static CreateProject(variables: CreateProjectVariablesType) {
     return apiClient.post('/project', {
       ...variables,
     });
   }
 
-  static ChangeProjectName(id: number, variables: CreateChangeImageProjectVariablesType) {
+  static ChangeProjectName(id: number, variables: ChangeNameVariablesType) {
     return apiClient.put(`/project/${id}`, {
       ...variables,
     });

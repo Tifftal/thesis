@@ -11,13 +11,17 @@ export type RegisterVariablesType = {
   username: string;
 };
 
+export type CreateProjectVariablesType = {
+  name: string;
+};
+
 export type CreateImageVariablesType = {
   projectID: number;
   name: string;
   image: File;
 };
 
-export type CreateChangeImageProjectVariablesType = {
+export type ChangeNameVariablesType = {
   name: string;
 };
 

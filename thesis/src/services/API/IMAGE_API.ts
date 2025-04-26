@@ -1,4 +1,4 @@
-import { CreateChangeImageProjectVariablesType, CreateImageVariablesType } from './types';
+import { ChangeNameVariablesType, CreateImageVariablesType } from './types';
 
 import apiClient from './utils/axiosInterceptor';
 
@@ -16,7 +16,7 @@ export class IMAGE_API {
     });
   }
 
-  static ChangeImageName(id: number, variables: CreateChangeImageProjectVariablesType) {
+  static ChangeImageName(id: number, variables: ChangeNameVariablesType) {
     return apiClient.put(`/image/${id}`, {
       ...variables,
     });
