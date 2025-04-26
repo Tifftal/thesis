@@ -49,14 +49,14 @@ export type ZustandStoreStateType = {
   userInfo: UserInfoType;
   selectedProject: ProjectType | null;
   selectedImageURL: string | null;
-  selectedLayer: LayerType | null;
+  visibleLayers: LayerType[];
   selectedTool: string | null;
   projects: ProjectType[];
   setTypeOfAuthForm: (typeOfAuthForm: 'login' | 'registration') => void;
   setUserInfo: (userInfo: UserInfoType) => void;
   setSelectedProject: (selectedProject: ProjectType | null) => void;
   setSelectedImageURL: (selectedImageURL: string | null) => void;
-  setSelectedLayer: (selectedLayer: LayerType | null) => void;
+  setVisibleLayers: (visibleLayers: LayerType[]) => void;
   setSelectedTool: (selectedTool: string | null) => void;
   setProjects: (projects: ProjectType[]) => void;
 

@@ -24,9 +24,14 @@ export const AddModal = (props: Props) => {
 
   const { onMessage } = useToast();
 
-  const { projects, setProjects, selectedProject, setSelectedImageURL, setSelectedProject } = useStore(
-    (state: ZustandStoreStateType) => state,
-  );
+  const {
+    projects,
+    setProjects,
+    selectedProject,
+    setSelectedImageURL,
+    setSelectedProject,
+    setVisibleLayers,
+  } = useStore((state: ZustandStoreStateType) => state);
 
   const [name, setName] = useState<string>('');
 
@@ -60,6 +65,8 @@ export const AddModal = (props: Props) => {
                 ...selectedProject,
                 images: updatedImages,
               });
+
+              setVisibleLayers([response.data]);
             })
             .catch(e => {
               onMessage(`${e}`, 'error', 'Ошибка добавления слоя');

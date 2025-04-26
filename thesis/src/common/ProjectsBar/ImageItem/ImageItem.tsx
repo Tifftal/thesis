@@ -9,6 +9,8 @@ import { ImageType, LayerType, ZustandStoreStateType } from 'services/zustand/ty
 
 import { InputText } from 'ui-kit/inputs/InputText';
 
+import { LayerItem } from '../LayerItem/LayerItem';
+
 import { BarContextMenu } from 'common/BarContextMenu/BarContextMenu';
 
 import { EditModalItemType, EditModalType } from 'common/EditModal/types';
@@ -28,14 +30,8 @@ export const ImageItem = (props: Props) => {
 
   const { onMessage } = useToast();
 
-  const {
-    selectedImageURL,
-    setSelectedImageURL,
-    selectedProject,
-    setSelectedProject,
-    selectedLayer,
-    setSelectedLayer,
-  } = useStore((state: ZustandStoreStateType) => state);
+  const { selectedImageURL, setSelectedImageURL, selectedProject, setSelectedProject, setVisibleLayers } =
+    useStore((state: ZustandStoreStateType) => state);
 
   const [isOpenLayers, setIsOpenLayers] = useState<boolean>(false);
   const [isAddingLayer, setIsAddingLayer] = useState<boolean>(false);
@@ -43,14 +39,15 @@ export const ImageItem = (props: Props) => {
 
   const handleSelectImage = () => {
     setSelectedImageURL(image.url);
-    setSelectedLayer(null);
+    setVisibleLayers([image.layers[0]]);
     setIsOpenLayers(true);
     !open && setOpen(true);
   };
 
   useEffect(() => {
     if (!open) setIsOpenLayers(false);
-  }, [open]);
+    if (selectedImageURL) setIsOpenLayers(true);
+  }, [open, selectedImageURL]);
 
   const handleToggleLayers = (e: any) => {
     e.stopPropagation();
@@ -153,12 +150,7 @@ export const ImageItem = (props: Props) => {
             )}
             {image.layers?.map((layer, index) => (
               <BarContextMenu key={index} renderContextMenu={() => renderContextMenu(layer)}>
-                <div
-                  className={cn('image-item__layers__item', { active: selectedLayer?.id === layer.id })}
-                  onClick={() => setSelectedLayer(layer)}>
-                  <span>#{layer.id}</span>
-                  {layer.name}
-                </div>
+                <LayerItem layer={layer} />
               </BarContextMenu>
             ))}
           </div>
