@@ -87,7 +87,8 @@ export const EditModal = (props: Props) => {
           onMessage('Ошибка', 'error', 'Не выбран проект');
           return;
         }
-        LAYER_API.ChangeLayerName(item.id, { name })
+        if (!('measurements' in item)) return;
+        LAYER_API.ChangeLayer(item.id, { name: name, measurements: item.measurements })
           .then(() => {
             PROJECT_API.GetProject(selectedProject?.id)
               .then(response => {

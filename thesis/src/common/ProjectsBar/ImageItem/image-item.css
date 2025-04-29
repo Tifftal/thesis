@@ -127,7 +127,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  cursor: pointer;
+  cursor: default;
   padding: 4px;
   border-radius: 4px;
 }
@@ -154,6 +154,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.image-item__layers__item__eye.disabled {
+  cursor: not-allowed;
+  color: var(--color-grey3);
 }
 
 .context_menu__item {

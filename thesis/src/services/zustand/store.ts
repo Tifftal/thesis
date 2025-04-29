@@ -25,6 +25,7 @@ const useStore = create<ZustandStoreStateType>(set => ({
   selectedProject: null,
   selectedImageURL: null,
   visibleLayers: [],
+  selectedLayer: null,
   selectedTool: null,
   projects: [],
 
@@ -33,6 +34,7 @@ const useStore = create<ZustandStoreStateType>(set => ({
   setSelectedProject: (selectedProject: ProjectType | null) => set({ selectedProject }),
   setSelectedImageURL: (selectedImageURL: string | null) => set({ selectedImageURL }),
   setVisibleLayers: (visibleLayers: LayerType[]) => set({ visibleLayers }),
+  setSelectedLayer: (selectedLayer: LayerType | null) => set({ selectedLayer }),
   setSelectedTool: (selectedTool: string | null) => set({ selectedTool }),
   setProjects: (projects: ProjectType[]) => set({ projects }),
 

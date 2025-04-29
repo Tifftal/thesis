@@ -30,8 +30,16 @@ export const ImageItem = (props: Props) => {
 
   const { onMessage } = useToast();
 
-  const { selectedImageURL, setSelectedImageURL, selectedProject, setSelectedProject, setVisibleLayers } =
-    useStore((state: ZustandStoreStateType) => state);
+  const {
+    selectedImageURL,
+    setSelectedImageURL,
+    selectedProject,
+    setSelectedProject,
+    setVisibleLayers,
+    setSelectedLayer,
+    selectedTool,
+    setSelectedTool,
+  } = useStore((state: ZustandStoreStateType) => state);
 
   const [isOpenLayers, setIsOpenLayers] = useState<boolean>(false);
   const [isAddingLayer, setIsAddingLayer] = useState<boolean>(false);
@@ -39,8 +47,10 @@ export const ImageItem = (props: Props) => {
 
   const handleSelectImage = () => {
     setSelectedImageURL(image.url);
-    setVisibleLayers([image.layers[0]]);
+    setVisibleLayers(image.layers);
+    setSelectedLayer(image.layers[0]);
     setIsOpenLayers(true);
+    !selectedTool && setSelectedTool('line');
     !open && setOpen(true);
   };
 

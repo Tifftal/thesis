@@ -25,6 +25,11 @@ export type ChangeNameVariablesType = {
   name: string;
 };
 
+export type ChangeLayerVariablesType = {
+  name: string;
+  measurements: Record<string, any>;
+};
+
 export type CreateLayerType = {
   imageID: number;
   name: string;

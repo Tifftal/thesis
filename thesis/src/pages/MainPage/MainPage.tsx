@@ -5,7 +5,7 @@ import { Layer, Stage, Image } from 'react-konva';
 import useImage from 'use-image';
 
 import useStore from 'services/zustand/store';
-import { Point, Line as LineType, ZustandStoreStateType, Rectangle } from 'services/zustand/types';
+import { Point, ZustandStoreStateType, Rectangle } from 'services/zustand/types';
 
 import { ContextMenu } from 'components/ContextMenu';
 import { BrokenLineLayer } from 'components/MainPage/BrokenLineLayer';
@@ -13,21 +13,27 @@ import { LineLayer } from 'components/MainPage/LineLayer';
 import { PolygonLayer } from 'components/MainPage/PolygonLayer';
 import { RectangleLayer } from 'components/MainPage/RectangleLayer';
 
+import { ChangeLayer } from 'pages/changeDataHelpers';
+
 import { defaultContextMenu } from './constants';
+
+import useToast from 'utils/hooks/useToast';
 
 export const MainPage = () => {
   const {
+    selectedProject,
+    setSelectedProject,
     selectedImageURL,
     selectedTool,
-    lines,
-    setLines,
-    brokenLines,
-    setBrokenLines,
-    polygons,
-    setPolygons,
     rectangles,
     setRectangles,
+    visibleLayers,
+    selectedLayer,
+    setSelectedLayer,
+    setVisibleLayers,
   } = useStore((state: ZustandStoreStateType) => state);
+
+  const { onMessage } = useToast();
 
   const [contextMenu, setContextMenu] = useState<{
     type: string;
@@ -40,7 +46,6 @@ export const MainPage = () => {
   const [currentLinePoints, setCurrentLinePoints] = useState<Point[]>([]);
   const [currentBrokenLine, setCurrentBrokenLine] = useState<Point[]>([]);
   const [currentPolygon, setCurrentPolygon] = useState<Point[]>([]);
-  const [isPolygonComplete, setIsPolygonComplete] = useState(false);
   const [currentRectangle, setCurrentRectangle] = useState<Rectangle | null>(null);
   const [isDrawingRectangle, setIsDrawingRectangle] = useState(false);
 
@@ -86,7 +91,10 @@ export const MainPage = () => {
     const pointer = stage.getPointerPosition();
 
     if (type === 'DEFAULT' && e.target.getClassName() !== 'Image') return;
-    if (selectedTool === 'line' && lines.length === 0) return;
+    if (type === 'DEFAULT' && e.target.getClassName() === 'Image') {
+      setContextMenu(defaultContextMenu);
+      return;
+    }
 
     setContextMenu({
       type: type,
@@ -121,7 +129,7 @@ export const MainPage = () => {
     });
   };
 
-  // Обработчик клика для создания точек
+  // Обработчик клика для создания точек TODO: вынести и отрефакторить
   const handleStageClick = (e: any) => {
     if (e.evt.button !== 0) return;
 
@@ -136,16 +144,36 @@ export const MainPage = () => {
       const newPoint = { x, y };
 
       if (selectedTool === 'line') {
-        setCurrentLinePoints(prev => {
-          const updated = [...prev, newPoint];
-          // Когда набрано 2 точки, сохраняем линию и сбрасываем текущие точки
-          if (updated.length === 2) {
-            const newLines = [...lines, [updated[0], updated[1]] as LineType];
-            setLines(newLines);
-            return [];
+        const updated = [...currentLinePoints, newPoint];
+
+        // Когда набрано 2 точки, сохраняем линию и сбрасываем текущие точки
+        if (updated.length === 2) {
+          const newLine = [updated[0], updated[1]];
+          const newMeasurements = JSON.parse(JSON.stringify(selectedLayer?.measurements || {}));
+
+          if (!newMeasurements.lines) {
+            newMeasurements.lines = [];
           }
-          return updated;
-        });
+
+          newMeasurements.lines.push(newLine);
+
+          ChangeLayer(
+            selectedProject,
+            setSelectedProject,
+            selectedLayer,
+            setSelectedLayer,
+            visibleLayers,
+            setVisibleLayers,
+            newMeasurements,
+            onMessage,
+            'Ошибка создания линии',
+          );
+
+          setCurrentLinePoints([]);
+          return;
+        }
+
+        setCurrentLinePoints(updated);
       }
 
       if (selectedTool === 'broken-line') {
@@ -163,10 +191,8 @@ export const MainPage = () => {
       }
 
       if (selectedTool === 'polygon') {
-        if (isPolygonComplete) {
-          // Начинаем новый многоугольник
+        if (!currentPolygon.length) {
           setCurrentPolygon([newPoint]);
-          setIsPolygonComplete(false);
         } else {
           setCurrentPolygon(prev => [...prev, newPoint]);
           // Открываем контекстное меню после первого сегмента
@@ -205,20 +231,55 @@ export const MainPage = () => {
   };
 
   const completeCurrentPolygon = () => {
-    if (currentPolygon.length > 2) {
-      const newPolygons = [...polygons, [...currentPolygon, currentPolygon[0]]];
-      setPolygons(newPolygons);
+    if (!currentPolygon.length) return;
+
+    const newMeasurements = JSON.parse(JSON.stringify(selectedLayer?.measurements || {}));
+
+    if (!newMeasurements.polygons) {
+      newMeasurements.polygons = [];
     }
-    setIsPolygonComplete(true);
+
+    newMeasurements.polygons.push(currentPolygon);
+
+    ChangeLayer(
+      selectedProject,
+      setSelectedProject,
+      selectedLayer,
+      setSelectedLayer,
+      visibleLayers,
+      setVisibleLayers,
+      newMeasurements,
+      onMessage,
+      'Ошибка создания многоугольника',
+    );
+
     setCurrentPolygon([]);
     setContextMenu(defaultContextMenu);
   };
 
   const completeCurrentBrokenLine = () => {
-    if (currentBrokenLine.length > 1) {
-      const newBrokenLine = [...brokenLines, currentBrokenLine];
-      setBrokenLines(newBrokenLine);
+    if (!currentBrokenLine.length) return;
+
+    const newMeasurements = JSON.parse(JSON.stringify(selectedLayer?.measurements || {}));
+
+    if (!newMeasurements.brokenLines) {
+      newMeasurements.brokenLines = [];
     }
+
+    newMeasurements.brokenLines.push(currentBrokenLine);
+
+    ChangeLayer(
+      selectedProject,
+      setSelectedProject,
+      selectedLayer,
+      setSelectedLayer,
+      visibleLayers,
+      setVisibleLayers,
+      newMeasurements,
+      onMessage,
+      'Ошибка создания ломаной',
+    );
+
     setCurrentBrokenLine([]);
     setContextMenu(defaultContextMenu);
   };
@@ -269,30 +330,28 @@ export const MainPage = () => {
                 <Image image={image} x={imagePosition.x} y={imagePosition.y} scaleX={scale} scaleY={scale} />
               )}
             </Layer>
-            {selectedTool === 'line' && (
-              <LineLayer
-                scale={scale}
-                imagePosition={imagePosition}
-                handleRightClick={handleRightClick}
-                currentLinePoints={currentLinePoints}
-              />
-            )}
-            {selectedTool === 'broken-line' && (
-              <BrokenLineLayer
-                scale={scale}
-                imagePosition={imagePosition}
-                handleRightClick={handleRightClick}
-                currentBrokenLine={currentBrokenLine}
-              />
-            )}
-            {selectedTool === 'polygon' && (
-              <PolygonLayer
-                scale={scale}
-                imagePosition={imagePosition}
-                currentPolygon={currentPolygon}
-                isPolygonComplete={isPolygonComplete}
-              />
-            )}
+
+            <LineLayer
+              scale={scale}
+              imagePosition={imagePosition}
+              handleRightClick={handleRightClick}
+              currentLinePoints={currentLinePoints}
+            />
+
+            <BrokenLineLayer
+              scale={scale}
+              imagePosition={imagePosition}
+              handleRightClick={handleRightClick}
+              currentBrokenLine={currentBrokenLine}
+            />
+
+            <PolygonLayer
+              scale={scale}
+              imagePosition={imagePosition}
+              handleRightClick={handleRightClick}
+              currentPolygon={currentPolygon}
+            />
+
             {selectedTool === 'rectangle' && (
               <RectangleLayer
                 scale={scale}

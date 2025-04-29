@@ -65,6 +65,7 @@ export const AuthPage = () => {
     AUTH_API.Login(data || loginData)
       .then(response => {
         localStorage.setItem('token', response.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
         setUserInfo(response.data.user);
       })
       .catch(e => {

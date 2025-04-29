@@ -1,7 +1,11 @@
 import useStore from 'services/zustand/store';
 import { Point, SavedBrokenLine, SavedLine, ZustandStoreStateType } from 'services/zustand/types';
 
-import { calculateDistance, calculatePolylineLength } from 'pages/MainPage/helpers';
+import { ChangeLayer } from 'pages/changeDataHelpers';
+
+import { calculateDistance, calculatePolygonArea, calculatePolylineLength } from 'pages/MainPage/helpers';
+
+import useToast from 'utils/hooks/useToast';
 
 type Props = {
   contextMenu: { type: string; visible: boolean; x: number; y: number; currentObject: any };
@@ -13,52 +17,48 @@ type Props = {
 };
 
 export const ContextMenu = (props: Props) => {
-  const {
-    contextMenu,
-    closeContextMenu,
-    setCurrentLinePoints,
-    setCurrentBrokenLine,
-    onCompleteBrokenLine,
-    onCompletePolygon,
-  } = props;
+  const { contextMenu, closeContextMenu, onCompleteBrokenLine, onCompletePolygon } = props;
 
   const {
-    lines,
-    setLines,
     savedLines,
     setSavedLines,
-    brokenLines,
-    setBrokenLines,
     savedBrokenLines,
     setSavedBrokenLines,
+    selectedLayer,
+    setSelectedLayer,
+    visibleLayers,
+    setVisibleLayers,
+    selectedProject,
+    setSelectedProject,
   } = useStore((state: ZustandStoreStateType) => state);
 
-  const handleClearBrokenLine = () => {
-    if (contextMenu.currentObject) {
-      const newBrokenLines = brokenLines.filter(
-        line => JSON.stringify(line) !== JSON.stringify(contextMenu.currentObject),
-      );
-      setBrokenLines(newBrokenLines);
-    } else {
-      setCurrentBrokenLine([]);
-    }
+  const { onMessage } = useToast();
 
-    closeContextMenu();
-  };
-  const handleClearLine = () => {
+  const handleClear = (object: string, error: string) => {
     if (!contextMenu.currentObject) return;
 
-    const newLines = lines.filter(line => JSON.stringify(line) !== JSON.stringify(contextMenu.currentObject));
-    setLines(newLines);
+    const newMeasurements = selectedLayer?.measurements || {};
 
-    closeContextMenu();
-  };
+    if (!newMeasurements[object]) {
+      newMeasurements[object] = [];
+    }
 
-  const handleClearAll = () => {
-    setLines([]);
-    setCurrentLinePoints([]);
-    setBrokenLines([]);
-    setCurrentBrokenLine([]);
+    newMeasurements[object] = newMeasurements[object].filter(
+      (line: Point[]) => JSON.stringify(line) !== JSON.stringify(contextMenu.currentObject),
+    );
+
+    ChangeLayer(
+      selectedProject,
+      setSelectedProject,
+      selectedLayer,
+      setSelectedLayer,
+      visibleLayers,
+      setVisibleLayers,
+      newMeasurements,
+      onMessage,
+      error,
+    );
+
     closeContextMenu();
   };
 
@@ -87,17 +87,6 @@ export const ContextMenu = (props: Props) => {
     closeContextMenu();
   };
 
-  const saveAll = () => {
-    const newSavedLines = lines.map(item => ({
-      line: item,
-      distance: `${calculateDistance(item[0], item[1])}`,
-      note: '',
-    }));
-
-    setSavedLines(newSavedLines);
-    closeContextMenu();
-  };
-
   const renderContent = () => {
     switch (contextMenu.type) {
       case 'LINE':
@@ -106,7 +95,7 @@ export const ContextMenu = (props: Props) => {
             <div className='context-menu__item' onClick={saveLine}>
               Сохранить измерение
             </div>
-            <div className='context-menu__item' onClick={handleClearLine}>
+            <div className='context-menu__item' onClick={() => handleClear('lines', 'Ошибка удаления линии')}>
               Удалить прямую
             </div>
           </>
@@ -131,7 +120,9 @@ export const ContextMenu = (props: Props) => {
               </>
             )}
 
-            <div className='context-menu__item' onClick={handleClearBrokenLine}>
+            <div
+              className='context-menu__item'
+              onClick={() => handleClear('brokenLines', 'Ошибка удаления ломаной')}>
               Удалить ломаную
             </div>
           </>
@@ -146,27 +137,25 @@ export const ContextMenu = (props: Props) => {
             )}
             {contextMenu.currentObject && (
               <>
-                {/* <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
-                  Общая длина: {calculatePolylineLength(contextMenu.currentObject).toFixed(2)}
-                </div> */}
+                <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+                  Периметр: {calculatePolylineLength(contextMenu.currentObject).toFixed(2)}
+                </div>
+                <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+                  Площадь: {calculatePolygonArea(contextMenu.currentObject).toFixed(2)}
+                </div>
                 <div className='context-menu__item'>Сохранить измерение</div>
               </>
             )}
 
-            <div className='context-menu__item'>Удалить многоугольник</div>
+            <div
+              className='context-menu__item'
+              onClick={() => handleClear('polygons', 'Ошибка удаления многоугольника')}>
+              Удалить многоугольник
+            </div>
           </>
         );
       default:
-        return (
-          <>
-            <div className='context-menu__item' onClick={saveAll}>
-              Сохранить все измерения
-            </div>
-            <div className='context-menu__item' onClick={handleClearAll}>
-              Очистить
-            </div>
-          </>
-        );
+        return <></>;
     }
   };
 

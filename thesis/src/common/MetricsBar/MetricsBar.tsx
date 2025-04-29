@@ -38,7 +38,7 @@ export const MetricsBar = () => {
         </div>
       </div>
       {/*  TODO: тут разделить на две таблицы */}
-      {savedBrokenLines.length === 0 ? (
+      {savedLines.length === 0 ? (
         <div className={`metrics-bar__content__empty ${open ? '' : 'collapsed'}`}>
           Пока не добавлено измерений...
         </div>

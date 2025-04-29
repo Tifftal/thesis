@@ -5,7 +5,7 @@ import { Breadcrumb } from 'antd';
 
 import { PROJECT_API } from 'services/API/PROJECT_API';
 import useStore from 'services/zustand/store';
-import { ProjectType, ZustandStoreStateType } from 'services/zustand/types';
+import { ZustandStoreStateType } from 'services/zustand/types';
 
 import { Tooltip } from 'ui-kit/tooltip';
 

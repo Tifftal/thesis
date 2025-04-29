@@ -1,4 +1,4 @@
-import { ChangeNameVariablesType, CreateLayerType } from './types';
+import { ChangeLayerVariablesType, CreateLayerType } from './types';
 
 import apiClient from './utils/axiosInterceptor';
 
@@ -9,7 +9,7 @@ export class LAYER_API {
     });
   }
 
-  static ChangeLayerName(id: number, variables: ChangeNameVariablesType) {
+  static ChangeLayer(id: number, variables: ChangeLayerVariablesType) {
     return apiClient.put(`/layer/${id}`, {
       ...variables,
     });
