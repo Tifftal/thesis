@@ -21,9 +21,14 @@ import useToast from 'utils/hooks/useToast';
 export const ProjectsBar = () => {
   const { onMessage } = useToast();
 
-  const { projects, setProjects, selectedProject, setSelectedProject, setSelectedImageURL } = useStore(
-    (state: ZustandStoreStateType) => state,
-  );
+  const {
+    projects,
+    setProjects,
+    selectedProject,
+    setSelectedProject,
+    setSelectedImageURL,
+    setVisibleLayers,
+  } = useStore((state: ZustandStoreStateType) => state);
 
   const [open, setOpen] = useState<boolean>(true);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -60,6 +65,7 @@ export const ProjectsBar = () => {
   useEffect(() => {
     if (selectedProject === null) {
       setSelectedImageURL(null);
+      setVisibleLayers([]);
       setBreadcrumbItems([defaultBreadcrumbItem]);
     } else {
       setBreadcrumbItems([

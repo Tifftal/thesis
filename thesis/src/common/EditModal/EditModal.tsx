@@ -110,33 +110,62 @@ export const EditModal = (props: Props) => {
   };
 
   const handleDelete = () => {
-    if (selectedProject && item?.id) {
-      IMAGE_API.DeleteImage(item.id)
-        .then(() => {
-          const updatedImages = selectedProject.images?.filter(img => img.id !== item.id);
+    if (!item) return;
+    switch (editModal.type) {
+      case 'IMAGE': {
+        if (!selectedProject) return;
+        IMAGE_API.DeleteImage(item.id)
+          .then(() => {
+            const updatedImages = selectedProject.images?.filter(img => img.id !== item.id);
 
-          setSelectedProject({
-            ...selectedProject,
-            images: updatedImages,
+            setSelectedProject({
+              ...selectedProject,
+              images: updatedImages,
+            });
+
+            if ('url' in item && selectedImageURL === item.url) setSelectedImageURL(null);
+          })
+          .catch(e => {
+            onMessage(`${e}`, 'error', 'Ошибка удаления изображения');
           });
+        break;
+      }
+      case 'PROJECT': {
+        PROJECT_API.DeleteProject(item.id)
+          .then(() => {
+            const updatedProjects = projects?.filter(project => project.id !== item.id);
 
-          if ('url' in item && selectedImageURL === item.url) setSelectedImageURL(null);
-        })
-        .catch(e => {
-          onMessage(`${e}`, 'error', 'Ошибка удаления изображения');
-        });
+            setProjects(updatedProjects);
+          })
+          .catch(e => {
+            onMessage(`${e}`, 'error', 'Ошибка удаления проекта');
+          });
+        break;
+      }
+      case 'LAYER': {
+        if (!selectedProject) {
+          onMessage('Ошибка', 'error', 'Не выбран проект');
+          return;
+        }
+        LAYER_API.DeleteLayer(item.id)
+          .then(() => {
+            PROJECT_API.GetProject(selectedProject?.id)
+              .then(response => {
+                setSelectedProject(response.data);
+              })
+              .catch(e => {
+                onMessage(`${e}`, 'error', 'Ошибка получения проекта');
+              });
+          })
+          .catch(e => {
+            onMessage(`${e}`, 'error', 'Ошибка удаления слоя');
+          });
+        break;
+      }
+      default:
+        return;
     }
-    if (!selectedProject && item?.id) {
-      PROJECT_API.DeleteProject(item.id)
-        .then(() => {
-          const updatedProjects = projects?.filter(project => project.id !== item.id);
 
-          setProjects(updatedProjects);
-        })
-        .catch(e => {
-          onMessage(`${e}`, 'error', 'Ошибка удаления проекта');
-        });
-    }
     handleClose();
   };
 

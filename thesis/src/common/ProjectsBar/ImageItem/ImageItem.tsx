@@ -90,10 +90,7 @@ export const ImageItem = (props: Props) => {
     return (
       <>
         <div className='context_menu__item' onClick={e => handleOpenEditModal(e, item, 'LAYER')}>
-          Переименовать
-        </div>
-        <div className='context_menu__item' style={{ color: 'var(--color-red)' }}>
-          Удалить
+          Изменить
         </div>
       </>
     );
@@ -150,7 +147,9 @@ export const ImageItem = (props: Props) => {
             )}
             {image.layers?.map((layer, index) => (
               <BarContextMenu key={index} renderContextMenu={() => renderContextMenu(layer)}>
-                <LayerItem layer={layer} />
+                <div>
+                  <LayerItem layer={layer} />
+                </div>
               </BarContextMenu>
             ))}
           </div>
