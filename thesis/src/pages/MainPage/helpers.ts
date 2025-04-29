@@ -1,6 +1,6 @@
 /* eslint-disable no-mixed-operators */
 
-import { Point } from 'services/zustand/types';
+import { Point, Rectangle } from 'services/zustand/types';
 
 /**
  * Вычисляет расстояние между двумя точками
@@ -79,4 +79,12 @@ export const calculatePolygonArea = (points: Point[]): number => {
   }
 
   return Math.abs(area) / 2;
+};
+
+export const calculateRectangleLength = (rect: Rectangle): number => {
+  return (Math.abs(rect.height) + Math.abs(rect.width)) * 2;
+};
+
+export const calculateRectangleArea = (rect: Rectangle): number => {
+  return Math.abs(rect.height) * Math.abs(rect.width);
 };

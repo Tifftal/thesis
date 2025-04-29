@@ -3,7 +3,13 @@ import { Point, SavedBrokenLine, SavedLine, ZustandStoreStateType } from 'servic
 
 import { ChangeLayer } from 'pages/changeDataHelpers';
 
-import { calculateDistance, calculatePolygonArea, calculatePolylineLength } from 'pages/MainPage/helpers';
+import {
+  calculateDistance,
+  calculatePolygonArea,
+  calculatePolylineLength,
+  calculateRectangleArea,
+  calculateRectangleLength,
+} from 'pages/MainPage/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -151,6 +157,24 @@ export const ContextMenu = (props: Props) => {
               className='context-menu__item'
               onClick={() => handleClear('polygons', 'Ошибка удаления многоугольника')}>
               Удалить многоугольник
+            </div>
+          </>
+        );
+
+      case 'RECTANGLE':
+        return (
+          <>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Периметр: {calculateRectangleLength(contextMenu.currentObject).toFixed(2)}
+            </div>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Площадь: {calculateRectangleArea(contextMenu.currentObject).toFixed(2)}
+            </div>
+            <div className='context-menu__item'>Сохранить измерение</div>
+            <div
+              className='context-menu__item'
+              onClick={() => handleClear('rectangles', 'Ошибка удаления прямоугольника')}>
+              Удалить прямоугольник
             </div>
           </>
         );

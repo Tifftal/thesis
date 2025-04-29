@@ -220,9 +220,26 @@ export const MainPage = () => {
           });
           setIsDrawingRectangle(true);
         } else {
-          // Завершаем рисование прямоугольника
-          const newRectangles = [...rectangles, currentRectangle!];
-          setRectangles(newRectangles);
+          const newMeasurements = JSON.parse(JSON.stringify(selectedLayer?.measurements || {}));
+
+          if (!newMeasurements.rectangles) {
+            newMeasurements.rectangles = [];
+          }
+
+          newMeasurements.rectangles.push(currentRectangle);
+
+          ChangeLayer(
+            selectedProject,
+            setSelectedProject,
+            selectedLayer,
+            setSelectedLayer,
+            visibleLayers,
+            setVisibleLayers,
+            newMeasurements,
+            onMessage,
+            'Ошибка создания прямоугольника',
+          );
+
           setCurrentRectangle(null);
           setIsDrawingRectangle(false);
         }
@@ -302,17 +319,17 @@ export const MainPage = () => {
     });
   };
 
-  const handleRectangleDragEnd = (index: number, rect: Rectangle) => {
-    const newRectangles = [...rectangles];
-    newRectangles[index] = rect;
-    setRectangles(newRectangles);
-  };
+  // const handleRectangleDragEnd = (index: number, rect: Rectangle) => {
+  //   const newRectangles = [...rectangles];
+  //   newRectangles[index] = rect;
+  //   setRectangles(newRectangles);
+  // };
 
-  const handleRectangleTransformEnd = (index: number, rect: Rectangle) => {
-    const newRectangles = [...rectangles];
-    newRectangles[index] = rect;
-    setRectangles(newRectangles);
-  };
+  // const handleRectangleTransformEnd = (index: number, rect: Rectangle) => {
+  //   const newRectangles = [...rectangles];
+  //   newRectangles[index] = rect;
+  //   setRectangles(newRectangles);
+  // };
 
   return (
     <div className='page__container main-page__container' style={{ overflow: 'hidden' }}>
@@ -352,16 +369,14 @@ export const MainPage = () => {
               currentPolygon={currentPolygon}
             />
 
-            {selectedTool === 'rectangle' && (
-              <RectangleLayer
-                scale={scale}
-                imagePosition={imagePosition}
-                currentRectangle={currentRectangle}
-                rectangles={rectangles}
-                onDragEnd={handleRectangleDragEnd}
-                onTransformEnd={handleRectangleTransformEnd}
-              />
-            )}
+            <RectangleLayer
+              scale={scale}
+              imagePosition={imagePosition}
+              handleRightClick={handleRightClick}
+              currentRectangle={currentRectangle}
+              // onDragEnd={handleRectangleDragEnd}
+              // onTransformEnd={handleRectangleTransformEnd}
+            />
           </Stage>
         </div>
       ) : (

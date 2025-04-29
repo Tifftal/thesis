@@ -66,24 +66,7 @@ export const PolygonLayer = (props: Props) => {
         <React.Fragment key={`polygon-${index}`}>{renderPolygon(polygon, '#ff0000', true)}</React.Fragment>
       ))}
 
-      {currentPolygon.length > 0 && (
-        <>
-          {renderPolygon(currentPolygon, '#26f704', true)}
-          {/* Показываем линию к курсору, если многоугольник не завершен */}
-          {/* {!isPolygonComplete && currentPolygon.length > 0 && (
-            <Line
-              points={[
-                currentPolygon[currentPolygon.length - 1].x * scale + imagePosition.x,
-                currentPolygon[currentPolygon.length - 1].y * scale + imagePosition.y,
-                // Добавьте координаты курсора, если нужно
-              ]}
-              stroke='blue'
-              strokeWidth={1}
-              dash={[5, 5]}
-            />
-          )} */}
-        </>
-      )}
+      {currentPolygon.length > 0 && <>{renderPolygon(currentPolygon, '#26f704', true)}</>}
     </Layer>
   );
 };
