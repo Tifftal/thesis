@@ -1,15 +1,16 @@
 import useStore from 'services/zustand/store';
-import { Point, SavedBrokenLine, SavedLine, ZustandStoreStateType } from 'services/zustand/types';
+import { Point, Rectangle, SavedBrokenLine, SavedLine, ZustandStoreStateType } from 'services/zustand/types';
 
 import { ChangeLayer } from 'pages/changeDataHelpers';
 
 import {
+  calculateCircleArea,
   calculateDistance,
   calculatePolygonArea,
   calculatePolylineLength,
   calculateRectangleArea,
   calculateRectangleLength,
-} from 'pages/MainPage/helpers';
+} from 'components/MainPage/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -36,6 +37,7 @@ export const ContextMenu = (props: Props) => {
     setVisibleLayers,
     selectedProject,
     setSelectedProject,
+    setSelectedTool,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -50,7 +52,7 @@ export const ContextMenu = (props: Props) => {
     }
 
     newMeasurements[object] = newMeasurements[object].filter(
-      (line: Point[]) => JSON.stringify(line) !== JSON.stringify(contextMenu.currentObject),
+      (object: any) => JSON.stringify(object) !== JSON.stringify(contextMenu.currentObject),
     );
 
     ChangeLayer(
@@ -90,6 +92,12 @@ export const ContextMenu = (props: Props) => {
     const newSavedBrokenLines = [...savedBrokenLines, newBrokenLine];
 
     setSavedBrokenLines(newSavedBrokenLines);
+    closeContextMenu();
+  };
+
+  const handleEditObject = (editFunction: (value: any) => void) => {
+    setSelectedTool('rectangle');
+    editFunction(contextMenu.currentObject);
     closeContextMenu();
   };
 
@@ -171,10 +179,31 @@ export const ContextMenu = (props: Props) => {
               Площадь: {calculateRectangleArea(contextMenu.currentObject).toFixed(2)}
             </div>
             <div className='context-menu__item'>Сохранить измерение</div>
+            {/* <div className='context-menu__item' onClick={() => handleEditObject(setEditingRectangle)}>
+              Редактировать
+            </div> */}
             <div
               className='context-menu__item'
               onClick={() => handleClear('rectangles', 'Ошибка удаления прямоугольника')}>
               Удалить прямоугольник
+            </div>
+          </>
+        );
+
+      case 'CIRCLE':
+        return (
+          <>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Радиус: {contextMenu.currentObject.radius.toFixed(2)}
+            </div>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Площадь: {calculateCircleArea(contextMenu.currentObject.radius).toFixed(2)}
+            </div>
+            <div className='context-menu__item'>Сохранить измерение</div>
+            <div
+              className='context-menu__item'
+              onClick={() => handleClear('circles', 'Ошибка удаления окружности')}>
+              Удалить окружность
             </div>
           </>
         );

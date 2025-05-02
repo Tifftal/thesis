@@ -13,13 +13,6 @@ import { Point, Rectangle } from 'services/zustand/types';
  * @returns {string|null} Расстояние между точками, отформатированное до 2 знаков после запятой,
  *                       или null если точки невалидны
  *
- * @example
- * // Возвращает "5.00"
- * const distance = calculateDistance({x: 0, y: 0}, {x: 3, y: 4});
- *
- * @example
- * // Возвращает null
- * const distance = calculateDistance(null, {x: 3, y: 4});
  */
 export const calculateDistance = (
   p1: { x: number; y: number } | null | undefined,
@@ -45,7 +38,7 @@ export const calculateDistance = (
 //TODO: описание
 
 export const calculatePolylineLength = (points: Point[]): number => {
-  if (points.length < 2) return 0; // Для линии нужно минимум 2 точки
+  if (points.length < 2) return 0;
 
   let totalLength = 0;
 
@@ -53,7 +46,6 @@ export const calculatePolylineLength = (points: Point[]): number => {
     const currentPoint = points[i];
     const nextPoint = points[i + 1];
 
-    // Вычисляем расстояние между текущей и следующей точкой
     const dx = nextPoint.x - currentPoint.x;
     const dy = nextPoint.y - currentPoint.y;
     const segmentLength = Math.sqrt(dx * dx + dy * dy);
@@ -87,4 +79,8 @@ export const calculateRectangleLength = (rect: Rectangle): number => {
 
 export const calculateRectangleArea = (rect: Rectangle): number => {
   return Math.abs(rect.height) * Math.abs(rect.width);
+};
+
+export const calculateCircleArea = (radius: number): number => {
+  return parseFloat((Math.PI * Math.pow(radius, 2)).toFixed(2));
 };

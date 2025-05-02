@@ -5,10 +5,11 @@ import { Layer, Stage, Image } from 'react-konva';
 import useImage from 'use-image';
 
 import useStore from 'services/zustand/store';
-import { Point, ZustandStoreStateType, Rectangle } from 'services/zustand/types';
+import { Point, ZustandStoreStateType, Rectangle, Circle } from 'services/zustand/types';
 
 import { ContextMenu } from 'components/ContextMenu';
 import { BrokenLineLayer } from 'components/MainPage/BrokenLineLayer';
+import { CircleLayer } from 'components/MainPage/CircleLayer';
 import { LineLayer } from 'components/MainPage/LineLayer';
 import { PolygonLayer } from 'components/MainPage/PolygonLayer';
 import { RectangleLayer } from 'components/MainPage/RectangleLayer';
@@ -25,8 +26,6 @@ export const MainPage = () => {
     setSelectedProject,
     selectedImageURL,
     selectedTool,
-    rectangles,
-    setRectangles,
     visibleLayers,
     selectedLayer,
     setSelectedLayer,
@@ -46,8 +45,12 @@ export const MainPage = () => {
   const [currentLinePoints, setCurrentLinePoints] = useState<Point[]>([]);
   const [currentBrokenLine, setCurrentBrokenLine] = useState<Point[]>([]);
   const [currentPolygon, setCurrentPolygon] = useState<Point[]>([]);
+
   const [currentRectangle, setCurrentRectangle] = useState<Rectangle | null>(null);
   const [isDrawingRectangle, setIsDrawingRectangle] = useState(false);
+
+  const [currentCircle, setCurrentCircle] = useState<Circle | null>(null);
+  const [isDrawingCircle, setIsDrawingCircle] = useState(false);
 
   const windowSize = {
     width: window.innerWidth,
@@ -244,6 +247,41 @@ export const MainPage = () => {
           setIsDrawingRectangle(false);
         }
       }
+
+      if (selectedTool === 'circle') {
+        if (!isDrawingCircle) {
+          setCurrentCircle({
+            x: newPoint.x,
+            y: newPoint.y,
+            radius: 0,
+          });
+          setIsDrawingCircle(true);
+        } else {
+          // Завершаем рисование круга
+          const newMeasurements = JSON.parse(JSON.stringify(selectedLayer?.measurements || {}));
+
+          if (!newMeasurements.circles) {
+            newMeasurements.circles = [];
+          }
+
+          newMeasurements.circles.push(currentCircle);
+
+          ChangeLayer(
+            selectedProject,
+            setSelectedProject,
+            selectedLayer,
+            setSelectedLayer,
+            visibleLayers,
+            setVisibleLayers,
+            newMeasurements,
+            onMessage,
+            'Ошибка создания круга',
+          );
+
+          setCurrentCircle(null);
+          setIsDrawingCircle(false);
+        }
+      }
     }
   };
 
@@ -302,34 +340,31 @@ export const MainPage = () => {
   };
 
   const handleMouseMove = (e: any) => {
-    if (!isDrawingRectangle || selectedTool !== 'rectangle') return;
-
     const stage = e.target.getStage();
     const pointer = stage.getPointerPosition();
-    if (!pointer || !image || !currentRectangle) return;
+    if (!pointer || !image) return;
 
     const x = (pointer.x - imagePosition.x) / scale;
     const y = (pointer.y - imagePosition.y) / scale;
 
-    setCurrentRectangle({
-      x: currentRectangle.x,
-      y: currentRectangle.y,
-      width: x - currentRectangle.x,
-      height: y - currentRectangle.y,
-    });
+    if (isDrawingRectangle && selectedTool === 'rectangle' && !!currentRectangle) {
+      setCurrentRectangle({
+        x: currentRectangle.x,
+        y: currentRectangle.y,
+        width: x - currentRectangle.x,
+        height: y - currentRectangle.y,
+      });
+    }
+
+    if (isDrawingCircle && selectedTool === 'circle' && !!currentCircle) {
+      const radius = Math.sqrt(Math.pow(x - currentCircle.x, 2) + Math.pow(y - currentCircle.y, 2));
+      setCurrentCircle({
+        x: currentCircle.x,
+        y: currentCircle.y,
+        radius,
+      });
+    }
   };
-
-  // const handleRectangleDragEnd = (index: number, rect: Rectangle) => {
-  //   const newRectangles = [...rectangles];
-  //   newRectangles[index] = rect;
-  //   setRectangles(newRectangles);
-  // };
-
-  // const handleRectangleTransformEnd = (index: number, rect: Rectangle) => {
-  //   const newRectangles = [...rectangles];
-  //   newRectangles[index] = rect;
-  //   setRectangles(newRectangles);
-  // };
 
   return (
     <div className='page__container main-page__container' style={{ overflow: 'hidden' }}>
@@ -341,7 +376,8 @@ export const MainPage = () => {
             onClick={handleStageClick}
             onWheel={handleWheel}
             onMouseMove={handleMouseMove}
-            onContextMenu={e => handleRightClick(e, 'DEFAULT')}>
+            onContextMenu={e => handleRightClick(e, 'DEFAULT')}
+            draggable={false}>
             <Layer>
               {image && (
                 <Image image={image} x={imagePosition.x} y={imagePosition.y} scaleX={scale} scaleY={scale} />
@@ -374,8 +410,13 @@ export const MainPage = () => {
               imagePosition={imagePosition}
               handleRightClick={handleRightClick}
               currentRectangle={currentRectangle}
-              // onDragEnd={handleRectangleDragEnd}
-              // onTransformEnd={handleRectangleTransformEnd}
+            />
+
+            <CircleLayer
+              scale={scale}
+              imagePosition={imagePosition}
+              handleRightClick={handleRightClick}
+              currentCircle={currentCircle}
             />
           </Stage>
         </div>

@@ -6,7 +6,7 @@ import { Circle, Layer, Line, Text } from 'react-konva';
 import useStore from 'services/zustand/store';
 import { Line as LineType, Point, ZustandStoreStateType } from 'services/zustand/types';
 
-import { calculateDistance } from 'pages/MainPage/helpers';
+import { calculateDistance } from 'components/MainPage/helpers';
 
 type Props = {
   scale: number;

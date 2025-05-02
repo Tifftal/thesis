@@ -32,7 +32,7 @@ export const NAVBAR_TOOL_ITEMS = [
   {
     key: 'circle',
     IconComponent: IconCircle,
-    tooltip: 'Окружность/эллипс',
+    tooltip: 'Окружность',
   },
   {
     key: 'angle',

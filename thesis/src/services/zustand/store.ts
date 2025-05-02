@@ -38,17 +38,6 @@ const useStore = create<ZustandStoreStateType>(set => ({
   setSelectedTool: (selectedTool: string | null) => set({ selectedTool }),
   setProjects: (projects: ProjectType[]) => set({ projects }),
 
-  // Редактор
-  lines: [],
-  brokenLines: [],
-  polygons: [],
-  rectangles: [],
-
-  setLines: (lines: Line[]) => set({ lines }),
-  setBrokenLines: (brokenLines: BrokenLine[]) => set({ brokenLines }),
-  setPolygons: (polygons: Polygon[]) => set({ polygons }),
-  setRectangles: (rectangles: Rectangle[]) => set({ rectangles }),
-
   //Метрики
   savedLines: [],
   savedBrokenLines: [],

@@ -40,6 +40,11 @@ export type Rectangle = {
   width: number;
   height: number;
 };
+export type Circle = {
+  x: number;
+  y: number;
+  radius: number;
+};
 
 export type SavedLine = { line: Line; distance: string | null; note: string };
 export type SavedBrokenLine = { brokenLine: BrokenLine; distance: string | null; note: string };
@@ -61,16 +66,6 @@ export type ZustandStoreStateType = {
   setSelectedLayer: (selectedLayer: LayerType | null) => void;
   setSelectedTool: (selectedTool: string | null) => void;
   setProjects: (projects: ProjectType[]) => void;
-
-  //Редактор
-  lines: Line[];
-  brokenLines: BrokenLine[];
-  polygons: Polygon[];
-  rectangles: Rectangle[];
-  setLines: (lines: Line[]) => void;
-  setBrokenLines: (brokenLines: BrokenLine[]) => void;
-  setPolygons: (brokenLines: Polygon[]) => void;
-  setRectangles: (rectangles: Rectangle[]) => void;
 
   //Метрики
   savedLines: SavedLine[];
