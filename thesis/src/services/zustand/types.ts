@@ -52,6 +52,7 @@ export type SavedBrokenLine = { brokenLine: BrokenLine; distance: string | null;
 export type ZustandStoreStateType = {
   typeOfAuthForm: 'login' | 'registration';
   userInfo: UserInfoType;
+
   selectedProject: ProjectType | null;
   selectedImageURL: string | null;
   visibleLayers: LayerType[];
@@ -66,6 +67,9 @@ export type ZustandStoreStateType = {
   setSelectedLayer: (selectedLayer: LayerType | null) => void;
   setSelectedTool: (selectedTool: string | null) => void;
   setProjects: (projects: ProjectType[]) => void;
+
+  stagePosition: Point;
+  setStagePosition: (stagePosition: Point) => void;
 
   //Метрики
   savedLines: SavedLine[];

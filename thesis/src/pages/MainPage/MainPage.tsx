@@ -30,6 +30,8 @@ export const MainPage = () => {
     selectedLayer,
     setSelectedLayer,
     setVisibleLayers,
+    stagePosition,
+    setStagePosition,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -71,11 +73,16 @@ export const MainPage = () => {
 
   useEffect(() => {
     if (image) {
-      const x = (windowSize.width - image.width * scale) / 2;
-      const y = (windowSize.height - image.height * scale) / 2;
+      const newScale = windowSize.height / image.height;
+      const newWidth = image.width * newScale;
+
+      const x = (windowSize.width - newWidth) / 2;
+      const y = 0;
+
+      setScale(newScale);
       setImagePosition({ x, y });
     }
-  }, [image]);
+  }, [image, windowSize.height, windowSize.width]);
 
   useEffect(() => {
     const handleClickOutside = () => {
@@ -140,8 +147,8 @@ export const MainPage = () => {
     const pointer = stage.getPointerPosition();
     if (!pointer || !image) return;
 
-    const x = (pointer.x - imagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y) / scale;
+    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
+    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
 
     if (x >= 0 && y >= 0 && x <= image.width && y <= image.height) {
       const newPoint = { x, y };
@@ -344,8 +351,8 @@ export const MainPage = () => {
     const pointer = stage.getPointerPosition();
     if (!pointer || !image) return;
 
-    const x = (pointer.x - imagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y) / scale;
+    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
+    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
 
     if (isDrawingRectangle && selectedTool === 'rectangle' && !!currentRectangle) {
       setCurrentRectangle({
@@ -366,6 +373,10 @@ export const MainPage = () => {
     }
   };
 
+  const handleDragStage = (e: any) => {
+    setStagePosition({ x: e.target.attrs.x, y: e.target.attrs.y });
+  };
+
   return (
     <div className='page__container main-page__container' style={{ overflow: 'hidden' }}>
       {selectedImageURL ? (
@@ -377,7 +388,8 @@ export const MainPage = () => {
             onWheel={handleWheel}
             onMouseMove={handleMouseMove}
             onContextMenu={e => handleRightClick(e, 'DEFAULT')}
-            draggable={false}>
+            draggable
+            onDragEnd={handleDragStage}>
             <Layer>
               {image && (
                 <Image image={image} x={imagePosition.x} y={imagePosition.y} scaleX={scale} scaleY={scale} />

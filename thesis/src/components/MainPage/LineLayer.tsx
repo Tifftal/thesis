@@ -29,6 +29,7 @@ export const LineLayer = (props: Props) => {
     setSelectedProject,
     setSelectedLayer,
     setVisibleLayers,
+    stagePosition,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -54,26 +55,30 @@ export const LineLayer = (props: Props) => {
   }, [visibleLayers, selectedLayer]);
 
   const handlePointDragMove = (e: any) => {
+    e.cancelBubble = true;
     if (selectedLineIndex === null || selectedPointIndex === null) return;
 
     const stage = e.target.getStage();
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
-    const x = (pointer.x - imagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y) / scale;
+    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
+    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
 
     const updatedLines = [...tempLines];
     updatedLines[selectedLineIndex][selectedPointIndex] = { x, y };
     setTempLines(updatedLines);
   };
 
-  const handlePointDragStart = (lineIndex: number, pointIndex: number) => {
+  const handlePointDragStart = (e: any, lineIndex: number, pointIndex: number) => {
+    e.cancelBubble = true;
     setSelectedLineIndex(lineIndex);
     setSelectedPointIndex(pointIndex);
   };
 
-  const handlePointDragEnd = () => {
+  const handlePointDragEnd = (e: any) => {
+    e.cancelBubble = true;
+
     if (
       selectedLineIndex === null ||
       selectedPointIndex === null ||
@@ -127,6 +132,8 @@ export const LineLayer = (props: Props) => {
                 ]}
                 stroke='red'
                 strokeWidth={2}
+                draggable
+                // onDragMove={handleDragLine}
               />
 
               <Circle
@@ -135,7 +142,7 @@ export const LineLayer = (props: Props) => {
                 radius={4}
                 fill='red'
                 draggable
-                onDragStart={() => handlePointDragStart(lineIndex, 0)}
+                onDragStart={e => handlePointDragStart(e, lineIndex, 0)}
                 onDragMove={handlePointDragMove}
                 onDragEnd={handlePointDragEnd}
               />
@@ -146,7 +153,7 @@ export const LineLayer = (props: Props) => {
                 radius={4}
                 fill='red'
                 draggable
-                onDragStart={() => handlePointDragStart(lineIndex, 1)}
+                onDragStart={e => handlePointDragStart(e, lineIndex, 1)}
                 onDragMove={handlePointDragMove}
                 onDragEnd={handlePointDragEnd}
               />

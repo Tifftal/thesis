@@ -1,12 +1,9 @@
 import { create } from 'zustand';
 
 import {
-  BrokenLine,
   LayerType,
-  Line,
-  Polygon,
+  Point,
   ProjectType,
-  Rectangle,
   SavedBrokenLine,
   SavedLine,
   UserInfoType,
@@ -37,6 +34,9 @@ const useStore = create<ZustandStoreStateType>(set => ({
   setSelectedLayer: (selectedLayer: LayerType | null) => set({ selectedLayer }),
   setSelectedTool: (selectedTool: string | null) => set({ selectedTool }),
   setProjects: (projects: ProjectType[]) => set({ projects }),
+
+  stagePosition: { x: 0, y: 0 },
+  setStagePosition: (stagePosition: Point) => set({ stagePosition }),
 
   //Метрики
   savedLines: [],
