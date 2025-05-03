@@ -12,6 +12,7 @@ export const ChangeLayer = (
   newMeasurements: Record<string, any>,
   onMessage: (message: string, type: string, label?: string) => void,
   errorMessage: string,
+  thenFunc?: () => void,
 ) => {
   if (!selectedLayer?.id) return;
   LAYER_API.ChangeLayer(selectedLayer?.id, {
@@ -32,6 +33,7 @@ export const ChangeLayer = (
       PROJECT_API.GetProject(selectedProject.id)
         .then(response => {
           setSelectedProject(response.data);
+          thenFunc && thenFunc();
         })
         .catch(e => {
           onMessage(`${e}`, 'error', 'Ошибка получения проекта');

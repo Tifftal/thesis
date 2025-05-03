@@ -133,7 +133,6 @@ export const LineLayer = (props: Props) => {
                 stroke='red'
                 strokeWidth={2}
                 draggable
-                // onDragMove={handleDragLine}
               />
 
               <Circle
