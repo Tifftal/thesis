@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable no-mixed-operators */
 import { useEffect, useState } from 'react';
 
@@ -5,11 +6,12 @@ import { Layer, Stage, Image } from 'react-konva';
 import useImage from 'use-image';
 
 import useStore from 'services/zustand/store';
-import { Point, ZustandStoreStateType, Rectangle, Circle } from 'services/zustand/types';
+import { Point, ZustandStoreStateType, Rectangle, Circle, Ellipse } from 'services/zustand/types';
 
 import { ContextMenu } from 'components/ContextMenu';
 import { BrokenLineLayer } from 'components/MainPage/BrokenLineLayer';
 import { CircleLayer } from 'components/MainPage/CircleLayer';
+import { EllipseLayer } from 'components/MainPage/EllipsLayer';
 import { LineLayer } from 'components/MainPage/LineLayer';
 import { PolygonLayer } from 'components/MainPage/PolygonLayer';
 import { RectangleLayer } from 'components/MainPage/RectangleLayer';
@@ -53,6 +55,9 @@ export const MainPage = () => {
 
   const [currentCircle, setCurrentCircle] = useState<Circle | null>(null);
   const [isDrawingCircle, setIsDrawingCircle] = useState(false);
+
+  const [currentEllipse, setCurrentEllipse] = useState<Ellipse | null>(null);
+  const [isDrawingEllipse, setIsDrawingEllipse] = useState(false);
 
   const windowSize = {
     width: window.innerWidth,
@@ -289,6 +294,42 @@ export const MainPage = () => {
           setIsDrawingCircle(false);
         }
       }
+
+      if (selectedTool === 'ellipse') {
+        if (!isDrawingEllipse) {
+          setCurrentEllipse({
+            x: newPoint.x,
+            y: newPoint.y,
+            radiusX: 0,
+            radiusY: 0,
+          });
+          setIsDrawingEllipse(true);
+        } else {
+          const newMeasurements = JSON.parse(JSON.stringify(selectedLayer?.measurements || {}));
+
+          if (!newMeasurements.ellipses) {
+            newMeasurements.ellipses = [];
+          }
+
+          newMeasurements.ellipses.push(currentEllipse);
+
+          ChangeLayer(
+            selectedProject,
+            setSelectedProject,
+            selectedLayer,
+            setSelectedLayer,
+            visibleLayers,
+            setVisibleLayers,
+            newMeasurements,
+            onMessage,
+            'Ошибка создания эллипса',
+            () => {
+              setCurrentEllipse(null);
+              setIsDrawingEllipse(false);
+            },
+          );
+        }
+      }
     }
   };
 
@@ -371,6 +412,17 @@ export const MainPage = () => {
         radius,
       });
     }
+
+    if (isDrawingEllipse && selectedTool === 'ellipse' && !!currentEllipse) {
+      const radiusX = Math.abs(x - currentEllipse.x);
+      const radiusY = Math.abs(y - currentEllipse.y);
+      setCurrentEllipse({
+        x: currentEllipse.x,
+        y: currentEllipse.y,
+        radiusX,
+        radiusY,
+      });
+    }
   };
 
   const handleDragStage = (e: any) => {
@@ -429,6 +481,13 @@ export const MainPage = () => {
               imagePosition={imagePosition}
               handleRightClick={handleRightClick}
               currentCircle={currentCircle}
+            />
+
+            <EllipseLayer
+              scale={scale}
+              imagePosition={imagePosition}
+              handleRightClick={handleRightClick}
+              currentEllipse={currentEllipse}
             />
           </Stage>
         </div>

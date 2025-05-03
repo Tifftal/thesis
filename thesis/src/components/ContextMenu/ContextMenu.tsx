@@ -1,11 +1,12 @@
 import useStore from 'services/zustand/store';
-import { Point, Rectangle, SavedBrokenLine, SavedLine, ZustandStoreStateType } from 'services/zustand/types';
+import { Point, SavedBrokenLine, SavedLine, ZustandStoreStateType } from 'services/zustand/types';
 
 import { ChangeLayer } from 'pages/changeDataHelpers';
 
 import {
   calculateCircleArea,
   calculateDistance,
+  calculateEllipseArea,
   calculatePolygonArea,
   calculatePolylineLength,
   calculateRectangleArea,
@@ -92,12 +93,6 @@ export const ContextMenu = (props: Props) => {
     const newSavedBrokenLines = [...savedBrokenLines, newBrokenLine];
 
     setSavedBrokenLines(newSavedBrokenLines);
-    closeContextMenu();
-  };
-
-  const handleEditObject = (editFunction: (value: any) => void) => {
-    setSelectedTool('rectangle');
-    editFunction(contextMenu.currentObject);
     closeContextMenu();
   };
 
@@ -204,6 +199,37 @@ export const ContextMenu = (props: Props) => {
               className='context-menu__item'
               onClick={() => handleClear('circles', 'Ошибка удаления окружности')}>
               Удалить окружность
+            </div>
+          </>
+        );
+
+      case 'ELLIPSE':
+        return (
+          <>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Большая полуось:{' '}
+              {contextMenu.currentObject.radiusX > contextMenu.currentObject.radiusY
+                ? contextMenu.currentObject.radiusX.toFixed(2)
+                : contextMenu.currentObject.radiusY.toFixed(2)}
+            </div>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Малая полуось:{' '}
+              {contextMenu.currentObject.radiusX < contextMenu.currentObject.radiusY
+                ? contextMenu.currentObject.radiusX.toFixed(2)
+                : contextMenu.currentObject.radiusY.toFixed(2)}
+            </div>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Площадь:{' '}
+              {calculateEllipseArea(
+                contextMenu.currentObject.radiusX,
+                contextMenu.currentObject.radiusY,
+              ).toFixed(2)}
+            </div>
+            <div className='context-menu__item'>Сохранить измерение</div>
+            <div
+              className='context-menu__item'
+              onClick={() => handleClear('ellipses', 'Ошибка удаления эллипса')}>
+              Удалить эллипс
             </div>
           </>
         );

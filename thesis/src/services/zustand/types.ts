@@ -45,6 +45,12 @@ export type Circle = {
   y: number;
   radius: number;
 };
+export type Ellipse = {
+  x: number;
+  y: number;
+  radiusX: number;
+  radiusY: number;
+};
 
 export type SavedLine = { line: Line; distance: string | null; note: string };
 export type SavedBrokenLine = { brokenLine: BrokenLine; distance: string | null; note: string };

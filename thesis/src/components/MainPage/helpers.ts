@@ -84,3 +84,13 @@ export const calculateRectangleArea = (rect: Rectangle): number => {
 export const calculateCircleArea = (radius: number): number => {
   return parseFloat((Math.PI * Math.pow(radius, 2)).toFixed(2));
 };
+
+/**
+ * Вычисляет площадь эллипса
+ * @param radiusX - радиус по горизонтальной оси (большая полуось)
+ * @param radiusY - радиус по вертикальной оси (малая полуось)
+ * @returns Площадь эллипса
+ */
+export const calculateEllipseArea = (radiusX: number, radiusY: number): number => {
+  return Math.PI * radiusX * radiusY;
+};

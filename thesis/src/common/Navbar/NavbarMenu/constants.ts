@@ -6,6 +6,7 @@ import {
   IconRectangle,
   IconRulerMeasure as IconRuler,
   IconTimeline as IconBrokenLine,
+  IconOvalVertical,
 } from '@tabler/icons-react';
 
 export const NAVBAR_TOOL_ITEMS = [
@@ -33,6 +34,11 @@ export const NAVBAR_TOOL_ITEMS = [
     key: 'circle',
     IconComponent: IconCircle,
     tooltip: 'Окружность',
+  },
+  {
+    key: 'ellipse',
+    IconComponent: IconOvalVertical,
+    tooltip: 'Эллипс',
   },
   {
     key: 'angle',
