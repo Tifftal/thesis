@@ -38,6 +38,8 @@ export const BrokenLineLayer = (props: Props) => {
   const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(null);
   const [selectedPointIndex, setSelectedPointIndex] = useState<number | null>(null);
   const [tempLines, setTempLines] = useState<BrokenLine[]>([]); //нужно для редактирования линии в реальном времени
+  const [isDraggingAll, setIsDraggingAll] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const disabledLayers = visibleLayers.filter(layer => layer.id !== selectedLayer?.id);
@@ -50,6 +52,80 @@ export const BrokenLineLayer = (props: Props) => {
       setTempLines([...selectedLayer.measurements.brokenLines]);
     }
   }, [selectedLayer]);
+
+  const handleTextDragStart = (e: any, lineIndex: number) => {
+    e.cancelBubble = true;
+    setSelectedLineIndex(lineIndex);
+    setIsDraggingAll(true);
+
+    const stage = e.target.getStage();
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
+
+    // Вычисляем центр ломаной линии
+    const line = tempLines[lineIndex];
+    const center = line.reduce(
+      (acc, point) => {
+        return {
+          x: acc.x + point.x,
+          y: acc.y + point.y,
+        };
+      },
+      { x: 0, y: 0 },
+    );
+
+    center.x /= line.length;
+    center.y /= line.length;
+
+    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
+    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+
+    setDragOffset({
+      x: x - center.x,
+      y: y - center.y,
+    });
+  };
+
+  const handleTextDragMove = (e: any) => {
+    e.cancelBubble = true;
+    if (selectedLineIndex === null || !isDraggingAll) return;
+
+    const stage = e.target.getStage();
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
+
+    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale - dragOffset.x;
+    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale - dragOffset.y;
+
+    const line = tempLines[selectedLineIndex];
+
+    // Вычисляем текущий центр
+    const currentCenter = line.reduce(
+      (acc, point) => {
+        return {
+          x: acc.x + point.x,
+          y: acc.y + point.y,
+        };
+      },
+      { x: 0, y: 0 },
+    );
+
+    currentCenter.x /= line.length;
+    currentCenter.y /= line.length;
+
+    // Вычисляем смещение
+    const offsetX = x - currentCenter.x;
+    const offsetY = y - currentCenter.y;
+
+    // Перемещаем все точки
+    const updatedLines = [...tempLines];
+    updatedLines[selectedLineIndex] = line.map(point => ({
+      x: point.x + offsetX,
+      y: point.y + offsetY,
+    }));
+
+    setTempLines(updatedLines);
+  };
 
   const handlePointDragMove = (e: any) => {
     e.cancelBubble = true;
@@ -76,12 +152,7 @@ export const BrokenLineLayer = (props: Props) => {
   const handlePointDragEnd = (e: any) => {
     e.cancelBubble = true;
 
-    if (
-      selectedLineIndex === null ||
-      selectedPointIndex === null ||
-      !selectedLayer ||
-      !selectedLayer.measurements?.brokenLines
-    ) {
+    if (!selectedLayer || !selectedLayer.measurements?.brokenLines) {
       return;
     }
 
@@ -103,10 +174,12 @@ export const BrokenLineLayer = (props: Props) => {
       newMeasurements,
       onMessage,
       'Ошибка редактирования ломаной',
+      () => {
+        setIsDraggingAll(false);
+        setSelectedLineIndex(null);
+        setSelectedPointIndex(null);
+      },
     );
-
-    setSelectedLineIndex(null);
-    setSelectedPointIndex(null);
   };
 
   const renderBrokenLines = () => {
@@ -115,46 +188,65 @@ export const BrokenLineLayer = (props: Props) => {
 
     return (
       <>
-        {linesToRender.map((line: Point[], lineIndex: number) => (
-          <React.Fragment key={`broken-line-${lineIndex}`}>
-            <Line
-              points={line.flatMap(point => [
-                point.x * scale + imagePosition.x,
-                point.y * scale + imagePosition.y,
-              ])}
-              stroke='red'
-              strokeWidth={2}
-            />
-            {line.map((point, pointIndex) => (
-              <Circle
-                key={`point-${lineIndex}-${pointIndex}`}
-                x={point.x * scale + imagePosition.x}
-                y={point.y * scale + imagePosition.y}
-                radius={4}
-                fill='red'
-                stroke='darkred'
-                strokeWidth={1}
-                draggable
-                onDragStart={e => handlePointDragStart(e, lineIndex, pointIndex)}
-                onDragMove={handlePointDragMove}
-                onDragEnd={handlePointDragEnd}
-              />
-            ))}
+        {linesToRender.map((line: Point[], lineIndex: number) => {
+          const center = line.reduce(
+            (acc, point) => {
+              return {
+                x: acc.x + point.x,
+                y: acc.y + point.y,
+              };
+            },
+            { x: 0, y: 0 },
+          );
 
-            {line.length > 1 &&
-              Array.from({ length: line.length - 1 }).map((_, segmentIndex) => (
-                <Text
-                  key={`segment-label-${lineIndex}-${segmentIndex}`}
-                  x={((line[segmentIndex].x + line[segmentIndex + 1].x) / 2) * scale + imagePosition.x}
-                  y={((line[segmentIndex].y + line[segmentIndex + 1].y) / 2) * scale + imagePosition.y - 20}
-                  text={`${calculateDistance(line[segmentIndex], line[segmentIndex + 1])} px`}
-                  fontSize={14}
+          center.x /= line.length;
+          center.y /= line.length;
+
+          return (
+            <React.Fragment key={`broken-line-${lineIndex}`}>
+              <Line
+                points={line.flatMap(point => [
+                  point.x * scale + imagePosition.x,
+                  point.y * scale + imagePosition.y,
+                ])}
+                stroke='red'
+                strokeWidth={2}
+              />
+              {line.map((point, pointIndex) => (
+                <Circle
+                  key={`point-${lineIndex}-${pointIndex}`}
+                  x={point.x * scale + imagePosition.x}
+                  y={point.y * scale + imagePosition.y}
+                  radius={4}
                   fill='red'
-                  onContextMenu={e => handleRightClick(e, 'BROKEN_LINE', line)}
+                  stroke='darkred'
+                  strokeWidth={1}
+                  draggable
+                  onDragStart={e => handlePointDragStart(e, lineIndex, pointIndex)}
+                  onDragMove={handlePointDragMove}
+                  onDragEnd={handlePointDragEnd}
                 />
               ))}
-          </React.Fragment>
-        ))}
+
+              {line.length > 1 &&
+                Array.from({ length: line.length - 1 }).map((_, segmentIndex) => (
+                  <Text
+                    key={`segment-label-${lineIndex}-${segmentIndex}`}
+                    x={((line[segmentIndex].x + line[segmentIndex + 1].x) / 2) * scale + imagePosition.x}
+                    y={((line[segmentIndex].y + line[segmentIndex + 1].y) / 2) * scale + imagePosition.y - 20}
+                    text={`${calculateDistance(line[segmentIndex], line[segmentIndex + 1])} px`}
+                    fontSize={14}
+                    fill='red'
+                    draggable
+                    onDragStart={e => handleTextDragStart(e, lineIndex)}
+                    onDragMove={handleTextDragMove}
+                    onDragEnd={handlePointDragEnd}
+                    onContextMenu={e => handleRightClick(e, 'BROKEN_LINE', line)}
+                  />
+                ))}
+            </React.Fragment>
+          );
+        })}
 
         {disabledBrokenLines.map((line, lineIndex) => (
           <React.Fragment key={`broken-line-${lineIndex}`}>

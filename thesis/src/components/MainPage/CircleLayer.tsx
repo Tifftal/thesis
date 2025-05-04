@@ -47,6 +47,37 @@ export const CircleLayer = (props: Props) => {
     }
   }, [selectedLayer]);
 
+  const handleDragStart = (e: any, index: number) => {
+    e.cancelBubble = true;
+    setSelectedCircleIndex(index);
+  };
+
+  const handleDragMove = useCallback(
+    (e: any) => {
+      e.cancelBubble = true;
+
+      if (selectedCircleIndex === null) return;
+
+      const stage = e.target.getStage();
+      const pointer = stage.getPointerPosition();
+      if (!pointer) return;
+
+      const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
+      const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+
+      setTempCircles(prev => {
+        const updated = [...prev];
+        updated[selectedCircleIndex] = {
+          ...updated[selectedCircleIndex],
+          x,
+          y,
+        };
+        return updated;
+      });
+    },
+    [selectedCircleIndex, scale, imagePosition, stagePosition],
+  );
+
   const handleResizeStart = (e: any, index: number) => {
     e.cancelBubble = true;
     setSelectedCircleIndex(index);
@@ -137,6 +168,10 @@ export const CircleLayer = (props: Props) => {
           fill='red'
           stroke='darkred'
           strokeWidth={1}
+          draggable={isActive}
+          onDragStart={e => handleDragStart(e, index)}
+          onDragMove={handleDragMove}
+          onDragEnd={handleResizeEnd}
           onContextMenu={e => handleRightClick(e, 'CIRCLE', circle)}
         />
 

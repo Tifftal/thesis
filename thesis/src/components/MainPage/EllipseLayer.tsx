@@ -48,6 +48,37 @@ export const EllipseLayer = (props: Props) => {
     }
   }, [selectedLayer]);
 
+  const handleDragStart = (e: any, index: number) => {
+    e.cancelBubble = true;
+    setSelectedEllipseIndex(index);
+  };
+
+  const handleDragMove = useCallback(
+    (e: any) => {
+      e.cancelBubble = true;
+
+      if (selectedEllipseIndex === null) return;
+
+      const stage = e.target.getStage();
+      const pointer = stage.getPointerPosition();
+      if (!pointer) return;
+
+      const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
+      const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+
+      setTempEllipses(prev => {
+        const updated = [...prev];
+        updated[selectedEllipseIndex] = {
+          ...updated[selectedEllipseIndex],
+          x,
+          y,
+        };
+        return updated;
+      });
+    },
+    [selectedEllipseIndex, scale, imagePosition, stagePosition],
+  );
+
   const handleResizeStart = (e: any, index: number, controlPoint: 'radiusX' | 'radiusY') => {
     e.cancelBubble = true;
     setSelectedEllipseIndex(index);
@@ -148,6 +179,10 @@ export const EllipseLayer = (props: Props) => {
           fill='red'
           stroke='darkred'
           strokeWidth={1}
+          draggable={isActive}
+          onDragStart={e => handleDragStart(e, index)}
+          onDragMove={handleDragMove}
+          onDragEnd={handleResizeEnd}
           onContextMenu={e => handleRightClick(e, 'ELLIPSE', ellipse)}
         />
 
@@ -157,8 +192,8 @@ export const EllipseLayer = (props: Props) => {
               x={controlPointX}
               y={screenY}
               radius={4}
-              fill='blue'
-              stroke='darkblue'
+              fill='red'
+              stroke='darkred'
               strokeWidth={1}
               draggable
               dragBoundFunc={pos => {
@@ -175,8 +210,8 @@ export const EllipseLayer = (props: Props) => {
               x={screenX}
               y={controlPointY}
               radius={4}
-              fill='green'
-              stroke='darkgreen'
+              fill='red'
+              stroke='darkred'
               strokeWidth={1}
               draggable
               dragBoundFunc={pos => {

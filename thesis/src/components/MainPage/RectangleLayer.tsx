@@ -47,6 +47,45 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
     }
   }, [selectedLayer]);
 
+  const handleDragStart = (e: any, index: number) => {
+    e.cancelBubble = true;
+    setSelectedRectIndex(index);
+  };
+
+  const handleDragMove = useCallback(
+    (e: any) => {
+      e.cancelBubble = true;
+
+      if (selectedRectIndex === null) return;
+
+      const stage = e.target.getStage();
+      const pointer = stage.getPointerPosition();
+      if (!pointer) return;
+
+      const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
+      const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+
+      setTempRectangles(prev => {
+        const updated = [...prev];
+        const rect = updated[selectedRectIndex];
+
+        // Вычисляем смещение от центра
+        const offsetX = x - (rect.x + rect.width / 2);
+        const offsetY = y - (rect.y + rect.height / 2);
+
+        // Перемещаем весь прямоугольник
+        updated[selectedRectIndex] = {
+          ...rect,
+          x: rect.x + offsetX,
+          y: rect.y + offsetY,
+        };
+
+        return updated;
+      });
+    },
+    [selectedRectIndex, scale, imagePosition, stagePosition],
+  );
+
   const handleCornerDragStart = (e: any, rectIndex: number, corner: string) => {
     e.cancelBubble = true;
     setSelectedRectIndex(rectIndex);
@@ -145,6 +184,9 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
     const screenWidth = rect.width * scale;
     const screenHeight = rect.height * scale;
 
+    const centerX = screenX + screenWidth / 2;
+    const centerY = screenY + screenHeight / 2;
+
     return (
       <Group key={`rect-${index}`}>
         <Rect
@@ -155,11 +197,27 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
           stroke={color}
           strokeWidth={2}
           fill={`${color}60`}
+          draggable={isActive}
+          onDragStart={e => handleDragStart(e, index)}
+          onDragMove={handleDragMove}
+          onDragEnd={handleCornerDragEnd}
           onContextMenu={isActive ? e => handleRightClick(e, 'RECTANGLE', rect) : undefined}
         />
 
         {isActive && (
           <>
+            <Circle
+              x={centerX}
+              y={centerY}
+              radius={4}
+              fill='red'
+              stroke='darkred'
+              strokeWidth={1}
+              draggable
+              onDragStart={e => handleDragStart(e, index)}
+              onDragMove={handleDragMove}
+              onDragEnd={handleCornerDragEnd}
+            />
             <Circle
               x={screenX}
               y={screenY}
@@ -221,7 +279,7 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
     <Layer>
       {disabledRectangles.map((rect, index) => renderRectangle(rect, '#e85050', false, index))}
       {rectanglesToRender.map((rect: any, index: number) => renderRectangle(rect, '#ff0000', true, index))}
-      {currentRectangle && renderRectangle(currentRectangle, 'rgb(0, 255, 0)', false, -1)}
+      {currentRectangle && renderRectangle(currentRectangle, '#a6ea43', false, -1)}
     </Layer>
   );
 };

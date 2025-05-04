@@ -38,6 +38,8 @@ export const LineLayer = (props: Props) => {
   const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(null);
   const [selectedPointIndex, setSelectedPointIndex] = useState<number | null>(null);
   const [tempLines, setTempLines] = useState<LineType[]>([]); //нужно для редактирования линии в реальном времени
+  const [isDraggingLine, setIsDraggingLine] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (selectedLayer?.measurements?.lines) {
@@ -53,6 +55,65 @@ export const LineLayer = (props: Props) => {
     });
     setDisabledLines(allLines);
   }, [visibleLayers, selectedLayer]);
+
+  const handleLineDragStart = (e: any, lineIndex: number) => {
+    e.cancelBubble = true;
+    setSelectedLineIndex(lineIndex);
+    setIsDraggingLine(true);
+
+    const stage = e.target.getStage();
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
+
+    const line = tempLines[lineIndex];
+    const center = {
+      x: (line[0].x + line[1].x) / 2,
+      y: (line[0].y + line[1].y) / 2,
+    };
+
+    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
+    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+
+    setDragOffset({
+      x: x - center.x,
+      y: y - center.y,
+    });
+  };
+
+  const handleLineDragMove = (e: any) => {
+    e.cancelBubble = true;
+    if (selectedLineIndex === null || !isDraggingLine) return;
+
+    const stage = e.target.getStage();
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
+
+    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale - dragOffset.x;
+    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale - dragOffset.y;
+
+    const line = tempLines[selectedLineIndex];
+    const currentCenter = {
+      x: (line[0].x + line[1].x) / 2,
+      y: (line[0].y + line[1].y) / 2,
+    };
+
+    const offsetX = x - currentCenter.x;
+    const offsetY = y - currentCenter.y;
+
+    const updatedLines = [...tempLines];
+    updatedLines[selectedLineIndex] = [
+      {
+        x: line[0].x + offsetX,
+        y: line[0].y + offsetY,
+      },
+      {
+        x: line[1].x + offsetX,
+        y: line[1].y + offsetY,
+      },
+    ];
+
+    setTempLines(updatedLines);
+  };
 
   const handlePointDragMove = (e: any) => {
     e.cancelBubble = true;
@@ -79,12 +140,7 @@ export const LineLayer = (props: Props) => {
   const handlePointDragEnd = (e: any) => {
     e.cancelBubble = true;
 
-    if (
-      selectedLineIndex === null ||
-      selectedPointIndex === null ||
-      !selectedLayer ||
-      !selectedLayer.measurements?.lines
-    ) {
+    if (!selectedLayer || !selectedLayer.measurements?.lines) {
       return;
     }
 
@@ -106,10 +162,12 @@ export const LineLayer = (props: Props) => {
       newMeasurements,
       onMessage,
       'Ошибка редактирования линии',
+      () => {
+        setSelectedLineIndex(null);
+        setSelectedPointIndex(null);
+        setIsDraggingLine(false);
+      },
     );
-
-    setSelectedLineIndex(null);
-    setSelectedPointIndex(null);
   };
 
   const renderLines = () => {
@@ -120,6 +178,8 @@ export const LineLayer = (props: Props) => {
         {linesToRender.map((line: LineType, lineIndex: number) => {
           const [start, end] = line;
           const distance = calculateDistance(start, end);
+          const centerX = (start.x + end.x) / 2;
+          const centerY = (start.y + end.y) / 2;
 
           return (
             <React.Fragment key={`line-${lineIndex}`}>
@@ -162,11 +222,15 @@ export const LineLayer = (props: Props) => {
               />
 
               <Text
-                x={((start.x + end.x) / 2) * scale + imagePosition.x}
-                y={((start.y + end.y) / 2) * scale + imagePosition.y - 20}
+                x={centerX * scale + imagePosition.x}
+                y={centerY * scale + imagePosition.y - 20}
                 text={`${distance} px`}
                 fontSize={14}
                 fill='red'
+                draggable
+                onDragStart={e => handleLineDragStart(e, lineIndex)}
+                onDragMove={handleLineDragMove}
+                onDragEnd={handlePointDragEnd}
                 onContextMenu={e => handleRightClick(e, 'LINE', line)}
               />
             </React.Fragment>
