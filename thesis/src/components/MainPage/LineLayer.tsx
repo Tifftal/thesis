@@ -140,6 +140,8 @@ export const LineLayer = (props: Props) => {
                 y={start.y * scale + imagePosition.y}
                 radius={4}
                 fill='red'
+                stroke='darkred'
+                strokeWidth={1}
                 draggable
                 onDragStart={e => handlePointDragStart(e, lineIndex, 0)}
                 onDragMove={handlePointDragMove}
@@ -151,6 +153,8 @@ export const LineLayer = (props: Props) => {
                 y={end.y * scale + imagePosition.y}
                 radius={4}
                 fill='red'
+                stroke='darkred'
+                strokeWidth={1}
                 draggable
                 onDragStart={e => handlePointDragStart(e, lineIndex, 1)}
                 onDragMove={handlePointDragMove}
@@ -161,7 +165,7 @@ export const LineLayer = (props: Props) => {
                 x={((start.x + end.x) / 2) * scale + imagePosition.x}
                 y={((start.y + end.y) / 2) * scale + imagePosition.y - 20}
                 text={`${distance} px`}
-                fontSize={16}
+                fontSize={14}
                 fill='red'
                 onContextMenu={e => handleRightClick(e, 'LINE', line)}
               />
@@ -171,7 +175,6 @@ export const LineLayer = (props: Props) => {
 
         {disabledLines.map((line, index) => {
           const [start, end] = line;
-          const distance = calculateDistance(start, end);
 
           return (
             <React.Fragment key={`disabled-line-${index}`}>
@@ -184,25 +187,6 @@ export const LineLayer = (props: Props) => {
                 ]}
                 stroke='#ff000099'
                 strokeWidth={2}
-              />
-              <Circle
-                x={start.x * scale + imagePosition.x}
-                y={start.y * scale + imagePosition.y}
-                radius={4}
-                fill='#ff000099'
-              />
-              <Circle
-                x={end.x * scale + imagePosition.x}
-                y={end.y * scale + imagePosition.y}
-                radius={4}
-                fill='#ff000099'
-              />
-              <Text
-                x={((start.x + end.x) / 2) * scale + imagePosition.x}
-                y={((start.y + end.y) / 2) * scale + imagePosition.y - 20}
-                text={`${distance} px`}
-                fontSize={16}
-                fill='#ff000099'
               />
             </React.Fragment>
           );

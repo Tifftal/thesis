@@ -165,7 +165,7 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
               y={screenY}
               radius={4}
               fill='red'
-              stroke='red'
+              stroke='darkred'
               strokeWidth={1}
               draggable
               onDragStart={e => handleCornerDragStart(e, index, 'top-left')}
@@ -177,7 +177,7 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
               y={screenY}
               radius={4}
               fill='red'
-              stroke='red'
+              stroke='darkred'
               strokeWidth={1}
               draggable
               onDragStart={e => handleCornerDragStart(e, index, 'top-right')}
@@ -189,7 +189,7 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
               y={screenY + screenHeight}
               radius={4}
               fill='red'
-              stroke='red'
+              stroke='darkred'
               strokeWidth={1}
               draggable
               onDragStart={e => handleCornerDragStart(e, index, 'bottom-left')}
@@ -201,7 +201,7 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
               y={screenY + screenHeight}
               radius={4}
               fill='red'
-              stroke='red'
+              stroke='darkred'
               strokeWidth={1}
               draggable
               onDragStart={e => handleCornerDragStart(e, index, 'bottom-right')}

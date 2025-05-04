@@ -132,6 +132,8 @@ export const BrokenLineLayer = (props: Props) => {
                 y={point.y * scale + imagePosition.y}
                 radius={4}
                 fill='red'
+                stroke='darkred'
+                strokeWidth={1}
                 draggable
                 onDragStart={e => handlePointDragStart(e, lineIndex, pointIndex)}
                 onDragMove={handlePointDragMove}
@@ -146,7 +148,7 @@ export const BrokenLineLayer = (props: Props) => {
                   x={((line[segmentIndex].x + line[segmentIndex + 1].x) / 2) * scale + imagePosition.x}
                   y={((line[segmentIndex].y + line[segmentIndex + 1].y) / 2) * scale + imagePosition.y - 20}
                   text={`${calculateDistance(line[segmentIndex], line[segmentIndex + 1])} px`}
-                  fontSize={16}
+                  fontSize={14}
                   fill='red'
                   onContextMenu={e => handleRightClick(e, 'BROKEN_LINE', line)}
                 />
@@ -164,27 +166,6 @@ export const BrokenLineLayer = (props: Props) => {
               stroke='#ff000099'
               strokeWidth={2}
             />
-            {line.map((point, pointIndex) => (
-              <Circle
-                key={`point-${lineIndex}-${pointIndex}`}
-                x={point.x * scale + imagePosition.x}
-                y={point.y * scale + imagePosition.y}
-                radius={4}
-                fill='#ff000099'
-              />
-            ))}
-
-            {line.length > 1 &&
-              Array.from({ length: line.length - 1 }).map((_, segmentIndex) => (
-                <Text
-                  key={`segment-label-${lineIndex}-${segmentIndex}`}
-                  x={((line[segmentIndex].x + line[segmentIndex + 1].x) / 2) * scale + imagePosition.x}
-                  y={((line[segmentIndex].y + line[segmentIndex + 1].y) / 2) * scale + imagePosition.y - 20}
-                  text={`${calculateDistance(line[segmentIndex], line[segmentIndex + 1])} px`}
-                  fontSize={16}
-                  fill='#ff000099'
-                />
-              ))}
           </React.Fragment>
         ))}
 

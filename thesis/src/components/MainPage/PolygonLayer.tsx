@@ -120,20 +120,23 @@ export const PolygonLayer = (props: Props) => {
           fill={`${color}80`}
           onContextMenu={isActive ? e => handleRightClick(e, 'POLYGON', points) : undefined}
         />
-        {points.map((point, pointIndex) => (
-          <Circle
-            key={`polygon-point-${pointIndex}`}
-            x={point.x * scale + imagePosition.x}
-            y={point.y * scale + imagePosition.y}
-            radius={4}
-            fill={color}
-            onContextMenu={isActive ? e => handleRightClick(e, 'POLYGON', points) : undefined}
-            draggable={isActive}
-            onDragStart={e => handlePointDragStart(e, polygonIndex, pointIndex)}
-            onDragMove={handlePointDragMove}
-            onDragEnd={handlePointDragEnd}
-          />
-        ))}
+        {isActive &&
+          points.map((point, pointIndex) => (
+            <Circle
+              key={`polygon-point-${pointIndex}`}
+              x={point.x * scale + imagePosition.x}
+              y={point.y * scale + imagePosition.y}
+              radius={4}
+              fill={color}
+              stroke='darkred'
+              strokeWidth={1}
+              onContextMenu={e => handleRightClick(e, 'POLYGON', points)}
+              draggable={true}
+              onDragStart={e => handlePointDragStart(e, polygonIndex, pointIndex)}
+              onDragMove={handlePointDragMove}
+              onDragEnd={handlePointDragEnd}
+            />
+          ))}
       </>
     );
   };

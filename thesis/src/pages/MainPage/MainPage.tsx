@@ -11,7 +11,7 @@ import { Point, ZustandStoreStateType, Rectangle, Circle, Ellipse } from 'servic
 import { ContextMenu } from 'components/ContextMenu';
 import { BrokenLineLayer } from 'components/MainPage/BrokenLineLayer';
 import { CircleLayer } from 'components/MainPage/CircleLayer';
-import { EllipseLayer } from 'components/MainPage/EllipsLayer';
+import { EllipseLayer } from 'components/MainPage/EllipseLayer';
 import { LineLayer } from 'components/MainPage/LineLayer';
 import { PolygonLayer } from 'components/MainPage/PolygonLayer';
 import { RectangleLayer } from 'components/MainPage/RectangleLayer';
