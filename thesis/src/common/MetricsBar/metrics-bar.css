@@ -99,32 +99,20 @@
   display: none;
 }
 
-.table {
-  width: 100%;
-  border: none;
-  border-collapse: separate;
-  border-spacing: 8px 6px;
+.metrics-bar__content__tables {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.table thead th {
-  font-family: 'Inter Light';
-  font-size: 12px;
-  color: var(--color-grey5);
-  text-align: left;
-  vertical-align: top;
-  padding-bottom: 6px;
+.metrics-bar__content__tables > * {
+  border-top: 1px dashed var(--color-grey4);
+  padding-top: 8px;
 }
 
-.table tbody td {
-  white-space: nowrap;
-  font-family: 'Inter Medium';
-  font-size: 13px;
-  color: var(--color-grey7);
-  text-align: left;
-}
-
-.table__input-note {
-  width: 130px;
+.metrics-bar__content__tables > :first-child {
+  border-color: transparent;
+  padding-top: 0;
 }
 
 .metrics-bar__actions {
@@ -134,4 +122,12 @@
   align-items: center;
   gap: 15px;
   width: 100%;
+}
+
+.metrics-bar__table__label {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
 }

@@ -1,5 +1,12 @@
 import useStore from 'services/zustand/store';
-import { Point, SavedBrokenLine, SavedLine, ZustandStoreStateType } from 'services/zustand/types';
+import {
+  Point,
+  SavedBrokenLine,
+  SavedLine,
+  SavedPolygon,
+  SavedRectangle,
+  ZustandStoreStateType,
+} from 'services/zustand/types';
 
 import { ChangeLayer } from 'pages/changeDataHelpers';
 
@@ -28,17 +35,14 @@ export const ContextMenu = (props: Props) => {
   const { contextMenu, closeContextMenu, onCompleteBrokenLine, onCompletePolygon } = props;
 
   const {
-    savedLines,
-    setSavedLines,
-    savedBrokenLines,
-    setSavedBrokenLines,
     selectedLayer,
     setSelectedLayer,
     visibleLayers,
     setVisibleLayers,
     selectedProject,
     setSelectedProject,
-    setSelectedTool,
+    savedMeasurements,
+    setSavedMeasurements,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -77,9 +81,13 @@ export const ContextMenu = (props: Props) => {
       distance: `${calculateDistance(contextMenu.currentObject[0], contextMenu.currentObject[1])}`,
       note: '',
     };
-    const newSavedLines = [...savedLines, newLine];
+    const newSavedLines = [...(savedMeasurements?.lines || []), newLine];
+    const newMeasurements = {
+      ...savedMeasurements,
+      lines: newSavedLines,
+    };
 
-    setSavedLines(newSavedLines);
+    setSavedMeasurements(newMeasurements);
     closeContextMenu();
   };
 
@@ -90,9 +98,52 @@ export const ContextMenu = (props: Props) => {
       note: '',
     };
 
-    const newSavedBrokenLines = [...savedBrokenLines, newBrokenLine];
+    const newSavedBrokenLines = [...(savedMeasurements?.brokenLines || []), newBrokenLine];
+    const newMeasurements = {
+      ...savedMeasurements,
+      brokenLines: newSavedBrokenLines,
+    };
 
-    setSavedBrokenLines(newSavedBrokenLines);
+    setSavedMeasurements(newMeasurements);
+    closeContextMenu();
+    closeContextMenu();
+  };
+
+  const savePolygon = () => {
+    const newPolygon: SavedPolygon = {
+      polygon: contextMenu.currentObject,
+      perimeter: `${calculatePolylineLength(contextMenu.currentObject).toFixed(1)}`,
+      area: `${calculatePolygonArea(contextMenu.currentObject).toFixed(1)}`,
+      note: '',
+    };
+
+    const newSavedPolygons = [...(savedMeasurements?.polygons || []), newPolygon];
+    const newMeasurements = {
+      ...savedMeasurements,
+      polygons: newSavedPolygons,
+    };
+
+    setSavedMeasurements(newMeasurements);
+    closeContextMenu();
+    closeContextMenu();
+  };
+
+  const saveRectangle = () => {
+    const newRectangle: SavedRectangle = {
+      rectangle: contextMenu.currentObject,
+      area: `${calculateRectangleLength(contextMenu.currentObject).toFixed(1)}`,
+      perimeter: `${calculateRectangleArea(contextMenu.currentObject).toFixed(1)}`,
+      note: '',
+    };
+
+    const newSavedRectangles = [...(savedMeasurements?.rectangles || []), newRectangle];
+    const newMeasurements = {
+      ...savedMeasurements,
+      rectangles: newSavedRectangles,
+    };
+
+    setSavedMeasurements(newMeasurements);
+    closeContextMenu();
     closeContextMenu();
   };
 
@@ -152,7 +203,9 @@ export const ContextMenu = (props: Props) => {
                 <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
                   Площадь: {calculatePolygonArea(contextMenu.currentObject).toFixed(2)}
                 </div>
-                <div className='context-menu__item'>Сохранить измерение</div>
+                <div className='context-menu__item' onClick={savePolygon}>
+                  Сохранить измерение
+                </div>
               </>
             )}
 
@@ -173,10 +226,9 @@ export const ContextMenu = (props: Props) => {
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
               Площадь: {calculateRectangleArea(contextMenu.currentObject).toFixed(2)}
             </div>
-            <div className='context-menu__item'>Сохранить измерение</div>
-            {/* <div className='context-menu__item' onClick={() => handleEditObject(setEditingRectangle)}>
-              Редактировать
-            </div> */}
+            <div className='context-menu__item' onClick={saveRectangle}>
+              Сохранить измерение
+            </div>
             <div
               className='context-menu__item'
               onClick={() => handleClear('rectangles', 'Ошибка удаления прямоугольника')}>

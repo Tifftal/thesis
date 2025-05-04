@@ -54,6 +54,13 @@ export type Ellipse = {
 
 export type SavedLine = { line: Line; distance: string | null; note: string };
 export type SavedBrokenLine = { brokenLine: BrokenLine; distance: string | null; note: string };
+export type SavedPolygon = { polygon: Polygon; perimeter: string | null; area: string | null; note: string };
+export type SavedRectangle = {
+  rectangle: Rectangle;
+  perimeter: string | null;
+  area: string | null;
+  note: string;
+};
 
 export type ZustandStoreStateType = {
   typeOfAuthForm: 'login' | 'registration';
@@ -78,8 +85,6 @@ export type ZustandStoreStateType = {
   setStagePosition: (stagePosition: Point) => void;
 
   //Метрики
-  savedLines: SavedLine[];
-  savedBrokenLines: SavedBrokenLine[];
-  setSavedLines: (savedLines: SavedLine[]) => void;
-  setSavedBrokenLines: (savedBrokenLines: SavedBrokenLine[]) => void;
+  savedMeasurements: Record<string, any> | null;
+  setSavedMeasurements: (savedMeasurements: Record<string, any> | null) => void;
 };

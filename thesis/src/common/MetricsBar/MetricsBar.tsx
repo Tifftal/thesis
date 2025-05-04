@@ -1,23 +1,22 @@
 import { useState } from 'react';
 
-import { IconArrowBarToLeft, IconArrowBarToRight } from '@tabler/icons-react';
+import { IconArrowBarToLeft, IconArrowBarToRight, IconInfoCircle } from '@tabler/icons-react';
 
 import useStore from 'services/zustand/store';
 import { ZustandStoreStateType } from 'services/zustand/types';
 
 import { Button } from 'ui-kit/button';
-import { InputNote } from 'ui-kit/inputs/InputNote';
+import { Tooltip } from 'ui-kit/tooltip';
+
+import { MeasurementTable } from './MeasurementTable/MeasurementTable';
 
 export const MetricsBar = () => {
   const [open, setOpen] = useState<boolean>(true);
 
-  const { savedLines, setSavedLines, savedBrokenLines, setSavedBrokenLines } = useStore(
-    (state: ZustandStoreStateType) => state,
-  );
+  const { savedMeasurements, setSavedMeasurements } = useStore((state: ZustandStoreStateType) => state);
 
   const handleClearMetrics = () => {
-    setSavedLines([]);
-    setSavedBrokenLines([]);
+    setSavedMeasurements(null);
   };
 
   return (
@@ -37,54 +36,70 @@ export const MetricsBar = () => {
           />
         </div>
       </div>
-      {/*  TODO: тут разделить на две таблицы */}
-      {savedLines.length === 0 ? (
+      {!savedMeasurements ? (
         <div className={`metrics-bar__content__empty ${open ? '' : 'collapsed'}`}>
           Пока не добавлено измерений...
         </div>
       ) : (
         <div className={`metrics-bar__content ${open ? '' : 'collapsed'}`}>
-          <table className='table'>
-            <thead>
-              <tr>
-                <th>Начальная точка</th>
-                <th>Конечная точка</th>
-                <th>Расстояние</th>
-                <th>Примечание</th>
-              </tr>
-            </thead>
-            <tbody>
-              {savedLines.map((savedLine, index) => (
-                <tr key={index}>
-                  <td>
-                    ({savedLine.line[0].x.toFixed(1)}, {savedLine.line[0].y.toFixed(1)})
-                  </td>
-                  <td>
-                    ({savedLine.line[1].x.toFixed(1)}, {savedLine.line[1].y.toFixed(1)})
-                  </td>
-                  <td>{savedLine.distance} нм</td>
-                  <td className='table__input-note'>
-                    <InputNote placeholder='Примечание' value={savedLine.note} onChange={() => {}} />
-                  </td>
-                </tr>
-              ))}
-              {savedBrokenLines.map((savedLine, index) => (
-                <tr key={index}>
-                  <td>
-                    ({savedLine.brokenLine[0].x.toFixed(1)}, {savedLine.brokenLine[0].y.toFixed(1)})
-                  </td>
-                  <td>
-                    ({savedLine.brokenLine[savedLine.brokenLine.length - 1].x.toFixed(1)},{' '}
-                    {savedLine.brokenLine[savedLine.brokenLine.length - 1].y.toFixed(1)})
-                  </td>
-                  <td>{savedLine.distance} нм</td>
-                  <td className='table__input-note'>
-                    <InputNote placeholder='Примечание' value={savedLine.note} onChange={() => {}} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className='metrics-bar__content__tables'>
+            {savedMeasurements.lines && (
+              <MeasurementTable
+                type='lines'
+                measurement={savedMeasurements.lines}
+                name='Прямые'
+                titles={['Начальная точка', 'Конечная точка', 'Длина', 'Примечание']}
+              />
+            )}
+            {savedMeasurements.brokenLines && (
+              <MeasurementTable
+                type='brokenLines'
+                measurement={savedMeasurements.brokenLines}
+                name={
+                  <div className='metrics-bar__table__label'>
+                    Ломаные
+                    <Tooltip
+                      title={'В таблице приведены начальная и конечные точки, в .csv выгружаются все точки'}>
+                      <IconInfoCircle width={18} height={18} stroke={1.5} />
+                    </Tooltip>
+                  </div>
+                }
+                titles={['Начальная точка', 'Конечная точка', 'Длина', 'Примечание']}
+              />
+            )}
+            {savedMeasurements.polygons && (
+              <MeasurementTable
+                type='polygons'
+                measurement={savedMeasurements.polygons}
+                name={
+                  <div className='metrics-bar__table__label'>
+                    Многоугольники
+                    <Tooltip
+                      title={'В таблице приведены начальная и конечные точки, в .csv выгружаются все точки'}>
+                      <IconInfoCircle width={18} height={18} stroke={1.5} />
+                    </Tooltip>
+                  </div>
+                }
+                titles={['Начальная точка', 'Конечная точка', 'Площадь', 'Периметр', 'Примечание']}
+              />
+            )}
+            {/* {savedMeasurements.polygons && (
+              <MeasurementTable
+                type='rectangles'
+                measurement={savedMeasurements.rectangles}
+                name={
+                  <div className='metrics-bar__table__label'>
+                    Прямоугольники
+                    <Tooltip
+                      title={'В таблице приведены начальная и конечные точки, в .csv выгружаются все точки'}>
+                      <IconInfoCircle width={18} height={18} stroke={1.5} />
+                    </Tooltip>
+                  </div>
+                }
+                titles={['Начальная точка', 'Конечная точка', 'Площадь', 'Периметр', 'Примечание']}
+              />
+            )} */}
+          </div>
           <div className='metrics-bar__actions'>
             <Button size='s' stretched>
               Скачать CSV
