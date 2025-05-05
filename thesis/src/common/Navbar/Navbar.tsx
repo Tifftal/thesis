@@ -8,6 +8,7 @@ import { Button } from 'ui-kit/button';
 import Logo from 'assets/images/logo/Logo.png';
 
 import { NavbarMenu } from './NavbarMenu';
+import { ProjectParameters } from './ProjectParameters/ProjectParameters';
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -27,14 +28,15 @@ export const Navbar = () => {
           СИРОГС
         </div>
         <div className='navbar__container__user'>
-          {`${userInfo.lastName} ${userInfo.firstName[0]}. ${userInfo.middleName ? userInfo.middleName[0] + '.' : ''}`}
+          {`${userInfo.lastName} ${userInfo.firstName[0]}. ${userInfo.patronymic ? userInfo.patronymic[0] + '.' : ''}`}
           <Button size='s' onClick={handleLogout}>
             Выйти
           </Button>
         </div>
       </div>
-      <div className='navbar__container'>
+      <div className='navbar__bottom-container'>
         <NavbarMenu />
+        <ProjectParameters />
       </div>
     </div>
   );

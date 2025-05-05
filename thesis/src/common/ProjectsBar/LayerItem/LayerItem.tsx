@@ -4,18 +4,24 @@ import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import cn from 'classnames';
 
 import useStore from 'services/zustand/store';
-import { LayerType, ZustandStoreStateType } from 'services/zustand/types';
+import { ImageType, LayerType, ZustandStoreStateType } from 'services/zustand/types';
 
 type Props = {
   layer: LayerType;
+  image: ImageType;
 };
 
 export const LayerItem = (props: Props) => {
-  const { layer } = props;
+  const { layer, image } = props;
 
-  const { visibleLayers, setVisibleLayers, selectedLayer, setSelectedLayer } = useStore(
-    (state: ZustandStoreStateType) => state,
-  );
+  const {
+    visibleLayers,
+    setVisibleLayers,
+    selectedLayer,
+    setSelectedLayer,
+    selectedImageURL,
+    setSelectedImageURL,
+  } = useStore((state: ZustandStoreStateType) => state);
 
   const [isVisibleLayer, setIsVisibleLayer] = useState<boolean>(
     visibleLayers.some(visibleLayer => visibleLayer.id === layer.id),
@@ -23,7 +29,7 @@ export const LayerItem = (props: Props) => {
 
   useEffect(() => {
     setIsVisibleLayer(visibleLayers.some(visibleLayer => visibleLayer.id === layer.id));
-  }, [visibleLayers]);
+  }, [visibleLayers, selectedLayer]);
 
   const handleChangeVisibleLayers = (
     e: React.MouseEvent<SVGSVGElement, MouseEvent>,
@@ -40,12 +46,20 @@ export const LayerItem = (props: Props) => {
     setVisibleLayers(newVisibleLayers);
   };
 
+  const handleChooseLayer = () => {
+    setSelectedLayer(layer);
+    if (image.url !== selectedImageURL) {
+      setSelectedImageURL(image.url);
+      setVisibleLayers(image.layers);
+    }
+  };
+
   return (
     <div
       className={cn('image-item__layers__item', {
         active: selectedLayer?.id === layer.id,
       })}
-      onClick={() => setSelectedLayer(layer)}>
+      onClick={handleChooseLayer}>
       <div className='image-item__layers__item__name'>
         <span className='image-item__layers__item__number'>#{layer.id}</span>
         <span className='image-item__layers__item__title'>{layer.name}</span>

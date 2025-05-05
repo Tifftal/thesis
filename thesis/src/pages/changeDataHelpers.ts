@@ -9,7 +9,7 @@ export const ChangeLayer = (
   setSelectedLayer: (selectedLayer: LayerType | null) => void,
   visibleLayers: LayerType[],
   setVisibleLayers: (visibleLayers: LayerType[]) => void,
-  newMeasurements: Record<string, any>,
+  newMeasurements: Record<string, any> | undefined,
   onMessage: (message: string, type: string, label?: string) => void,
   errorMessage: string,
   thenFunc?: () => void,

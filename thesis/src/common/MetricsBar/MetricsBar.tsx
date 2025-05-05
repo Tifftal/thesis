@@ -120,7 +120,7 @@ export const MetricsBar = () => {
             Скачать CSV
           </Button>
           <Button size='s' type='grey' stretched onClick={handleClearMetrics}>
-            Очистить
+            Очистить все
           </Button>
         </div>
       </div>

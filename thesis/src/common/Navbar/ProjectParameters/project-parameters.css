@@ -1,0 +1,7 @@
+.project-parameters__container {
+  height: 30px;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  gap: 30px;
+}

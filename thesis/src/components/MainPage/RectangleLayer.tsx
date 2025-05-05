@@ -197,10 +197,6 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
           stroke={color}
           strokeWidth={2}
           fill={`${color}60`}
-          draggable={isActive}
-          onDragStart={e => handleDragStart(e, index)}
-          onDragMove={handleDragMove}
-          onDragEnd={handleCornerDragEnd}
           onContextMenu={isActive ? e => handleRightClick(e, 'RECTANGLE', rect) : undefined}
         />
 

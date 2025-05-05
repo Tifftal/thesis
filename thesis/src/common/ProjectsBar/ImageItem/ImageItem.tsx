@@ -158,7 +158,7 @@ export const ImageItem = (props: Props) => {
             {image.layers?.map((layer, index) => (
               <BarContextMenu key={index} renderContextMenu={() => renderContextMenu(layer)}>
                 <div>
-                  <LayerItem layer={layer} />
+                  <LayerItem layer={layer} image={image} />
                 </div>
               </BarContextMenu>
             ))}

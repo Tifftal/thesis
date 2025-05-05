@@ -27,7 +27,7 @@ export type ChangeNameVariablesType = {
 
 export type ChangeLayerVariablesType = {
   name: string;
-  measurements: Record<string, any>;
+  measurements: Record<string, any> | undefined;
 };
 
 export type CreateLayerType = {

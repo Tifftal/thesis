@@ -34,12 +34,19 @@ export const AddModal = (props: Props) => {
   } = useStore((state: ZustandStoreStateType) => state);
 
   const [name, setName] = useState<string>('');
+  const [width, setWidth] = useState<string | undefined>(undefined);
+  const [units, setUnits] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     file && setName(file.name);
   }, [file]);
 
   const handleCreate = () => {
+    if (!name || (!units && !width)) {
+      onMessage('Заполните поля корректно', 'error', 'Неверные поля');
+      return;
+    }
+
     if (file && setFile && selectedProject) {
       IMAGE_API.CreateImage({
         projectID: selectedProject?.id,
@@ -110,6 +117,22 @@ export const AddModal = (props: Props) => {
       return (
         <>
           <InputText label='Название' value={name} onChange={value => setName(value)} height={46} />
+          <div className='add-modal__scale-fields'>
+            <InputText
+              label='Ширина изображения'
+              placeholder='100'
+              value={width}
+              onChange={value => setWidth(value)}
+              height={46}
+            />
+            <InputText
+              label='Единицы измерения'
+              placeholder='нм'
+              value={units}
+              onChange={value => setUnits(value)}
+              height={46}
+            />
+          </div>
           <div className='add-modal__preview'>
             <img src={URL.createObjectURL(file)} alt='Превью' className='add-modal__image' />
           </div>
