@@ -2,7 +2,7 @@ import { IconPlus } from '@tabler/icons-react';
 import cn from 'classnames';
 
 import useStore from 'services/zustand/store';
-import { ImageType, ProjectType, ZustandStoreStateType } from 'services/zustand/types';
+import { ZustandStoreStateType } from 'services/zustand/types';
 
 import { UploadFiles } from 'ui-kit/upload-files';
 

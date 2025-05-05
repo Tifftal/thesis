@@ -9,7 +9,8 @@ import { RouteLayout } from 'common/RouteLayout/RouteLayout';
 
 const App = () => {
   const isAuthenticated = () => {
-    return localStorage.getItem('token') !== null;
+    const token = localStorage.getItem('token');
+    return token !== null && token !== 'undefined';
   };
 
   const ProtectedRoute = ({ element }: { element: React.ReactElement }) => {
@@ -25,10 +26,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<RouteLayout />}>
-            <Route
-              path='/'
-              element={isAuthenticated() ? <Navigate to='/main' replace /> : <Navigate to='/auth' replace />}
-            />
+            <Route index element={<Navigate to={isAuthenticated() ? '/main' : '/auth'} replace />} />
             <Route path='/auth' element={<PublicRoute element={<AuthPage />} />} />
             <Route path='/main' element={<ProtectedRoute element={<MainPage />} />} />
           </Route>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -36,10 +36,6 @@ export const AuthPage = () => {
     password: '',
   });
 
-  useEffect(() => {
-    if (localStorage.getItem('token')) navigate('/main');
-  }, [localStorage.getItem('token')]);
-
   const handleChangeTypeOfAuthForm = (type: 'login' | 'registration') => {
     setTypeOfAuthForm(type);
   };
@@ -61,29 +57,30 @@ export const AuthPage = () => {
     }
   };
 
-  const handleLogin = (data?: LoginDataType) => {
-    AUTH_API.Login(data || loginData)
-      .then(response => {
-        localStorage.setItem('token', response.data.accessToken);
-        localStorage.setItem('refreshToken', response.data.refreshToken);
-        setUserInfo(response.data.user);
-      })
-      .catch(e => {
-        onMessage(`${e}`, 'error', 'Ошибка входа');
-      });
+  const handleLogin = async (data?: LoginDataType) => {
+    try {
+      const response = await AUTH_API.Login(data || loginData);
+      localStorage.setItem('token', response.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      setUserInfo(response.data.user);
+      navigate('/main', { replace: true });
+    } catch (e) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      onMessage(`${e}`, 'error', 'Ошибка входа');
+    }
   };
 
-  const handleRegister = () => {
-    AUTH_API.Register(registerData)
-      .then(() => {
-        handleLogin({
-          username: registerData.username,
-          password: registerData.password,
-        });
-      })
-      .catch(e => {
-        onMessage(`${e}`, 'error', 'Ошибка регистрации');
+  const handleRegister = async () => {
+    try {
+      await AUTH_API.Register(registerData);
+      await handleLogin({
+        username: registerData.username,
+        password: registerData.password,
       });
+    } catch (e) {
+      onMessage(`${e}`, 'error', 'Ошибка регистрации');
+    }
   };
 
   const renderForm = () => {
