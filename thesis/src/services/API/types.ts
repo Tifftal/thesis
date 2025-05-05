@@ -18,11 +18,18 @@ export type CreateProjectVariablesType = {
 export type CreateImageVariablesType = {
   projectID: number;
   name: string;
+  width: string;
+  units: string;
   image: File;
 };
 
 export type ChangeNameVariablesType = {
   name: string;
+};
+
+export type ChangeImageScaleVariablesType = {
+  width?: number;
+  units?: string;
 };
 
 export type ChangeLayerVariablesType = {

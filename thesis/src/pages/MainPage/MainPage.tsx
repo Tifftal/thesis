@@ -26,7 +26,7 @@ export const MainPage = () => {
   const {
     selectedProject,
     setSelectedProject,
-    selectedImageURL,
+    selectedImage,
     selectedTool,
     visibleLayers,
     selectedLayer,
@@ -66,7 +66,9 @@ export const MainPage = () => {
 
   const [scale, setScale] = useState(1);
 
-  const fullImageUrl = selectedImageURL?.startsWith('http') ? selectedImageURL : `http://${selectedImageURL}`;
+  const fullImageUrl = selectedImage?.url?.startsWith('http')
+    ? selectedImage.url
+    : `http://${selectedImage?.url}`;
   const [image] = useImage(encodeURI(fullImageUrl || '') || '');
 
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
@@ -435,7 +437,7 @@ export const MainPage = () => {
 
   return (
     <div className='page__container main-page__container' style={{ overflow: 'hidden' }}>
-      {selectedImageURL ? (
+      {selectedImage?.url ? (
         <div className='main-page__image'>
           <Stage
             width={windowSize.width}

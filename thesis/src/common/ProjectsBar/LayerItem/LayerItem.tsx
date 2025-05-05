@@ -19,8 +19,8 @@ export const LayerItem = (props: Props) => {
     setVisibleLayers,
     selectedLayer,
     setSelectedLayer,
-    selectedImageURL,
-    setSelectedImageURL,
+    selectedImage,
+    setSelectedImage,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const [isVisibleLayer, setIsVisibleLayer] = useState<boolean>(
@@ -48,8 +48,8 @@ export const LayerItem = (props: Props) => {
 
   const handleChooseLayer = () => {
     setSelectedLayer(layer);
-    if (image.url !== selectedImageURL) {
-      setSelectedImageURL(image.url);
+    if (image.url !== selectedImage?.url) {
+      setSelectedImage(image);
       setVisibleLayers(image.layers);
     }
   };

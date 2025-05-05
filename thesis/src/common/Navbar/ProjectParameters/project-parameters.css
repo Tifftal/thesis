@@ -3,5 +3,19 @@
   display: flex;
   flex-flow: row;
   align-items: center;
-  gap: 30px;
+  gap: 20px;
+}
+
+.project-parameters__container button {
+  white-space: nowrap;
+}
+
+.project-parameters__container .ant-input {
+  border-radius: 8px !important;
+}
+
+.project-parameters__container__scale {
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
 }

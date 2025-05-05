@@ -31,8 +31,8 @@ export const ImageItem = (props: Props) => {
   const { onMessage } = useToast();
 
   const {
-    selectedImageURL,
-    setSelectedImageURL,
+    selectedImage,
+    setSelectedImage,
     selectedProject,
     setSelectedProject,
     setVisibleLayers,
@@ -46,7 +46,7 @@ export const ImageItem = (props: Props) => {
   const [layerName, setLayerName] = useState<string>('');
 
   const handleSelectImage = () => {
-    setSelectedImageURL(image.url);
+    setSelectedImage(image);
     setVisibleLayers(image.layers);
     setSelectedLayer(image.layers[0]);
     setIsOpenLayers(true);
@@ -56,8 +56,8 @@ export const ImageItem = (props: Props) => {
 
   useEffect(() => {
     if (!open) setIsOpenLayers(false);
-    if (selectedImageURL) setIsOpenLayers(true);
-  }, [open, selectedImageURL]);
+    if (selectedImage?.url) setIsOpenLayers(true);
+  }, [open, selectedImage]);
 
   const handleToggleLayers = (e: any) => {
     e.stopPropagation();
@@ -108,11 +108,11 @@ export const ImageItem = (props: Props) => {
 
   return (
     <>
-      <div className={cn('image-item__container', { active: selectedImageURL === image.url })}>
+      <div className={cn('image-item__container', { active: selectedImage?.url === image.url })}>
         <div
           className={cn(
             'image-item__title',
-            { active: selectedImageURL === image.url },
+            { active: selectedImage?.url === image.url },
             { collapsed: !open },
           )}
           onClick={handleSelectImage}>

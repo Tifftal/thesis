@@ -20,6 +20,8 @@ export type ImageType = {
   projectID: number;
   layers: LayerType[];
   url: string;
+  units: string;
+  width: number;
 };
 
 export type ProjectType = {
@@ -79,7 +81,7 @@ export type ZustandStoreStateType = {
   userInfo: UserInfoType;
 
   selectedProject: ProjectType | null;
-  selectedImageURL: string | null;
+  selectedImage: ImageType | null;
   visibleLayers: LayerType[];
   selectedLayer: LayerType | null;
   selectedTool: string | null;
@@ -87,7 +89,7 @@ export type ZustandStoreStateType = {
   setTypeOfAuthForm: (typeOfAuthForm: 'login' | 'registration') => void;
   setUserInfo: (userInfo: UserInfoType) => void;
   setSelectedProject: (selectedProject: ProjectType | null) => void;
-  setSelectedImageURL: (selectedImageURL: string | null) => void;
+  setSelectedImage: (selectedImage: ImageType | null) => void;
   setVisibleLayers: (visibleLayers: LayerType[]) => void;
   setSelectedLayer: (selectedLayer: LayerType | null) => void;
   setSelectedTool: (selectedTool: string | null) => void;

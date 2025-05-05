@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { LayerType, Point, ProjectType, UserInfoType, ZustandStoreStateType } from './types';
+import { ImageType, LayerType, Point, ProjectType, UserInfoType, ZustandStoreStateType } from './types';
 
 const useStore = create<ZustandStoreStateType>(set => ({
   typeOfAuthForm: 'login',
@@ -12,7 +12,7 @@ const useStore = create<ZustandStoreStateType>(set => ({
     username: '',
   },
   selectedProject: null,
-  selectedImageURL: null,
+  selectedImage: null,
   visibleLayers: [],
   selectedLayer: null,
   selectedTool: null,
@@ -21,7 +21,7 @@ const useStore = create<ZustandStoreStateType>(set => ({
   setTypeOfAuthForm: (typeOfAuthForm: 'login' | 'registration') => set({ typeOfAuthForm }),
   setUserInfo: (userInfo: UserInfoType) => set({ userInfo }),
   setSelectedProject: (selectedProject: ProjectType | null) => set({ selectedProject }),
-  setSelectedImageURL: (selectedImageURL: string | null) => set({ selectedImageURL }),
+  setSelectedImage: (selectedImage: ImageType | null) => set({ selectedImage }),
   setVisibleLayers: (visibleLayers: LayerType[]) => set({ visibleLayers }),
   setSelectedLayer: (selectedLayer: LayerType | null) => set({ selectedLayer }),
   setSelectedTool: (selectedTool: string | null) => set({ selectedTool }),

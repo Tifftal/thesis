@@ -27,14 +27,8 @@ export const EditModal = (props: Props) => {
 
   const { onMessage } = useToast();
 
-  const {
-    projects,
-    setProjects,
-    selectedProject,
-    setSelectedProject,
-    selectedImageURL,
-    setSelectedImageURL,
-  } = useStore((state: ZustandStoreStateType) => state);
+  const { projects, setProjects, selectedProject, setSelectedProject, selectedImage, setSelectedImage } =
+    useStore((state: ZustandStoreStateType) => state);
 
   const [name, setName] = useState<string>('');
 
@@ -124,7 +118,7 @@ export const EditModal = (props: Props) => {
               images: updatedImages,
             });
 
-            if ('url' in item && selectedImageURL === item.url) setSelectedImageURL(null);
+            if ('url' in item && selectedImage?.url === item.url) setSelectedImage(null);
           })
           .catch(e => {
             onMessage(`${e}`, 'error', 'Ошибка удаления изображения');

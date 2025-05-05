@@ -26,8 +26,9 @@ export const ProjectsBar = () => {
     setProjects,
     selectedProject,
     setSelectedProject,
-    setSelectedImageURL,
+    setSelectedImage,
     setVisibleLayers,
+    setSelectedLayer,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const [open, setOpen] = useState<boolean>(true);
@@ -64,8 +65,9 @@ export const ProjectsBar = () => {
 
   useEffect(() => {
     if (selectedProject === null) {
-      setSelectedImageURL(null);
+      setSelectedImage(null);
       setVisibleLayers([]);
+      setSelectedLayer(null);
       setBreadcrumbItems([defaultBreadcrumbItem]);
     } else {
       setBreadcrumbItems([
@@ -94,32 +96,40 @@ export const ProjectsBar = () => {
   const renderBarContent = () => {
     if (!selectedProject) {
       return (
-        <div className='projects-bar__content'>
-          {projects?.map((item, index) => (
-            <div
-              className={`projects-bar__content__item ${open ? '' : 'collapsed'}`}
-              onClick={() => handleChooseProject(item.id)}
-              key={index}>
-              {open ? (
-                <>
-                  <>
-                    <div className='projects-bar__content__item__image'>
-                      <span className='projects-bar__content__item__number'>#{item.id}</span>
-                      <span className='projects-bar__content__item__name'>{item.name}</span>
-                    </div>
-                    <IconEditCircle
-                      width={20}
-                      height={20}
-                      stroke={1.5}
-                      onClick={e => handleOpenEditModal(e, item, 'PROJECT')}
-                    />
-                  </>
-                </>
-              ) : (
-                `#${item.id}`
-              )}
+        <div className='projects-bar__container__content'>
+          {!projects.length ? (
+            <div className={`projects-bar__content__empty ${open ? '' : 'collapsed'}`}>
+              Пока не создано проектов...
             </div>
-          ))}
+          ) : (
+            <div className='projects-bar__content'>
+              {projects?.map((item, index) => (
+                <div
+                  className={`projects-bar__content__item ${open ? '' : 'collapsed'}`}
+                  onClick={() => handleChooseProject(item.id)}
+                  key={index}>
+                  {open ? (
+                    <>
+                      <>
+                        <div className='projects-bar__content__item__image'>
+                          <span className='projects-bar__content__item__number'>#{item.id}</span>
+                          <span className='projects-bar__content__item__name'>{item.name}</span>
+                        </div>
+                        <IconEditCircle
+                          width={20}
+                          height={20}
+                          stroke={1.5}
+                          onClick={e => handleOpenEditModal(e, item, 'PROJECT')}
+                        />
+                      </>
+                    </>
+                  ) : (
+                    `#${item.id}`
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       );
     }

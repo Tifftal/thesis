@@ -28,9 +28,10 @@ export const AddModal = (props: Props) => {
     projects,
     setProjects,
     selectedProject,
-    setSelectedImageURL,
+    setSelectedImage,
     setSelectedProject,
     setVisibleLayers,
+    setSelectedLayer,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const [name, setName] = useState<string>('');
@@ -42,8 +43,12 @@ export const AddModal = (props: Props) => {
   }, [file]);
 
   const handleCreate = () => {
-    if (!name || (!units && !width)) {
-      onMessage('Заполните поля корректно', 'error', 'Неверные поля');
+    if (!Number(width)) {
+      onMessage('Ширина должна быть числовым значением', 'error', 'Неверный формат');
+      return;
+    }
+    if (!name || !units || !width) {
+      onMessage('Заполните поля', 'error', 'Пустые поля');
       return;
     }
 
@@ -51,11 +56,13 @@ export const AddModal = (props: Props) => {
       IMAGE_API.CreateImage({
         projectID: selectedProject?.id,
         name: name,
+        width: width,
+        units: units,
         image: file,
       })
         .then(response => {
           let newImage = response.data;
-          setSelectedImageURL(newImage.url);
+          setSelectedImage(newImage);
 
           LAYER_API.CreateLayer({
             imageID: newImage.id,
@@ -73,6 +80,7 @@ export const AddModal = (props: Props) => {
                 images: updatedImages,
               });
 
+              setSelectedLayer(response.data);
               setVisibleLayers([response.data]);
             })
             .catch(e => {
@@ -84,6 +92,8 @@ export const AddModal = (props: Props) => {
         })
         .finally(() => {
           setName('');
+          setUnits(undefined);
+          setWidth(undefined);
           setOpen(false);
         });
     }

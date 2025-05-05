@@ -83,7 +83,7 @@ export const InputText = (props: Props) => {
   }
 
   const inputElement = (
-    <InputTextAntd {...props} style={{ width: '100%' }} onChange={handleChange} suffix={renderSuffix()} />
+    <InputTextAntd {...props} style={{ ...style }} onChange={handleChange} suffix={renderSuffix()} />
   );
 
   return (
