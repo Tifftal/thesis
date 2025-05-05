@@ -2,6 +2,8 @@ import useStore from 'services/zustand/store';
 import {
   Point,
   SavedBrokenLine,
+  SavedCircle,
+  SavedEllipse,
   SavedLine,
   SavedPolygon,
   SavedRectangle,
@@ -147,6 +149,44 @@ export const ContextMenu = (props: Props) => {
     closeContextMenu();
   };
 
+  const saveCircle = () => {
+    const newCircle: SavedCircle = {
+      circle: contextMenu.currentObject,
+      area: `${calculateCircleArea(contextMenu.currentObject.radius).toFixed(1)}`,
+      length: '0',
+      note: '',
+    };
+
+    const newSavedCircles = [...(savedMeasurements?.circles || []), newCircle];
+    const newMeasurements = {
+      ...savedMeasurements,
+      circles: newSavedCircles,
+    };
+
+    setSavedMeasurements(newMeasurements);
+    closeContextMenu();
+    closeContextMenu();
+  };
+
+  const saveEllipse = () => {
+    const newEllipse: SavedEllipse = {
+      ellipse: contextMenu.currentObject,
+      area: `${calculateCircleArea(contextMenu.currentObject.radius).toFixed(1)}`,
+      length: '0',
+      note: '',
+    };
+
+    const newSavedEllipses = [...(savedMeasurements?.ellipses || []), newEllipse];
+    const newMeasurements = {
+      ...savedMeasurements,
+      ellipses: newSavedEllipses,
+    };
+
+    setSavedMeasurements(newMeasurements);
+    closeContextMenu();
+    closeContextMenu();
+  };
+
   const renderContent = () => {
     switch (contextMenu.type) {
       case 'LINE':
@@ -246,7 +286,9 @@ export const ContextMenu = (props: Props) => {
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
               Площадь: {calculateCircleArea(contextMenu.currentObject.radius).toFixed(2)}
             </div>
-            <div className='context-menu__item'>Сохранить измерение</div>
+            <div className='context-menu__item' onClick={saveCircle}>
+              Сохранить измерение
+            </div>
             <div
               className='context-menu__item'
               onClick={() => handleClear('circles', 'Ошибка удаления окружности')}>
@@ -277,7 +319,9 @@ export const ContextMenu = (props: Props) => {
                 contextMenu.currentObject.radiusY,
               ).toFixed(2)}
             </div>
-            <div className='context-menu__item'>Сохранить измерение</div>
+            <div className='context-menu__item' onClick={saveEllipse}>
+              Сохранить измерение
+            </div>
             <div
               className='context-menu__item'
               onClick={() => handleClear('ellipses', 'Ошибка удаления эллипса')}>

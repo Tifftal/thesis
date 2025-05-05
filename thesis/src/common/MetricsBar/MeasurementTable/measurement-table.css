@@ -4,6 +4,20 @@
   color: var(--color-grey7);
   padding: 2px 4px;
   text-align: center;
+
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  align-items: center;
+}
+
+.table__edit-columns-btn {
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.table__edit-columns-btn:hover {
+  background-color: var(--color-green-light);
 }
 
 .table {

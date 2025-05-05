@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 
+import { IconColumns } from '@tabler/icons-react';
+
 import { InputNote } from 'ui-kit/inputs/InputNote';
 
 import './measurement-table.css';
@@ -25,7 +27,6 @@ export const MeasurementTable = (props: Props) => {
             <td>
               ({item.line[1].x.toFixed(1)}, {item.line[1].y.toFixed(1)})
             </td>
-            <td>{item.distance} нм</td>
           </>
         );
       }
@@ -39,7 +40,6 @@ export const MeasurementTable = (props: Props) => {
               ({item.brokenLine[item.brokenLine.length - 1].x.toFixed(1)},{' '}
               {item.brokenLine[item.brokenLine.length - 1].y.toFixed(1)})
             </td>
-            <td>{item.distance} нм</td>
           </>
         );
       }
@@ -53,26 +53,41 @@ export const MeasurementTable = (props: Props) => {
               ({item.polygon[item.polygon.length - 1].x.toFixed(1)},{' '}
               {item.polygon[item.polygon.length - 1].y.toFixed(1)})
             </td>
-            <td>{item.area} нм&sup2;</td>
-            <td>{item.perimeter} нм</td>
           </>
         );
       }
-      // case 'rectangles': {
-      //   return (
-      //     <>
-      //       <td>
-      //         ({item.rectangle[0].x.toFixed(1)}, {item.rectangle[0].y.toFixed(1)})
-      //       </td>
-      //       <td>
-      //         ({item.rectangle[item.rectangle.length - 1].x.toFixed(1)},{' '}
-      //         {item.polygon[item.polygon.length - 1].y.toFixed(1)})
-      //       </td>
-      //       <td>{item.area} нм&sup2;</td>
-      //       <td>{item.perimeter} нм</td>
-      //     </>
-      //   );
-      // }
+      case 'rectangles': {
+        return (
+          <>
+            <td>
+              ({item.rectangle.x.toFixed(1)}, {item.rectangle.y.toFixed(1)})
+            </td>
+            <td>{item.rectangle.width.toFixed(1)}</td>
+            <td>{item.rectangle.height.toFixed(1)}</td>
+          </>
+        );
+      }
+      case 'circles': {
+        return (
+          <>
+            <td>
+              ({item.circle.x.toFixed(1)}, {item.circle.y.toFixed(1)})
+            </td>
+            <td>{item.circle.radius.toFixed(1)}</td>
+          </>
+        );
+      }
+      case 'ellipses': {
+        return (
+          <>
+            <td>
+              ({item.ellipse.x.toFixed(1)}, {item.ellipse.y.toFixed(1)})
+            </td>
+            <td>{item.ellipse.radiusX.toFixed(1)}</td>
+            <td>{item.ellipse.radiusY.toFixed(1)}</td>
+          </>
+        );
+      }
       default:
         return null;
     }
@@ -80,7 +95,10 @@ export const MeasurementTable = (props: Props) => {
 
   return (
     <div>
-      <div className='table__name'>{name}</div>
+      <div className='table__name'>
+        <span>{name}</span>
+        <IconColumns width={18} height={18} stroke={1.5} className='table__edit-columns-btn' />
+      </div>
       <table className='table'>
         <thead>
           <tr>

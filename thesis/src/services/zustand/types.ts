@@ -61,6 +61,18 @@ export type SavedRectangle = {
   area: string | null;
   note: string;
 };
+export type SavedCircle = {
+  circle: Circle;
+  length: string | null;
+  area: string | null;
+  note: string;
+};
+export type SavedEllipse = {
+  ellipse: Circle;
+  length: string | null;
+  area: string | null;
+  note: string;
+};
 
 export type ZustandStoreStateType = {
   typeOfAuthForm: 'login' | 'registration';
