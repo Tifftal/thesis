@@ -1,6 +1,12 @@
 import useStore from 'services/zustand/store';
 import {
+  BrokenLine,
+  Circle,
+  Ellipse,
+  Line,
   Point,
+  Polygon,
+  Rectangle,
   SavedBrokenLine,
   SavedCircle,
   SavedEllipse,
@@ -10,8 +16,6 @@ import {
   ZustandStoreStateType,
 } from 'services/zustand/types';
 
-import { ChangeLayer } from 'pages/changeDataHelpers';
-
 import {
   calculateCircleArea,
   calculateDistance,
@@ -20,7 +24,11 @@ import {
   calculatePolylineLength,
   calculateRectangleArea,
   calculateRectangleLength,
+  getScaledCoord,
+  getScaledNumber,
+  getScaledParameter,
 } from 'components/MainPage/helpers';
+import { ChangeLayer } from 'pages/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -45,6 +53,8 @@ export const ContextMenu = (props: Props) => {
     setSelectedProject,
     savedMeasurements,
     setSavedMeasurements,
+    scaleFactor,
+    selectedImage,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -78,11 +88,23 @@ export const ContextMenu = (props: Props) => {
   };
 
   const saveLine = () => {
+    const scaledLine: Line = contextMenu.currentObject.map((point: Point) =>
+      getScaledCoord(point, scaleFactor),
+    );
+
+    const scaledDistance = calculateDistance(
+      contextMenu.currentObject[0],
+      contextMenu.currentObject[1],
+      scaleFactor,
+      selectedImage?.units,
+    );
+
     const newLine: SavedLine = {
-      line: contextMenu.currentObject,
-      distance: `${calculateDistance(contextMenu.currentObject[0], contextMenu.currentObject[1])}`,
+      line: scaledLine,
+      distance: scaledDistance,
       note: '',
     };
+
     const newSavedLines = [...(savedMeasurements?.lines || []), newLine];
     const newMeasurements = {
       ...savedMeasurements,
@@ -94,9 +116,19 @@ export const ContextMenu = (props: Props) => {
   };
 
   const saveBrokenLine = () => {
+    const scaledBrokenLine: BrokenLine = contextMenu.currentObject.map((point: Point) =>
+      getScaledCoord(point, scaleFactor),
+    );
+
+    const scaledDistance = calculatePolylineLength(
+      contextMenu.currentObject,
+      scaleFactor,
+      selectedImage?.units,
+    );
+
     const newBrokenLine: SavedBrokenLine = {
-      brokenLine: contextMenu.currentObject,
-      distance: `${calculatePolylineLength(contextMenu.currentObject).toFixed(2)}`,
+      brokenLine: scaledBrokenLine,
+      distance: scaledDistance,
       note: '',
     };
 
@@ -112,10 +144,20 @@ export const ContextMenu = (props: Props) => {
   };
 
   const savePolygon = () => {
+    const scaledPolygon: Polygon = contextMenu.currentObject.map((point: Point) =>
+      getScaledCoord(point, scaleFactor),
+    );
+
+    const scaledDistance = calculatePolylineLength(
+      contextMenu.currentObject,
+      scaleFactor,
+      selectedImage?.units,
+    );
+
     const newPolygon: SavedPolygon = {
-      polygon: contextMenu.currentObject,
-      perimeter: `${calculatePolylineLength(contextMenu.currentObject).toFixed(1)}`,
-      area: `${calculatePolygonArea(contextMenu.currentObject).toFixed(1)}`,
+      polygon: scaledPolygon,
+      perimeter: scaledDistance,
+      area: calculatePolygonArea(contextMenu.currentObject, scaleFactor, selectedImage?.units),
       note: '',
     };
 
@@ -131,10 +173,17 @@ export const ContextMenu = (props: Props) => {
   };
 
   const saveRectangle = () => {
+    const scaledRectangle: Rectangle = {
+      x: getScaledNumber(contextMenu.currentObject.x, scaleFactor),
+      y: getScaledNumber(contextMenu.currentObject.y, scaleFactor),
+      width: getScaledNumber(contextMenu.currentObject.width, scaleFactor),
+      height: getScaledNumber(contextMenu.currentObject.height, scaleFactor),
+    };
+
     const newRectangle: SavedRectangle = {
-      rectangle: contextMenu.currentObject,
-      area: `${calculateRectangleLength(contextMenu.currentObject).toFixed(1)}`,
-      perimeter: `${calculateRectangleArea(contextMenu.currentObject).toFixed(1)}`,
+      rectangle: scaledRectangle,
+      area: calculateRectangleLength(contextMenu.currentObject, scaleFactor, selectedImage?.units),
+      perimeter: calculateRectangleArea(contextMenu.currentObject, scaleFactor, selectedImage?.units),
       note: '',
     };
 
@@ -150,9 +199,15 @@ export const ContextMenu = (props: Props) => {
   };
 
   const saveCircle = () => {
+    const scaledCircle: Circle = {
+      x: getScaledNumber(contextMenu.currentObject.x, scaleFactor),
+      y: getScaledNumber(contextMenu.currentObject.y, scaleFactor),
+      radius: getScaledNumber(contextMenu.currentObject.radius, scaleFactor),
+    };
+
     const newCircle: SavedCircle = {
-      circle: contextMenu.currentObject,
-      area: `${calculateCircleArea(contextMenu.currentObject.radius).toFixed(1)}`,
+      circle: scaledCircle,
+      area: calculateCircleArea(contextMenu.currentObject.radius, scaleFactor, selectedImage?.units),
       length: '0',
       note: '',
     };
@@ -169,9 +224,21 @@ export const ContextMenu = (props: Props) => {
   };
 
   const saveEllipse = () => {
+    const scaledEllipse: Ellipse = {
+      x: getScaledNumber(contextMenu.currentObject.x, scaleFactor),
+      y: getScaledNumber(contextMenu.currentObject.y, scaleFactor),
+      radiusX: getScaledNumber(contextMenu.currentObject.radiusX, scaleFactor),
+      radiusY: getScaledNumber(contextMenu.currentObject.radiusY, scaleFactor),
+    };
+
     const newEllipse: SavedEllipse = {
-      ellipse: contextMenu.currentObject,
-      area: `${calculateCircleArea(contextMenu.currentObject.radius).toFixed(1)}`,
+      ellipse: scaledEllipse,
+      area: calculateEllipseArea(
+        contextMenu.currentObject.radiusX,
+        contextMenu.currentObject.radiusY,
+        scaleFactor,
+        selectedImage?.units,
+      ),
       length: '0',
       note: '',
     };
@@ -212,7 +279,8 @@ export const ContextMenu = (props: Props) => {
             {contextMenu.currentObject && (
               <>
                 <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
-                  Общая длина: {calculatePolylineLength(contextMenu.currentObject).toFixed(2)}
+                  Общая длина:{' '}
+                  {calculatePolylineLength(contextMenu.currentObject, scaleFactor, selectedImage?.units)}
                 </div>
                 <div className='context-menu__item' onClick={saveBrokenLine}>
                   Сохранить измерение
@@ -238,10 +306,12 @@ export const ContextMenu = (props: Props) => {
             {contextMenu.currentObject && (
               <>
                 <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
-                  Периметр: {calculatePolylineLength(contextMenu.currentObject).toFixed(2)}
+                  Периметр:{' '}
+                  {calculatePolylineLength(contextMenu.currentObject, scaleFactor, selectedImage?.units)}
                 </div>
                 <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
-                  Площадь: {calculatePolygonArea(contextMenu.currentObject).toFixed(2)}
+                  Площадь:{' '}
+                  {calculatePolygonArea(contextMenu.currentObject, scaleFactor, selectedImage?.units)}
                 </div>
                 <div className='context-menu__item' onClick={savePolygon}>
                   Сохранить измерение
@@ -261,10 +331,11 @@ export const ContextMenu = (props: Props) => {
         return (
           <>
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
-              Периметр: {calculateRectangleLength(contextMenu.currentObject).toFixed(2)}
+              Периметр:{' '}
+              {calculateRectangleLength(contextMenu.currentObject, scaleFactor, selectedImage?.units)}
             </div>
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
-              Площадь: {calculateRectangleArea(contextMenu.currentObject).toFixed(2)}
+              Площадь: {calculateRectangleArea(contextMenu.currentObject, scaleFactor, selectedImage?.units)}
             </div>
             <div className='context-menu__item' onClick={saveRectangle}>
               Сохранить измерение
@@ -281,10 +352,12 @@ export const ContextMenu = (props: Props) => {
         return (
           <>
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
-              Радиус: {contextMenu.currentObject.radius.toFixed(2)}
+              Радиус:{' '}
+              {getScaledParameter(contextMenu.currentObject.radius, scaleFactor, selectedImage?.units, 1)}
             </div>
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
-              Площадь: {calculateCircleArea(contextMenu.currentObject.radius).toFixed(2)}
+              Площадь:{' '}
+              {calculateCircleArea(contextMenu.currentObject.radius, scaleFactor, selectedImage?.units)}
             </div>
             <div className='context-menu__item' onClick={saveCircle}>
               Сохранить измерение
@@ -298,26 +371,32 @@ export const ContextMenu = (props: Props) => {
         );
 
       case 'ELLIPSE':
+        const bigAxis =
+          contextMenu.currentObject.radiusX > contextMenu.currentObject.radiusY
+            ? contextMenu.currentObject.radiusX
+            : contextMenu.currentObject.radiusY;
+
+        const smallAxis =
+          contextMenu.currentObject.radiusX <= contextMenu.currentObject.radiusY
+            ? contextMenu.currentObject.radiusX
+            : contextMenu.currentObject.radiusY;
+
         return (
           <>
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
-              Большая полуось:{' '}
-              {contextMenu.currentObject.radiusX > contextMenu.currentObject.radiusY
-                ? contextMenu.currentObject.radiusX.toFixed(2)
-                : contextMenu.currentObject.radiusY.toFixed(2)}
+              Большая полуось: {getScaledParameter(bigAxis, scaleFactor, selectedImage?.units, 2)}
             </div>
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
-              Малая полуось:{' '}
-              {contextMenu.currentObject.radiusX < contextMenu.currentObject.radiusY
-                ? contextMenu.currentObject.radiusX.toFixed(2)
-                : contextMenu.currentObject.radiusY.toFixed(2)}
+              Малая полуось: {getScaledParameter(smallAxis, scaleFactor, selectedImage?.units, 2)}
             </div>
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
               Площадь:{' '}
               {calculateEllipseArea(
                 contextMenu.currentObject.radiusX,
                 contextMenu.currentObject.radiusY,
-              ).toFixed(2)}
+                scaleFactor,
+                selectedImage?.units,
+              )}
             </div>
             <div className='context-menu__item' onClick={saveEllipse}>
               Сохранить измерение

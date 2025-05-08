@@ -6,9 +6,8 @@ import { Circle, Layer, Line, Text } from 'react-konva';
 import useStore from 'services/zustand/store';
 import { BrokenLine, Point, ZustandStoreStateType } from 'services/zustand/types';
 
-import { ChangeLayer } from 'pages/changeDataHelpers';
-
 import { calculateDistance } from 'components/MainPage/helpers';
+import { ChangeLayer, getScaledPosition } from 'pages/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -30,6 +29,8 @@ export const BrokenLineLayer = (props: Props) => {
     setSelectedLayer,
     setVisibleLayers,
     stagePosition,
+    selectedImage,
+    scaleFactor,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -77,8 +78,7 @@ export const BrokenLineLayer = (props: Props) => {
     center.x /= line.length;
     center.y /= line.length;
 
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+    const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
     setDragOffset({
       x: x - center.x,
@@ -94,8 +94,10 @@ export const BrokenLineLayer = (props: Props) => {
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale - dragOffset.x;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale - dragOffset.y;
+    const cursorPoint = getScaledPosition(pointer, imagePosition, stagePosition, scale);
+
+    const x = cursorPoint.x - dragOffset.x;
+    const y = cursorPoint.y - dragOffset.y;
 
     const line = tempLines[selectedLineIndex];
 
@@ -135,8 +137,7 @@ export const BrokenLineLayer = (props: Props) => {
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+    const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
     const updatedLines = [...tempLines];
     updatedLines[selectedLineIndex][selectedPointIndex] = { x, y };
@@ -180,6 +181,10 @@ export const BrokenLineLayer = (props: Props) => {
         setSelectedPointIndex(null);
       },
     );
+  };
+
+  const getDistance = (point1: Point, point2: Point) => {
+    return calculateDistance(point1, point2, scaleFactor, selectedImage?.units);
   };
 
   const renderBrokenLines = () => {
@@ -234,7 +239,7 @@ export const BrokenLineLayer = (props: Props) => {
                     key={`segment-label-${lineIndex}-${segmentIndex}`}
                     x={((line[segmentIndex].x + line[segmentIndex + 1].x) / 2) * scale + imagePosition.x}
                     y={((line[segmentIndex].y + line[segmentIndex + 1].y) / 2) * scale + imagePosition.y - 20}
-                    text={`${calculateDistance(line[segmentIndex], line[segmentIndex + 1])} px`}
+                    text={getDistance(line[segmentIndex], line[segmentIndex + 1])}
                     fontSize={14}
                     fill='red'
                     draggable
@@ -296,11 +301,8 @@ export const BrokenLineLayer = (props: Props) => {
                     imagePosition.y -
                     20
                   }
-                  text={`${calculateDistance(
-                    currentBrokenLine[segmentIndex],
-                    currentBrokenLine[segmentIndex + 1],
-                  )} px`}
-                  fontSize={16}
+                  text={getDistance(currentBrokenLine[segmentIndex], currentBrokenLine[segmentIndex + 1])}
+                  fontSize={14}
                   fill='red'
                 />
               ))}

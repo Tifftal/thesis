@@ -7,7 +7,7 @@ import { ZustandStoreStateType } from 'services/zustand/types';
 import { Button } from 'ui-kit/button';
 import { InputText } from 'ui-kit/inputs/InputText';
 
-import { ChangeLayer } from 'pages/changeDataHelpers';
+import { ChangeLayer } from 'pages/helpers';
 
 import useToast from 'utils/hooks/useToast';
 

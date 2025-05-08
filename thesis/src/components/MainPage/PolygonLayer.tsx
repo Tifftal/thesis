@@ -6,7 +6,7 @@ import { Layer, Line, Circle } from 'react-konva';
 import useStore from 'services/zustand/store';
 import { Point, Polygon, ZustandStoreStateType } from 'services/zustand/types';
 
-import { ChangeLayer } from 'pages/changeDataHelpers';
+import { ChangeLayer, getScaledPosition } from 'pages/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -28,6 +28,8 @@ export const PolygonLayer = (props: Props) => {
     setSelectedLayer,
     setVisibleLayers,
     stagePosition,
+    scaleFactor,
+    selectedImage,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -75,9 +77,7 @@ export const PolygonLayer = (props: Props) => {
     center.x /= polygon.length;
     center.y /= polygon.length;
 
-    // Вычисляем смещение курсора от центра
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+    const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
     setDragOffset({
       x: x - center.x,
@@ -93,8 +93,10 @@ export const PolygonLayer = (props: Props) => {
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale - dragOffset.x;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale - dragOffset.y;
+    const cursorPoint = getScaledPosition(pointer, imagePosition, stagePosition, scale);
+
+    const x = cursorPoint.x - dragOffset.x;
+    const y = cursorPoint.y - dragOffset.y;
 
     const polygon = tempLines[selectedLineIndex];
 
@@ -134,8 +136,7 @@ export const PolygonLayer = (props: Props) => {
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+    const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
     const updatedLines = [...tempLines];
     updatedLines[selectedLineIndex][selectedPointIndex] = { x, y };

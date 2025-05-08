@@ -16,9 +16,9 @@ import { LineLayer } from 'components/MainPage/LineLayer';
 import { PolygonLayer } from 'components/MainPage/PolygonLayer';
 import { RectangleLayer } from 'components/MainPage/RectangleLayer';
 
-import { ChangeLayer } from 'pages/changeDataHelpers';
-
 import { defaultContextMenu } from './constants';
+
+import { ChangeLayer, getScaledPosition } from 'pages/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -34,6 +34,7 @@ export const MainPage = () => {
     setVisibleLayers,
     stagePosition,
     setStagePosition,
+    setScaleFactor,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -46,6 +47,7 @@ export const MainPage = () => {
     currentObject: any;
   }>(defaultContextMenu);
   const [blockCloseContextMenu, setBlockCloseContextMenu] = useState(false);
+
   const [currentLinePoints, setCurrentLinePoints] = useState<Point[]>([]);
   const [currentBrokenLine, setCurrentBrokenLine] = useState<Point[]>([]);
   const [currentPolygon, setCurrentPolygon] = useState<Point[]>([]);
@@ -88,6 +90,9 @@ export const MainPage = () => {
 
       setScale(newScale);
       setImagePosition({ x, y });
+      if (selectedImage) {
+        setScaleFactor(selectedImage?.width / image.width);
+      }
     }
   }, [image, windowSize.height, windowSize.width]);
 
@@ -158,8 +163,7 @@ export const MainPage = () => {
     const pointer = stage.getPointerPosition();
     if (!pointer || !image) return;
 
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+    const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
     if (x >= 0 && y >= 0 && x <= image.width && y <= image.height) {
       const newPoint = { x, y };
@@ -398,8 +402,7 @@ export const MainPage = () => {
     const pointer = stage.getPointerPosition();
     if (!pointer || !image) return;
 
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+    const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
     if (isDrawingRectangle && selectedTool === 'rectangle' && !!currentRectangle) {
       setCurrentRectangle({

@@ -6,7 +6,7 @@ import { Layer, Ellipse as KonvaEllipse, Circle, Group } from 'react-konva';
 import useStore from 'services/zustand/store';
 import { Ellipse, ZustandStoreStateType } from 'services/zustand/types';
 
-import { ChangeLayer } from 'pages/changeDataHelpers';
+import { ChangeLayer, getScaledPosition } from 'pages/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -63,8 +63,7 @@ export const EllipseLayer = (props: Props) => {
       const pointer = stage.getPointerPosition();
       if (!pointer) return;
 
-      const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-      const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+      const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
       setTempEllipses(prev => {
         const updated = [...prev];
@@ -95,8 +94,7 @@ export const EllipseLayer = (props: Props) => {
       const pointer = stage.getPointerPosition();
       if (!pointer) return;
 
-      const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-      const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+      const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
       setTempEllipses(prev => {
         const updated = [...prev];

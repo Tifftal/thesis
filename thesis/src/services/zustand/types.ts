@@ -70,7 +70,7 @@ export type SavedCircle = {
   note: string;
 };
 export type SavedEllipse = {
-  ellipse: Circle;
+  ellipse: Ellipse;
   length: string | null;
   area: string | null;
   note: string;
@@ -82,6 +82,7 @@ export type ZustandStoreStateType = {
 
   selectedProject: ProjectType | null;
   selectedImage: ImageType | null;
+  scaleFactor: number | null;
   visibleLayers: LayerType[];
   selectedLayer: LayerType | null;
   selectedTool: string | null;
@@ -90,6 +91,7 @@ export type ZustandStoreStateType = {
   setUserInfo: (userInfo: UserInfoType) => void;
   setSelectedProject: (selectedProject: ProjectType | null) => void;
   setSelectedImage: (selectedImage: ImageType | null) => void;
+  setScaleFactor: (scaleFactor: number | null) => void;
   setVisibleLayers: (visibleLayers: LayerType[]) => void;
   setSelectedLayer: (selectedLayer: LayerType | null) => void;
   setSelectedTool: (selectedTool: string | null) => void;

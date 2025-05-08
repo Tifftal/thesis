@@ -6,7 +6,7 @@ import { Layer, Rect, Group, Circle } from 'react-konva';
 import useStore from 'services/zustand/store';
 import { Rectangle, ZustandStoreStateType } from 'services/zustand/types';
 
-import { ChangeLayer } from 'pages/changeDataHelpers';
+import { ChangeLayer, getScaledPosition } from 'pages/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -62,8 +62,7 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
       const pointer = stage.getPointerPosition();
       if (!pointer) return;
 
-      const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-      const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+      const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
       setTempRectangles(prev => {
         const updated = [...prev];
@@ -102,8 +101,7 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
       const pointer = stage.getPointerPosition();
       if (!pointer) return;
 
-      const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-      const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+      const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
       setTempRectangles(prev => {
         const updated = [...prev];

@@ -6,9 +6,8 @@ import { Circle, Layer, Line, Text } from 'react-konva';
 import useStore from 'services/zustand/store';
 import { Line as LineType, Point, ZustandStoreStateType } from 'services/zustand/types';
 
-import { ChangeLayer } from 'pages/changeDataHelpers';
-
 import { calculateDistance } from 'components/MainPage/helpers';
+import { ChangeLayer, getScaledPosition } from 'pages/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -30,6 +29,8 @@ export const LineLayer = (props: Props) => {
     setSelectedLayer,
     setVisibleLayers,
     stagePosition,
+    selectedImage,
+    scaleFactor,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -71,8 +72,7 @@ export const LineLayer = (props: Props) => {
       y: (line[0].y + line[1].y) / 2,
     };
 
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+    const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
     setDragOffset({
       x: x - center.x,
@@ -88,8 +88,10 @@ export const LineLayer = (props: Props) => {
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale - dragOffset.x;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale - dragOffset.y;
+    const cursorPoint = getScaledPosition(pointer, imagePosition, stagePosition, scale);
+
+    const x = cursorPoint.x - dragOffset.x;
+    const y = cursorPoint.y - dragOffset.y;
 
     const line = tempLines[selectedLineIndex];
     const currentCenter = {
@@ -123,8 +125,7 @@ export const LineLayer = (props: Props) => {
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
-    const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-    const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+    const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
     const updatedLines = [...tempLines];
     updatedLines[selectedLineIndex][selectedPointIndex] = { x, y };
@@ -177,7 +178,7 @@ export const LineLayer = (props: Props) => {
       <>
         {linesToRender.map((line: LineType, lineIndex: number) => {
           const [start, end] = line;
-          const distance = calculateDistance(start, end);
+          const distance = calculateDistance(start, end, scaleFactor, selectedImage?.units) || '';
           const centerX = (start.x + end.x) / 2;
           const centerY = (start.y + end.y) / 2;
 
@@ -224,7 +225,7 @@ export const LineLayer = (props: Props) => {
               <Text
                 x={centerX * scale + imagePosition.x}
                 y={centerY * scale + imagePosition.y - 20}
-                text={`${distance} px`}
+                text={distance}
                 fontSize={14}
                 fill='red'
                 draggable

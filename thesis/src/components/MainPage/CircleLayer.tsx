@@ -6,7 +6,7 @@ import { Circle, Layer, Group } from 'react-konva';
 import useStore from 'services/zustand/store';
 import { Circle as CircleType, ZustandStoreStateType } from 'services/zustand/types';
 
-import { ChangeLayer } from 'pages/changeDataHelpers';
+import { ChangeLayer, getScaledPosition } from 'pages/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -62,8 +62,7 @@ export const CircleLayer = (props: Props) => {
       const pointer = stage.getPointerPosition();
       if (!pointer) return;
 
-      const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-      const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+      const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
       setTempCircles(prev => {
         const updated = [...prev];
@@ -93,8 +92,7 @@ export const CircleLayer = (props: Props) => {
       const pointer = stage.getPointerPosition();
       if (!pointer) return;
 
-      const x = (pointer.x - imagePosition.x - stagePosition.x) / scale;
-      const y = (pointer.y - imagePosition.y - stagePosition.y) / scale;
+      const { x, y } = getScaledPosition(pointer, imagePosition, stagePosition, scale);
 
       setTempCircles(prev => {
         const updated = [...prev];

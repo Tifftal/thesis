@@ -43,3 +43,15 @@ export const ChangeLayer = (
       onMessage(`${e}`, 'error', errorMessage);
     });
 };
+
+export const getScaledPosition = (
+  pointer: { x: number; y: number },
+  imagePosition: { x: number; y: number },
+  stagePosition: { x: number; y: number },
+  scale: number,
+) => {
+  return {
+    x: (pointer.x - imagePosition.x - stagePosition.x) / scale,
+    y: (pointer.y - imagePosition.y - stagePosition.y) / scale,
+  };
+};
