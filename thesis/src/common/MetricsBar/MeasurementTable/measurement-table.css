@@ -5,18 +5,19 @@
   padding: 2px 4px;
   text-align: center;
 
-  display: grid;
-  grid-template-columns: 1fr min-content;
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
 }
 
-.table__edit-columns-btn {
+.table__csv-btn {
   border-radius: 6px;
   padding: 4px;
   cursor: pointer;
 }
 
-.table__edit-columns-btn:hover {
+.table__csv-btn:hover {
   background-color: var(--color-green-light);
 }
 

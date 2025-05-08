@@ -29,6 +29,13 @@ const useStore = create<ZustandStoreStateType>(set => ({
   setSelectedTool: (selectedTool: string | null) => set({ selectedTool }),
   setProjects: (projects: ProjectType[]) => set({ projects }),
 
+  generatedObjects: null,
+  isGeneratingObjects: false,
+  isVisibleGeneratedLayer: false,
+  setGeneratedObjects: (generatedObjects: Record<string, any> | null) => set({ generatedObjects }),
+  setIsGeneratingObjects: (isGeneratingObjects: boolean) => set({ isGeneratingObjects }),
+  setIsVisibleGeneratedLayer: (isVisibleGeneratedLayer: boolean) => set({ isVisibleGeneratedLayer }),
+
   stagePosition: { x: 0, y: 0 },
   setStagePosition: (stagePosition: Point) => set({ stagePosition }),
 

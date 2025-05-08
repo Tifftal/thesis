@@ -18,6 +18,10 @@ export class IMAGE_API {
     });
   }
 
+  static DetectObjects(id: number) {
+    return apiClient.get(`/image/detect/${id}`);
+  }
+
   static ChangeImageName(id: number, variables: ChangeNameVariablesType) {
     return apiClient.put(`/image/${id}`, {
       ...variables,

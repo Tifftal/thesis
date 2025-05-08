@@ -58,7 +58,7 @@ export const calculateDistance = (
   p1: Point | null | undefined,
   p2: Point | null | undefined,
   scaleFactor: number | null,
-  imageUnits: string | undefined,
+  imageUnits?: string,
 ): string => {
   if (
     !p1 ||
@@ -81,6 +81,8 @@ export const calculateDistance = (
 
   const distanceUnits = distancePixels * scaleFactor;
 
+  if (!imageUnits) return `${distanceUnits}`;
+
   const formattedValue = distanceUnits.toFixed(2);
   return `${formattedValue} ${imageUnits}`;
 };
@@ -90,7 +92,7 @@ export const calculateDistance = (
 export const calculatePolylineLength = (
   points: Point[],
   scaleFactor: number | null,
-  imageUnits: string | undefined,
+  imageUnits?: string,
 ): string => {
   if (points.length < 2) return '0';
 
@@ -113,6 +115,8 @@ export const calculatePolylineLength = (
 
   const totalUnits = totalLength * scaleFactor;
 
+  if (!imageUnits) return `${totalUnits}`;
+
   const formattedValue = totalUnits.toFixed(2);
   return `${formattedValue} ${imageUnits}`;
 };
@@ -120,7 +124,7 @@ export const calculatePolylineLength = (
 export const calculatePolygonArea = (
   points: Point[],
   scaleFactor: number | null,
-  imageUnits: string | undefined,
+  imageUnits?: string,
 ): string => {
   if (points.length < 3) {
     return '0';
@@ -143,6 +147,8 @@ export const calculatePolygonArea = (
 
   const areaUnits = polygonArea * scaleFactor;
 
+  if (!imageUnits) return `${areaUnits}`;
+
   const formattedValue = areaUnits.toFixed(2);
   return `${formattedValue} ${imageUnits}`;
 };
@@ -150,7 +156,7 @@ export const calculatePolygonArea = (
 export const calculateRectangleLength = (
   rect: Rectangle,
   scaleFactor: number | null,
-  imageUnits: string | undefined,
+  imageUnits?: string,
 ): string => {
   const length = (Math.abs(rect.height) + Math.abs(rect.width)) * 2;
 
@@ -160,6 +166,8 @@ export const calculateRectangleLength = (
 
   const lengthUnits = length * scaleFactor;
 
+  if (!imageUnits) return `${lengthUnits}`;
+
   const formattedValue = lengthUnits.toFixed(2);
   return `${formattedValue} ${imageUnits}`;
 };
@@ -167,7 +175,7 @@ export const calculateRectangleLength = (
 export const calculateRectangleArea = (
   rect: Rectangle,
   scaleFactor: number | null,
-  imageUnits: string | undefined,
+  imageUnits?: string,
 ): string => {
   const area = Math.abs(rect.height) * Math.abs(rect.width);
 
@@ -177,16 +185,38 @@ export const calculateRectangleArea = (
 
   const areaUnits = area * scaleFactor;
 
+  if (!imageUnits) return `${areaUnits}`;
+
   const formattedValue = areaUnits.toFixed(2);
   return `${formattedValue} ${imageUnits}`;
+};
+
+export const calculateCircumference = (
+  radius: number,
+  scaleFactor: number | null,
+  imageUnits?: string,
+): string => {
+  const circumference = 2 * Math.PI * radius;
+
+  if (!scaleFactor) {
+    return `${circumference.toFixed(2)} px`;
+  }
+
+  const circumferenceUnits = circumference * scaleFactor;
+
+  if (!imageUnits) {
+    return `${circumferenceUnits}`;
+  }
+
+  return `${circumferenceUnits.toFixed(2)} ${imageUnits}`;
 };
 
 export const calculateCircleArea = (
   radius: number,
   scaleFactor: number | null,
-  imageUnits: string | undefined,
+  imageUnits?: string,
 ): string => {
-  const area = parseFloat((Math.PI * Math.pow(radius, 2)).toFixed(2));
+  const area = Math.PI * Math.pow(radius, 2);
 
   if (!scaleFactor) {
     return `${area.toFixed(2)} px`;
@@ -194,8 +224,40 @@ export const calculateCircleArea = (
 
   const areaUnits = area * scaleFactor;
 
+  if (!imageUnits) return `${areaUnits}`;
+
   const formattedValue = areaUnits.toFixed(2);
   return `${formattedValue} ${imageUnits}`;
+};
+
+/**
+ * Вычисляет приблизительную длину (периметр) эллипса
+ * @param radiusX - радиус по горизонтальной оси (большая полуось)
+ * @param radiusY - радиус по вертикальной оси (малая полуось)
+ * @param scaleFactor - коэффициент масштабирования (пиксели в единицы измерения)
+ * @param imageUnits - единицы измерения (опционально)
+ * @returns Длина эллипса с указанием единиц измерения
+ */
+export const calculateEllipseCircumference = (
+  radiusX: number,
+  radiusY: number,
+  scaleFactor: number | null,
+  imageUnits?: string,
+): string => {
+  const h = Math.pow(radiusX - radiusY, 2) / Math.pow(radiusX + radiusY, 2);
+  const circumference = Math.PI * (radiusX + radiusY) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h)));
+
+  if (!scaleFactor) {
+    return `${circumference.toFixed(2)} px`;
+  }
+
+  const circumferenceUnits = circumference * scaleFactor;
+
+  if (!imageUnits) {
+    return `${circumferenceUnits}`;
+  }
+
+  return `${circumferenceUnits.toFixed(2)} ${imageUnits}`;
 };
 
 /**
@@ -208,7 +270,7 @@ export const calculateEllipseArea = (
   radiusX: number,
   radiusY: number,
   scaleFactor: number | null,
-  imageUnits: string | undefined,
+  imageUnits?: string,
 ): string => {
   const area = Math.PI * radiusX * radiusY;
 
@@ -217,6 +279,8 @@ export const calculateEllipseArea = (
   }
 
   const areaUnits = area * scaleFactor;
+
+  if (!imageUnits) return `${areaUnits}`;
 
   const formattedValue = areaUnits.toFixed(2);
   return `${formattedValue} ${imageUnits}`;

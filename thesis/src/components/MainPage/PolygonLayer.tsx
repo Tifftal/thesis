@@ -28,8 +28,9 @@ export const PolygonLayer = (props: Props) => {
     setSelectedLayer,
     setVisibleLayers,
     stagePosition,
-    scaleFactor,
+    generatedObjects,
     selectedImage,
+    isVisibleGeneratedLayer,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -207,10 +208,6 @@ export const PolygonLayer = (props: Props) => {
           strokeWidth={2}
           closed={true}
           fill={`${color}80`}
-          draggable={isActive}
-          onDragStart={e => handleCenterDragStart(e, polygonIndex)}
-          onDragMove={handleCenterDragMove}
-          onDragEnd={handlePointDragEnd}
           onContextMenu={isActive ? e => handleRightClick(e, 'POLYGON', points) : undefined}
         />
         {isActive && (
@@ -252,6 +249,26 @@ export const PolygonLayer = (props: Props) => {
     );
   };
 
+  const renderGeneratedPolygons = (points: Point[], color: string, index: number) => {
+    const flatPoints = points.flatMap(point => [
+      point.x * scale + imagePosition.x,
+      point.y * scale + imagePosition.y,
+    ]);
+    return (
+      <>
+        <Line
+          key={`generated-polygon-${index}`}
+          points={flatPoints}
+          stroke={color}
+          strokeWidth={2}
+          closed={true}
+          fill={`${color}80`}
+          onContextMenu={e => handleRightClick(e, 'GENERATED_POLYGON', points)}
+        />
+      </>
+    );
+  };
+
   const linesToRender = selectedLineIndex !== null ? tempLines : selectedLayer?.measurements?.polygons || [];
 
   return (
@@ -267,6 +284,14 @@ export const PolygonLayer = (props: Props) => {
           {renderPolygon(polygon, '#e85050', false, index)}
         </React.Fragment>
       ))}
+
+      {isVisibleGeneratedLayer &&
+        generatedObjects &&
+        selectedImage &&
+        generatedObjects[selectedImage.id] &&
+        generatedObjects[selectedImage.id].map((polygon: Point[], index: number) =>
+          renderGeneratedPolygons(polygon, '#26f704', index),
+        )}
 
       {currentPolygon.length > 0 && <>{renderPolygon(currentPolygon, '#26f704', true, 0)}</>}
     </Layer>

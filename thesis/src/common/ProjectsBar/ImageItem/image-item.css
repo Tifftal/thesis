@@ -174,3 +174,23 @@
 .context_menu__item:hover {
   background-color: var(--color-green-hover);
 }
+
+.image-item__generated__item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: default;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.image-item__generated__item.active {
+  background-color: color-mix(in srgb, var(--color-gold), transparent 80%);
+}
+
+.image-item__generated__item__name {
+  font-family: 'Inter Medium';
+  color: var(--color-gold);
+}

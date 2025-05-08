@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { IconArrowBarToLeft, IconArrowBarToRight, IconInfoCircle } from '@tabler/icons-react';
 
@@ -8,12 +8,27 @@ import { ZustandStoreStateType } from 'services/zustand/types';
 import { Button } from 'ui-kit/button';
 import { Tooltip } from 'ui-kit/tooltip';
 
+import {
+  defaultBrokenLineTableColumns,
+  defaultCirclesTableColumns,
+  defaultEllipsesTableColumns,
+  defaultLineTableColumns,
+  defaultPolygonTableColumns,
+  defaultRectanglesTableColumns,
+} from './constants';
+
 import { MeasurementTable } from './MeasurementTable/MeasurementTable';
 
 export const MetricsBar = () => {
   const [open, setOpen] = useState<boolean>(true);
 
-  const { savedMeasurements, setSavedMeasurements } = useStore((state: ZustandStoreStateType) => state);
+  const { savedMeasurements, setSavedMeasurements, selectedImage } = useStore(
+    (state: ZustandStoreStateType) => state,
+  );
+
+  useEffect(() => {
+    setSavedMeasurements(null);
+  }, [selectedImage]);
 
   const handleClearMetrics = () => {
     setSavedMeasurements(null);
@@ -49,7 +64,7 @@ export const MetricsBar = () => {
                   type='lines'
                   measurement={savedMeasurements.lines}
                   name='Прямые'
-                  titles={['Начальная точка', 'Конечная точка', 'Примечание']}
+                  defaultColumns={defaultLineTableColumns}
                 />
               )}
               {savedMeasurements.brokenLines && (
@@ -67,7 +82,7 @@ export const MetricsBar = () => {
                       </Tooltip>
                     </div>
                   }
-                  titles={['Начальная точка', 'Конечная точка', 'Примечание']}
+                  defaultColumns={defaultBrokenLineTableColumns}
                 />
               )}
               {savedMeasurements.polygons && (
@@ -85,7 +100,7 @@ export const MetricsBar = () => {
                       </Tooltip>
                     </div>
                   }
-                  titles={['Начальная точка', 'Конечная точка', 'Примечание']}
+                  defaultColumns={defaultPolygonTableColumns}
                 />
               )}
               {savedMeasurements.rectangles && (
@@ -93,7 +108,7 @@ export const MetricsBar = () => {
                   type='rectangles'
                   measurement={savedMeasurements.rectangles}
                   name='Прямоугольники'
-                  titles={['Начальная точка', 'Ширина', 'Высота', 'Примечание']}
+                  defaultColumns={defaultRectanglesTableColumns}
                 />
               )}
               {savedMeasurements.circles && (
@@ -101,7 +116,7 @@ export const MetricsBar = () => {
                   type='circles'
                   measurement={savedMeasurements.circles}
                   name='Окружности'
-                  titles={['Центр', 'Радиус', 'Примечание']}
+                  defaultColumns={defaultCirclesTableColumns}
                 />
               )}
               {savedMeasurements.ellipses && (
@@ -109,7 +124,7 @@ export const MetricsBar = () => {
                   type='ellipses'
                   measurement={savedMeasurements.ellipses}
                   name='Эллипсы'
-                  titles={['Центр', 'Полуось X', 'Полуось Y', 'Примечание']}
+                  defaultColumns={defaultEllipsesTableColumns}
                 />
               )}
             </div>
@@ -117,7 +132,7 @@ export const MetricsBar = () => {
         )}
         <div className='metrics-bar__actions'>
           <Button size='s' stretched>
-            Скачать CSV
+            Скачать все CSV
           </Button>
           <Button size='s' type='grey' stretched onClick={handleClearMetrics}>
             Очистить все

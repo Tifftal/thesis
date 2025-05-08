@@ -87,6 +87,7 @@ export type ZustandStoreStateType = {
   selectedLayer: LayerType | null;
   selectedTool: string | null;
   projects: ProjectType[];
+
   setTypeOfAuthForm: (typeOfAuthForm: 'login' | 'registration') => void;
   setUserInfo: (userInfo: UserInfoType) => void;
   setSelectedProject: (selectedProject: ProjectType | null) => void;
@@ -96,6 +97,13 @@ export type ZustandStoreStateType = {
   setSelectedLayer: (selectedLayer: LayerType | null) => void;
   setSelectedTool: (selectedTool: string | null) => void;
   setProjects: (projects: ProjectType[]) => void;
+
+  generatedObjects: Record<string, any> | null;
+  isGeneratingObjects: boolean;
+  isVisibleGeneratedLayer: boolean;
+  setGeneratedObjects: (generatedObjects: Record<string, any> | null) => void;
+  setIsGeneratingObjects: (isGeneratingObjects: boolean) => void;
+  setIsVisibleGeneratedLayer: (isVisibleGeneratedLayer: boolean) => void;
 
   stagePosition: Point;
   setStagePosition: (stagePosition: Point) => void;

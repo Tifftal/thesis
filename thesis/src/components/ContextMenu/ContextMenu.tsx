@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import useStore from 'services/zustand/store';
 import {
   BrokenLine,
@@ -18,8 +20,10 @@ import {
 
 import {
   calculateCircleArea,
+  calculateCircumference,
   calculateDistance,
   calculateEllipseArea,
+  calculateEllipseCircumference,
   calculatePolygonArea,
   calculatePolylineLength,
   calculateRectangleArea,
@@ -92,11 +96,22 @@ export const ContextMenu = (props: Props) => {
       getScaledCoord(point, scaleFactor),
     );
 
+    const isLineExists = savedMeasurements?.lines?.some((existingLine: SavedLine) => {
+      return (
+        _.isEqual(existingLine.line, scaledLine) || _.isEqual(existingLine.line, [...scaledLine].reverse())
+      );
+    });
+
+    if (isLineExists) {
+      onMessage('Линия с такими координатами уже существует', 'error', 'Дубликат линии');
+      closeContextMenu();
+      return;
+    }
+
     const scaledDistance = calculateDistance(
       contextMenu.currentObject[0],
       contextMenu.currentObject[1],
       scaleFactor,
-      selectedImage?.units,
     );
 
     const newLine: SavedLine = {
@@ -120,11 +135,20 @@ export const ContextMenu = (props: Props) => {
       getScaledCoord(point, scaleFactor),
     );
 
-    const scaledDistance = calculatePolylineLength(
-      contextMenu.currentObject,
-      scaleFactor,
-      selectedImage?.units,
-    );
+    const isBrokenLineExists = savedMeasurements?.brokenLines?.some((existingLine: SavedBrokenLine) => {
+      return (
+        _.isEqual(existingLine.brokenLine, scaledBrokenLine) ||
+        _.isEqual(existingLine.brokenLine, [...scaledBrokenLine].reverse())
+      );
+    });
+
+    if (isBrokenLineExists) {
+      onMessage('Ломаная с такими координатами уже существует', 'error', 'Дубликат ломаной');
+      closeContextMenu();
+      return;
+    }
+
+    const scaledDistance = calculatePolylineLength(contextMenu.currentObject, scaleFactor);
 
     const newBrokenLine: SavedBrokenLine = {
       brokenLine: scaledBrokenLine,
@@ -148,16 +172,25 @@ export const ContextMenu = (props: Props) => {
       getScaledCoord(point, scaleFactor),
     );
 
-    const scaledDistance = calculatePolylineLength(
-      contextMenu.currentObject,
-      scaleFactor,
-      selectedImage?.units,
-    );
+    const isPolygonExists = savedMeasurements?.polygons?.some((existItem: SavedPolygon) => {
+      return (
+        _.isEqual(existItem.polygon, scaledPolygon) ||
+        _.isEqual(existItem.polygon, [...scaledPolygon].reverse())
+      );
+    });
+
+    if (isPolygonExists) {
+      onMessage('Многоугольник с такими координатами уже существует', 'error', 'Дубликат многоугольника');
+      closeContextMenu();
+      return;
+    }
+
+    const scaledDistance = calculatePolylineLength(contextMenu.currentObject, scaleFactor);
 
     const newPolygon: SavedPolygon = {
       polygon: scaledPolygon,
       perimeter: scaledDistance,
-      area: calculatePolygonArea(contextMenu.currentObject, scaleFactor, selectedImage?.units),
+      area: calculatePolygonArea(contextMenu.currentObject, scaleFactor),
       note: '',
     };
 
@@ -180,10 +213,20 @@ export const ContextMenu = (props: Props) => {
       height: getScaledNumber(contextMenu.currentObject.height, scaleFactor),
     };
 
+    const isRectangleExists = savedMeasurements?.rectangles?.some((existItem: SavedRectangle) => {
+      return _.isEqual(existItem.rectangle, scaledRectangle);
+    });
+
+    if (isRectangleExists) {
+      onMessage('Прямоугольник с такими координатами уже существует', 'error', 'Дубликат прямоугольника');
+      closeContextMenu();
+      return;
+    }
+
     const newRectangle: SavedRectangle = {
       rectangle: scaledRectangle,
-      area: calculateRectangleLength(contextMenu.currentObject, scaleFactor, selectedImage?.units),
-      perimeter: calculateRectangleArea(contextMenu.currentObject, scaleFactor, selectedImage?.units),
+      area: calculateRectangleLength(contextMenu.currentObject, scaleFactor),
+      perimeter: calculateRectangleArea(contextMenu.currentObject, scaleFactor),
       note: '',
     };
 
@@ -205,10 +248,20 @@ export const ContextMenu = (props: Props) => {
       radius: getScaledNumber(contextMenu.currentObject.radius, scaleFactor),
     };
 
+    const isCircleExists = savedMeasurements?.circles?.some((existItem: SavedCircle) => {
+      return _.isEqual(existItem.circle, scaledCircle);
+    });
+
+    if (isCircleExists) {
+      onMessage('Окружность с такими координатами уже существует', 'error', 'Дубликат окружности');
+      closeContextMenu();
+      return;
+    }
+
     const newCircle: SavedCircle = {
       circle: scaledCircle,
-      area: calculateCircleArea(contextMenu.currentObject.radius, scaleFactor, selectedImage?.units),
-      length: '0',
+      area: calculateCircleArea(contextMenu.currentObject.radius, scaleFactor),
+      length: calculateCircumference(contextMenu.currentObject.radius, scaleFactor),
       note: '',
     };
 
@@ -231,15 +284,28 @@ export const ContextMenu = (props: Props) => {
       radiusY: getScaledNumber(contextMenu.currentObject.radiusY, scaleFactor),
     };
 
+    const isEllipseExists = savedMeasurements?.ellipses?.some((existItem: SavedEllipse) => {
+      return _.isEqual(existItem.ellipse, scaledEllipse);
+    });
+
+    if (isEllipseExists) {
+      onMessage('Эллипс с такими координатами уже существует', 'error', 'Дубликат эллипса');
+      closeContextMenu();
+      return;
+    }
+
     const newEllipse: SavedEllipse = {
       ellipse: scaledEllipse,
       area: calculateEllipseArea(
         contextMenu.currentObject.radiusX,
         contextMenu.currentObject.radiusY,
         scaleFactor,
-        selectedImage?.units,
       ),
-      length: '0',
+      length: calculateEllipseCircumference(
+        contextMenu.currentObject.radiusX,
+        contextMenu.currentObject.radiusY,
+        scaleFactor,
+      ),
       note: '',
     };
 
@@ -327,6 +393,29 @@ export const ContextMenu = (props: Props) => {
           </>
         );
 
+      case 'GENERATED_POLYGON':
+        return (
+          <>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Периметр:{' '}
+              {calculatePolylineLength(contextMenu.currentObject, scaleFactor, selectedImage?.units)}
+            </div>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Площадь: {calculatePolygonArea(contextMenu.currentObject, scaleFactor, selectedImage?.units)}
+            </div>
+            <div className='context-menu__item'>Использовать измерение на слое</div>
+            <div className='context-menu__item' onClick={savePolygon}>
+              Сохранить измерение
+            </div>
+
+            <div
+              className='context-menu__item'
+              onClick={() => handleClear('polygons', 'Ошибка удаления многоугольника')}>
+              Удалить многоугольник
+            </div>
+          </>
+        );
+
       case 'RECTANGLE':
         return (
           <>
@@ -354,6 +443,10 @@ export const ContextMenu = (props: Props) => {
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
               Радиус:{' '}
               {getScaledParameter(contextMenu.currentObject.radius, scaleFactor, selectedImage?.units, 1)}
+            </div>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Длина:{' '}
+              {calculateCircumference(contextMenu.currentObject.radius, scaleFactor, selectedImage?.units)}
             </div>
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
               Площадь:{' '}
@@ -388,6 +481,15 @@ export const ContextMenu = (props: Props) => {
             </div>
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
               Малая полуось: {getScaledParameter(smallAxis, scaleFactor, selectedImage?.units, 2)}
+            </div>
+            <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
+              Длина:{' '}
+              {calculateEllipseCircumference(
+                contextMenu.currentObject.radiusX,
+                contextMenu.currentObject.radiusY,
+                scaleFactor,
+                selectedImage?.units,
+              )}
             </div>
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
               Площадь:{' '}

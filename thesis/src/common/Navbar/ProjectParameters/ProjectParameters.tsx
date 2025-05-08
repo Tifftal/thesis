@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { convertContoursToPolygons } from 'utils/parsers/convertContoursToPolygons';
+
 import { IMAGE_API } from 'services/API/IMAGE_API';
 import useStore from 'services/zustand/store';
 import { ZustandStoreStateType } from 'services/zustand/types';
@@ -23,6 +25,10 @@ export const ProjectParameters = () => {
     setVisibleLayers,
     selectedImage,
     setSelectedImage,
+    setIsGeneratingObjects,
+    setGeneratedObjects,
+    generatedObjects,
+    setIsVisibleGeneratedLayer,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -124,6 +130,26 @@ export const ProjectParameters = () => {
     return () => clearTimeout(timer);
   }, [units]);
 
+  const handleGenerateObjects = () => {
+    if (selectedImage?.id) {
+      setIsGeneratingObjects(true);
+      IMAGE_API.DetectObjects(selectedImage.id)
+        .then(response => {
+          if (Object.keys(response.data).length === 0) {
+            onMessage('Получены пустые данные', 'warning', 'Объекты не обнаружены');
+            return;
+          }
+          const newPolygons = convertContoursToPolygons(response.data);
+          setGeneratedObjects({ ...generatedObjects, [selectedImage.id]: newPolygons });
+          setVisibleLayers([]);
+          setSelectedLayer(null);
+          setIsVisibleGeneratedLayer(true);
+        })
+        .catch(e => onMessage(`${e}`, 'error', 'Ошибка генерации объектов'))
+        .finally(() => setIsGeneratingObjects(false));
+    }
+  };
+
   return (
     <div className='project-parameters__container'>
       {selectedLayer && (
@@ -146,6 +172,11 @@ export const ProjectParameters = () => {
             status={!units.length ? 'error' : undefined}
           />
         </div>
+      )}
+      {selectedImage && !generatedObjects?.[selectedImage.id] && (
+        <Button size='s' onClick={handleGenerateObjects}>
+          Сгенерировать объекты
+        </Button>
       )}
     </div>
   );

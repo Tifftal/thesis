@@ -8,6 +8,8 @@ import useImage from 'use-image';
 import useStore from 'services/zustand/store';
 import { Point, ZustandStoreStateType, Rectangle, Circle, Ellipse } from 'services/zustand/types';
 
+import { Loader } from 'ui-kit/loader';
+
 import { ContextMenu } from 'components/ContextMenu';
 import { BrokenLineLayer } from 'components/MainPage/BrokenLineLayer';
 import { CircleLayer } from 'components/MainPage/CircleLayer';
@@ -35,6 +37,7 @@ export const MainPage = () => {
     stagePosition,
     setStagePosition,
     setScaleFactor,
+    isGeneratingObjects,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -442,6 +445,7 @@ export const MainPage = () => {
     <div className='page__container main-page__container' style={{ overflow: 'hidden' }}>
       {selectedImage?.url ? (
         <div className='main-page__image'>
+          {isGeneratingObjects && <Loader title={'Загрузка...'} size='large' />}
           <Stage
             width={windowSize.width}
             height={windowSize.height}

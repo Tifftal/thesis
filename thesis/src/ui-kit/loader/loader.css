@@ -1,47 +1,50 @@
 .loader {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	color: var(--color-grey7);
-	z-index: 10005;
-	font-family: 'Inter Regular';
-	font-size: 18px;
+  position: fixed;
+  top: 90;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 90px);
+  z-index: 9;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: color-mix(in srgb, var(--color-grey0), transparent 50%);
 }
 
 .loader .MuiCircularProgress-root {
-	color: var(--color-grey7);
+  color: var(--color-grey7);
 }
 
 .loader-with-background {
-	background-color: var(--color-grey0);
+  background-color: var(--color-grey0);
 }
 
 .loader-inner {
-	position: relative;
-	width: 100%;
-	height: 100%;
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .loader__content {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
 }
 
 .loader-inner__title {
-	margin-top: 20px;
-	max-width: 500px;
+  margin-top: 20px;
+  max-width: 500px;
 }
 
 .loader-mini {
-	position: relative;
-	top: 2px;
+  position: relative;
+  top: 2px;
 }
 
 .loader-mini .MuiCircularProgress-root {
-    color: var(--color-grey0);
+  color: var(--color-grey0);
 }

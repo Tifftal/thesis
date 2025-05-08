@@ -1,41 +1,23 @@
-import React, { CSSProperties } from 'react';
-
-import { CircularProgress } from '@mui/material';
-import cn from 'classnames';
+import { ConfigProvider, Spin as SpinAntd } from 'antd';
 
 type Props = {
   title?: string;
-  size: number;
-  isMini?: boolean;
-  isBackground?: boolean;
-  style?: CSSProperties;
+  size?: 'default' | 'small' | 'large';
 };
 
 export const Loader = (props: Props) => {
-  const { title, size, isMini, isBackground, style } = props;
-
-  const renderLoader = () => <CircularProgress size={size} />;
-
-  if (isMini) {
-    return (
-      <span className='loader-mini' style={style}>
-        {renderLoader()}
-      </span>
-    );
-  }
+  const { title, size } = props;
 
   return (
-    <div
-      className={cn('loader', {
-        'loader-with-background': isBackground,
-      })}
-      style={style}>
-      <div className='loader-inner'>
-        <div className='loader__content'>
-          {renderLoader()}
-          {title && <p className='loader-inner__title'>{title}</p>}
-        </div>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#486e00',
+        },
+      }}>
+      <div className='loader'>
+        <SpinAntd tip={title} size={size} />
       </div>
-    </div>
+    </ConfigProvider>
   );
 };

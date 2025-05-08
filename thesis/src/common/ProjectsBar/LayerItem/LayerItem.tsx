@@ -7,7 +7,7 @@ import useStore from 'services/zustand/store';
 import { ImageType, LayerType, ZustandStoreStateType } from 'services/zustand/types';
 
 type Props = {
-  layer: LayerType;
+  layer: LayerType | null;
   image: ImageType;
 };
 
@@ -21,14 +21,15 @@ export const LayerItem = (props: Props) => {
     setSelectedLayer,
     selectedImage,
     setSelectedImage,
+    setIsVisibleGeneratedLayer,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const [isVisibleLayer, setIsVisibleLayer] = useState<boolean>(
-    visibleLayers.some(visibleLayer => visibleLayer.id === layer.id),
+    visibleLayers.some(visibleLayer => visibleLayer.id === layer?.id),
   );
 
   useEffect(() => {
-    setIsVisibleLayer(visibleLayers.some(visibleLayer => visibleLayer.id === layer.id));
+    setIsVisibleLayer(visibleLayers.some(visibleLayer => visibleLayer.id === layer?.id));
   }, [visibleLayers, selectedLayer]);
 
   const handleChangeVisibleLayers = (
@@ -48,11 +49,31 @@ export const LayerItem = (props: Props) => {
 
   const handleChooseLayer = () => {
     setSelectedLayer(layer);
+    setIsVisibleGeneratedLayer(false);
+
     if (image.url !== selectedImage?.url) {
       setSelectedImage(image);
       setVisibleLayers(image.layers);
+      setIsVisibleGeneratedLayer(false);
     }
   };
+
+  if (!layer) {
+    return (
+      <div
+        className={cn('image-item__generated__item', {
+          active: !selectedLayer && selectedImage?.id === image.id,
+        })}
+        onClick={() => {
+          setVisibleLayers([]);
+          setSelectedLayer(null);
+          setIsVisibleGeneratedLayer(true);
+          selectedImage?.id !== image.id && setSelectedImage(image);
+        }}>
+        <span className='image-item__generated__item__name'>Найденные объекты</span>
+      </div>
+    );
+  }
 
   return (
     <div

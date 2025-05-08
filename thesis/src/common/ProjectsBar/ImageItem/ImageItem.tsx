@@ -16,6 +16,7 @@ import { BarContextMenu } from 'common/BarContextMenu/BarContextMenu';
 import { EditModalItemType, EditModalType } from 'common/EditModal/types';
 
 import useToast from 'utils/hooks/useToast';
+
 import './image-item.css';
 
 type Props = {
@@ -39,6 +40,8 @@ export const ImageItem = (props: Props) => {
     setSelectedLayer,
     selectedTool,
     setSelectedTool,
+    generatedObjects,
+    setIsVisibleGeneratedLayer,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const [isOpenLayers, setIsOpenLayers] = useState<boolean>(false);
@@ -50,13 +53,14 @@ export const ImageItem = (props: Props) => {
     setVisibleLayers(image.layers);
     setSelectedLayer(image.layers[0]);
     setIsOpenLayers(true);
+    setIsVisibleGeneratedLayer(false);
     !selectedTool && setSelectedTool('line');
     !open && setOpen(true);
   };
 
   useEffect(() => {
     if (!open) setIsOpenLayers(false);
-    if (selectedImage?.url) setIsOpenLayers(true);
+    if (selectedImage?.url === image.url) setIsOpenLayers(true);
   }, [open, selectedImage]);
 
   const handleToggleLayers = (e: any) => {
@@ -106,6 +110,14 @@ export const ImageItem = (props: Props) => {
     );
   };
 
+  const renderContextMenuGeneratedLayer = () => {
+    return (
+      <>
+        <div className='context_menu__item'>Перенести все измерения в слой</div>
+      </>
+    );
+  };
+
   return (
     <>
       <div className={cn('image-item__container', { active: selectedImage?.url === image.url })}>
@@ -140,8 +152,19 @@ export const ImageItem = (props: Props) => {
         </div>
         {open && (
           <div className={cn('image-item__layers__container', { active: isOpenLayers })}>
+            {generatedObjects && generatedObjects[image.id] && (
+              <BarContextMenu renderContextMenu={renderContextMenuGeneratedLayer}>
+                <div>
+                  <LayerItem layer={null} image={image} />
+                </div>
+              </BarContextMenu>
+            )}
             <button onClick={handleCreateLayer}>
-              <IconPlus width={13} height={13} stroke={3} />
+              {isAddingLayer ? (
+                <IconChevronUp width={13} height={13} stroke={3} />
+              ) : (
+                <IconPlus width={13} height={13} stroke={3} />
+              )}
               слой
             </button>
             {isAddingLayer && (
