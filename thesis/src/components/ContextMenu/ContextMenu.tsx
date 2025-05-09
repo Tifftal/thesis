@@ -59,6 +59,7 @@ export const ContextMenu = (props: Props) => {
     setSavedMeasurements,
     scaleFactor,
     selectedImage,
+    setIsOpenAddObjectModal,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -403,7 +404,14 @@ export const ContextMenu = (props: Props) => {
             <div className='context-menu__item' style={{ fontFamily: 'Inter Bold' }}>
               Площадь: {calculatePolygonArea(contextMenu.currentObject, scaleFactor, selectedImage?.units)}
             </div>
-            <div className='context-menu__item'>Использовать измерение на слое</div>
+
+            <div
+              className='context-menu__item'
+              onClick={() =>
+                setIsOpenAddObjectModal({ visible: true, selectedObject: contextMenu.currentObject })
+              }>
+              Использовать измерение на слое
+            </div>
             <div className='context-menu__item' onClick={savePolygon}>
               Сохранить измерение
             </div>

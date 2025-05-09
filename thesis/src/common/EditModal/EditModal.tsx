@@ -4,7 +4,7 @@ import { IMAGE_API } from 'services/API/IMAGE_API';
 import { LAYER_API } from 'services/API/LAYER_API';
 import { PROJECT_API } from 'services/API/PROJECT_API';
 import useStore from 'services/zustand/store';
-import { ZustandStoreStateType } from 'services/zustand/types';
+import { ImageType, ZustandStoreStateType } from 'services/zustand/types';
 
 import { Button } from 'ui-kit/button';
 import { InputText } from 'ui-kit/inputs/InputText';
@@ -27,8 +27,18 @@ export const EditModal = (props: Props) => {
 
   const { onMessage } = useToast();
 
-  const { projects, setProjects, selectedProject, setSelectedProject, selectedImage, setSelectedImage } =
-    useStore((state: ZustandStoreStateType) => state);
+  const {
+    projects,
+    setProjects,
+    selectedProject,
+    setSelectedProject,
+    selectedImage,
+    setSelectedImage,
+    visibleLayers,
+    setVisibleLayers,
+    selectedLayer,
+    setSelectedLayer,
+  } = useStore((state: ZustandStoreStateType) => state);
 
   const [name, setName] = useState<string>('');
 
@@ -147,6 +157,13 @@ export const EditModal = (props: Props) => {
             PROJECT_API.GetProject(selectedProject?.id)
               .then(response => {
                 setSelectedProject(response.data);
+                const newSelectedImage = response.data.images?.filter(
+                  (image: ImageType) => image.id === selectedImage?.id,
+                )[0];
+                setSelectedImage(newSelectedImage);
+                const newVisibleLayers = [...visibleLayers.filter(layer => layer.id !== item.id)];
+                setVisibleLayers(newVisibleLayers);
+                selectedLayer?.id === item.id && setSelectedLayer(newSelectedImage.layers[0]);
               })
               .catch(e => {
                 onMessage(`${e}`, 'error', 'Ошибка получения проекта');

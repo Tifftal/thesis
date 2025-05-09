@@ -18,6 +18,8 @@ import { LineLayer } from 'components/MainPage/LineLayer';
 import { PolygonLayer } from 'components/MainPage/PolygonLayer';
 import { RectangleLayer } from 'components/MainPage/RectangleLayer';
 
+import { AddGeneratedObjectToLayerModal } from 'common/AddGeneratedObjectToLayerModal/AddGeneratedObjectToLayerModal';
+
 import { defaultContextMenu } from './constants';
 
 import { ChangeLayer, getScaledPosition } from 'pages/helpers';
@@ -518,6 +520,8 @@ export const MainPage = () => {
           onCompletePolygon={completeCurrentPolygon}
         />
       )}
+
+      <AddGeneratedObjectToLayerModal />
     </div>
   );
 };

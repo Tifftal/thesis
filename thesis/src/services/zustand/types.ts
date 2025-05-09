@@ -101,9 +101,14 @@ export type ZustandStoreStateType = {
   generatedObjects: Record<string, any> | null;
   isGeneratingObjects: boolean;
   isVisibleGeneratedLayer: boolean;
+  isOpenAddObjectModal: { visible: boolean; selectedObject: Polygon | Polygon[] | null };
   setGeneratedObjects: (generatedObjects: Record<string, any> | null) => void;
   setIsGeneratingObjects: (isGeneratingObjects: boolean) => void;
   setIsVisibleGeneratedLayer: (isVisibleGeneratedLayer: boolean) => void;
+  setIsOpenAddObjectModal: (isOpenAddObjectModal: {
+    visible: boolean;
+    selectedObject: Polygon | Polygon[] | null;
+  }) => void;
 
   stagePosition: Point;
   setStagePosition: (stagePosition: Point) => void;

@@ -42,6 +42,7 @@ export const ImageItem = (props: Props) => {
     setSelectedTool,
     generatedObjects,
     setIsVisibleGeneratedLayer,
+    setIsOpenAddObjectModal,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const [isOpenLayers, setIsOpenLayers] = useState<boolean>(false);
@@ -85,6 +86,10 @@ export const ImageItem = (props: Props) => {
             ...selectedProject,
             images: updatedImages,
           });
+
+          const newSelectedImage = updatedImages?.filter(image => image.id === selectedImage?.id)[0] || null;
+
+          setSelectedImage(newSelectedImage);
         })
         .catch(e => {
           onMessage(`${e}`, 'error', 'Ошибка добавления слоя');
@@ -113,7 +118,15 @@ export const ImageItem = (props: Props) => {
   const renderContextMenuGeneratedLayer = () => {
     return (
       <>
-        <div className='context_menu__item'>Перенести все измерения в слой</div>
+        <div
+          className='context_menu__item'
+          onClick={e => {
+            e.stopPropagation();
+            generatedObjects &&
+              setIsOpenAddObjectModal({ visible: true, selectedObject: generatedObjects[image.id] });
+          }}>
+          Перенести все измерения в слой
+        </div>
       </>
     );
   };

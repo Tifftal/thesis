@@ -33,11 +33,11 @@ export const LayerItem = (props: Props) => {
   }, [visibleLayers, selectedLayer]);
 
   const handleChangeVisibleLayers = (
-    e: React.MouseEvent<SVGSVGElement, MouseEvent>,
     layer: LayerType,
     type: 'ADD' | 'DELETE',
+    e?: React.MouseEvent<SVGSVGElement, MouseEvent>,
   ) => {
-    e.stopPropagation();
+    e && e.stopPropagation();
     if (selectedLayer?.id === layer.id && type === 'DELETE') return;
     let newVisibleLayers: LayerType[] = [];
 
@@ -50,6 +50,9 @@ export const LayerItem = (props: Props) => {
   const handleChooseLayer = () => {
     setSelectedLayer(layer);
     setIsVisibleGeneratedLayer(false);
+    if (layer && !visibleLayers.includes(layer)) {
+      handleChangeVisibleLayers(layer, 'ADD');
+    }
 
     if (image.url !== selectedImage?.url) {
       setSelectedImage(image);
@@ -93,14 +96,14 @@ export const LayerItem = (props: Props) => {
           width={20}
           height={20}
           stroke={1.5}
-          onClick={e => handleChangeVisibleLayers(e, layer, 'DELETE')}
+          onClick={e => handleChangeVisibleLayers(layer, 'DELETE', e)}
         />
       ) : (
         <IconEyeOff
           width={20}
           height={20}
           stroke={1.5}
-          onClick={e => handleChangeVisibleLayers(e, layer, 'ADD')}
+          onClick={e => handleChangeVisibleLayers(layer, 'ADD', e)}
         />
       )}
     </div>

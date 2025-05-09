@@ -255,17 +255,15 @@ export const PolygonLayer = (props: Props) => {
       point.y * scale + imagePosition.y,
     ]);
     return (
-      <>
-        <Line
-          key={`generated-polygon-${index}`}
-          points={flatPoints}
-          stroke={color}
-          strokeWidth={2}
-          closed={true}
-          fill={`${color}80`}
-          onContextMenu={e => handleRightClick(e, 'GENERATED_POLYGON', points)}
-        />
-      </>
+      <Line
+        key={`generated-polygon-${index}`}
+        points={flatPoints}
+        stroke={color}
+        strokeWidth={2}
+        closed={true}
+        fill={`${color}80`}
+        onContextMenu={e => handleRightClick(e, 'GENERATED_POLYGON', points)}
+      />
     );
   };
 

@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 
-import { ImageType, LayerType, Point, ProjectType, UserInfoType, ZustandStoreStateType } from './types';
+import {
+  ImageType,
+  LayerType,
+  Point,
+  Polygon,
+  ProjectType,
+  UserInfoType,
+  ZustandStoreStateType,
+} from './types';
 
 const useStore = create<ZustandStoreStateType>(set => ({
   typeOfAuthForm: 'login',
@@ -32,9 +40,14 @@ const useStore = create<ZustandStoreStateType>(set => ({
   generatedObjects: null,
   isGeneratingObjects: false,
   isVisibleGeneratedLayer: false,
+  isOpenAddObjectModal: { visible: false, selectedObject: null },
   setGeneratedObjects: (generatedObjects: Record<string, any> | null) => set({ generatedObjects }),
   setIsGeneratingObjects: (isGeneratingObjects: boolean) => set({ isGeneratingObjects }),
   setIsVisibleGeneratedLayer: (isVisibleGeneratedLayer: boolean) => set({ isVisibleGeneratedLayer }),
+  setIsOpenAddObjectModal: (isOpenAddObjectModal: {
+    visible: boolean;
+    selectedObject: Polygon | Polygon[] | null;
+  }) => set({ isOpenAddObjectModal }),
 
   stagePosition: { x: 0, y: 0 },
   setStagePosition: (stagePosition: Point) => set({ stagePosition }),
