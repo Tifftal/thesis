@@ -48,6 +48,8 @@ export const ContextMenu = (props: Props) => {
     scaleFactor,
     selectedImage,
     setIsOpenAddObjectModal,
+    isEditMode,
+    setEditModeForPolygon,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -77,6 +79,11 @@ export const ContextMenu = (props: Props) => {
       error,
     );
 
+    closeContextMenu();
+  };
+
+  const handleOnEditModeForPolygon = () => {
+    setEditModeForPolygon(contextMenu.currentObject);
     closeContextMenu();
   };
 
@@ -309,6 +316,11 @@ export const ContextMenu = (props: Props) => {
                   Площадь:{' '}
                   {calculatePolygonArea(contextMenu.currentObject, scaleFactor, selectedImage?.units)}
                 </div>
+                {!isEditMode && (
+                  <div className='context-menu__item' onClick={handleOnEditModeForPolygon}>
+                    Включить режим редактирования
+                  </div>
+                )}
                 <div className='context-menu__item' onClick={savePolygon}>
                   Сохранить измерение
                 </div>

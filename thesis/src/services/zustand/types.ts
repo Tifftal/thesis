@@ -111,7 +111,11 @@ export type ZustandStoreStateType = {
   }) => void;
 
   stagePosition: Point;
+  isEditMode: boolean;
+  editModeForPolygon: boolean;
   setStagePosition: (stagePosition: Point) => void;
+  setIsEditMode: (isEditMode: boolean) => void;
+  setEditModeForPolygon: (editModeForPolygon: boolean) => void;
 
   //Метрики
   savedMeasurements: Record<string, any> | null;

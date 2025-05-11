@@ -4,8 +4,7 @@
   right: 20px;
   transition: opacity 0.3s ease;
   z-index: 9999;
-  min-width: max-content;
-  max-width: 50%;
+  max-width: 35%;
 }
 
 .toast {

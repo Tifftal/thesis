@@ -1,6 +1,7 @@
 /* eslint-disable no-mixed-operators */
 import React, { useEffect, useState } from 'react';
 
+import _ from 'lodash';
 import { Layer, Line, Circle } from 'react-konva';
 
 import useStore from 'services/zustand/store';
@@ -31,6 +32,9 @@ export const PolygonLayer = (props: Props) => {
     generatedObjects,
     selectedImage,
     isVisibleGeneratedLayer,
+    isEditMode,
+    setIsEditMode,
+    editModeForPolygon,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -41,12 +45,32 @@ export const PolygonLayer = (props: Props) => {
   const [tempLines, setTempLines] = useState<Polygon[]>([]); //нужно для редактирования линии в реальном времени
   const [isDraggingAll, setIsDraggingAll] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [editingPolygonIndex, setEditingPolygonIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (selectedLayer?.measurements?.polygons) {
       setTempLines([...selectedLayer.measurements.polygons]);
+      const excessOfObjects = selectedLayer?.measurements?.polygons.length < 15;
+      if (!excessOfObjects && excessOfObjects !== isEditMode) {
+        onMessage(
+          'Режим редактирование объектов выключен, т.к. превышено кол-во объектов на слое (включить можно через контектное меню)',
+          'warning',
+          'Режим редактирование отключен',
+        );
+      }
+      setEditingPolygonIndex(null);
+      setIsEditMode(excessOfObjects);
     }
   }, [selectedLayer]);
+
+  const linesToRender = selectedLineIndex !== null ? tempLines : selectedLayer?.measurements?.polygons || [];
+
+  useEffect(() => {
+    const editModeForPolygonIndex = linesToRender?.findIndex((item: Polygon) =>
+      _.isEqual(item, editModeForPolygon),
+    );
+    editModeForPolygonIndex ? setEditingPolygonIndex(editModeForPolygonIndex) : setEditingPolygonIndex(null);
+  }, [editModeForPolygon]);
 
   useEffect(() => {
     const disabledLayers = visibleLayers.filter(layer => layer.id !== selectedLayer?.id);
@@ -210,7 +234,7 @@ export const PolygonLayer = (props: Props) => {
           fill={`${color}80`}
           onContextMenu={isActive ? e => handleRightClick(e, 'POLYGON', points) : undefined}
         />
-        {isActive && (
+        {isActive && (isEditMode || editingPolygonIndex === polygonIndex) && (
           <>
             {/* Центральная точка для перемещения всего полигона */}
             <Circle
@@ -266,8 +290,6 @@ export const PolygonLayer = (props: Props) => {
       />
     );
   };
-
-  const linesToRender = selectedLineIndex !== null ? tempLines : selectedLayer?.measurements?.polygons || [];
 
   return (
     <Layer>

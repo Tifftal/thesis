@@ -50,7 +50,11 @@ const useStore = create<ZustandStoreStateType>(set => ({
   }) => set({ isOpenAddObjectModal }),
 
   stagePosition: { x: 0, y: 0 },
+  isEditMode: false,
+  editModeForPolygon: false,
   setStagePosition: (stagePosition: Point) => set({ stagePosition }),
+  setIsEditMode: (isEditMode: boolean) => set({ isEditMode }),
+  setEditModeForPolygon: (editModeForPolygon: boolean) => set({ editModeForPolygon }),
 
   //Метрика
   savedMeasurements: null,
