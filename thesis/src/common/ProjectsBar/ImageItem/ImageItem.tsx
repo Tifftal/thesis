@@ -43,6 +43,8 @@ export const ImageItem = (props: Props) => {
     generatedObjects,
     setIsVisibleGeneratedLayer,
     setIsOpenAddObjectModal,
+    savedMeasurements,
+    setSavedMeasurements,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const [isOpenLayers, setIsOpenLayers] = useState<boolean>(false);
@@ -105,11 +107,28 @@ export const ImageItem = (props: Props) => {
     }
   };
 
+  const handleSaveAllObjects = (e: React.MouseEvent, layer: LayerType) => {
+    // e.stopPropagation();
+    // if (!selectedImage) return;
+    // const currentImageMeasurements = savedMeasurements ? savedMeasurements[selectedImage.id] || {} : {};
+    // const newMeasurements = {
+    //   ...currentImageMeasurements,
+    //   ...layer.measurements,
+    // };
+    // setSavedMeasurements({
+    //   ...savedMeasurements,
+    //   [selectedImage.id]: newMeasurements,
+    // });
+  };
+
   const renderContextMenu = (item: LayerType) => {
     return (
       <>
         <div className='context_menu__item' onClick={e => handleOpenEditModal(e, item, 'LAYER')}>
           Изменить
+        </div>
+        <div className='context_menu__item' onClick={e => handleSaveAllObjects(e, item)}>
+          Сохранить все объекты
         </div>
       </>
     );

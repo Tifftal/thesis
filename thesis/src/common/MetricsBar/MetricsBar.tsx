@@ -1,7 +1,8 @@
 /* eslint-disable complexity */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { IconArrowBarToLeft, IconArrowBarToRight, IconInfoCircle } from '@tabler/icons-react';
+import { handleDownloadCSVByType, handleDownloadCSVInZIP } from 'utils/csvConverter/convertToCSV';
 
 import useStore from 'services/zustand/store';
 import { ZustandStoreStateType } from 'services/zustand/types';
@@ -20,6 +21,8 @@ import {
 
 import { MeasurementTable } from './MeasurementTable/MeasurementTable';
 
+import useToast from 'utils/hooks/useToast';
+
 export const MetricsBar = () => {
   const [open, setOpen] = useState<boolean>(true);
 
@@ -27,8 +30,26 @@ export const MetricsBar = () => {
     (state: ZustandStoreStateType) => state,
   );
 
+  const { onMessage } = useToast();
+
   const handleClearMetrics = () => {
     setSavedMeasurements({ ...(savedMeasurements || []), [`${selectedImage?.id}`]: null });
+  };
+
+  const handleDownloadCSVForAll = () => {
+    if (!selectedImage || !savedMeasurements) {
+      onMessage('Нет данных для экспорта', 'warning', 'Ошибка');
+      return;
+    }
+
+    onMessage('Идет подготовка архива...', 'warning', 'Экспорт данных');
+    setTimeout(() => {
+      handleDownloadCSVInZIP(selectedImage, savedMeasurements[selectedImage.id] || {})
+        .then(() => onMessage('Архив успешно создан', 'success', 'Готово'))
+        .catch(error => {
+          onMessage(`Ошибка при создании архива ${error}`, 'error', 'Ошибка');
+        });
+    }, 500);
   };
 
   return (
@@ -128,7 +149,7 @@ export const MetricsBar = () => {
           </div>
         )}
         <div className='metrics-bar__actions'>
-          <Button size='s' stretched>
+          <Button size='s' stretched onClick={handleDownloadCSVForAll}>
             Скачать все CSV
           </Button>
           <Button size='s' type='grey' stretched onClick={handleClearMetrics}>

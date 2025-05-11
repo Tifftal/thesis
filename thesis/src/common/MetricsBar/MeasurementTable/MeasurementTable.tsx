@@ -2,15 +2,7 @@
 import { ReactNode, useState } from 'react';
 
 import { IconDownload } from '@tabler/icons-react';
-import {
-  convertBrokenLinesToCSV,
-  convertCirclesToCSV,
-  convertEllipsesToCSV,
-  convertLinesToCSV,
-  convertPolygonsToCSV,
-  convertRectanglesToCSV,
-  downloadCSVFile,
-} from 'utils/csvConverter/convertToCSV';
+import { handleDownloadCSVByType } from 'utils/csvConverter/convertToCSV';
 
 import useStore from 'services/zustand/store';
 import { ZustandStoreStateType } from 'services/zustand/types';
@@ -70,52 +62,7 @@ export const MeasurementTable = (props: Props) => {
 
   const handleDownloadCSV = () => {
     onMessage('Скачивание начнется в течении нескольких секунд...', 'success', 'Загрузка файла');
-    switch (type) {
-      case 'lines': {
-        setTimeout(() => {
-          const csvData = convertLinesToCSV(measurement);
-          downloadCSVFile(csvData, `${selectedImage?.fileName.split('.')[0]}_lines`);
-        }, 500);
-        break;
-      }
-      case 'brokenLines': {
-        setTimeout(() => {
-          const csvData = convertBrokenLinesToCSV(measurement);
-          downloadCSVFile(csvData, `${selectedImage?.fileName.split('.')[0]}_broken-lines`);
-        }, 500);
-        break;
-      }
-      case 'polygons': {
-        setTimeout(() => {
-          const csvData = convertPolygonsToCSV(measurement);
-          downloadCSVFile(csvData, `${selectedImage?.fileName.split('.')[0]}_polygons`);
-        }, 500);
-        break;
-      }
-      case 'rectangles': {
-        setTimeout(() => {
-          const csvData = convertRectanglesToCSV(measurement);
-          downloadCSVFile(csvData, `${selectedImage?.fileName.split('.')[0]}_rectangles`);
-        }, 500);
-        break;
-      }
-      case 'circles': {
-        setTimeout(() => {
-          const csvData = convertCirclesToCSV(measurement);
-          downloadCSVFile(csvData, `${selectedImage?.fileName.split('.')[0]}_circles`);
-        }, 500);
-        break;
-      }
-      case 'ellipses': {
-        setTimeout(() => {
-          const csvData = convertEllipsesToCSV(measurement);
-          downloadCSVFile(csvData, `${selectedImage?.fileName.split('.')[0]}_ellipses`);
-        }, 500);
-        break;
-      }
-      default:
-        break;
-    }
+    handleDownloadCSVByType(type, measurement, selectedImage);
   };
 
   const getCells = (item: any) => {
