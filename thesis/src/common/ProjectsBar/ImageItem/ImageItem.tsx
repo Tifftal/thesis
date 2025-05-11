@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { useEffect, useState } from 'react';
 
 import { IconCheck, IconChevronDown, IconChevronUp, IconEditCircle, IconPlus } from '@tabler/icons-react';
@@ -5,7 +6,17 @@ import cn from 'classnames';
 
 import { LAYER_API } from 'services/API/LAYER_API';
 import useStore from 'services/zustand/store';
-import { ImageType, LayerType, ZustandStoreStateType } from 'services/zustand/types';
+import {
+  ImageType,
+  LayerType,
+  SavedBrokenLine,
+  SavedCircle,
+  SavedEllipse,
+  SavedLine,
+  SavedPolygon,
+  SavedRectangle,
+  ZustandStoreStateType,
+} from 'services/zustand/types';
 
 import { InputText } from 'ui-kit/inputs/InputText';
 
@@ -14,6 +25,16 @@ import { LayerItem } from '../LayerItem/LayerItem';
 import { BarContextMenu } from 'common/BarContextMenu/BarContextMenu';
 
 import { EditModalItemType, EditModalType } from 'common/EditModal/types';
+
+import {
+  getSavedBrokenLine,
+  getSavedCircle,
+  getSavedEllipse,
+  getSavedLine,
+  getSavedPolygon,
+  getSavedRectangle,
+  mergeMeasurements,
+} from 'utils/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -45,6 +66,7 @@ export const ImageItem = (props: Props) => {
     setIsOpenAddObjectModal,
     savedMeasurements,
     setSavedMeasurements,
+    scaleFactor,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const [isOpenLayers, setIsOpenLayers] = useState<boolean>(false);
@@ -108,17 +130,143 @@ export const ImageItem = (props: Props) => {
   };
 
   const handleSaveAllObjects = (e: React.MouseEvent, layer: LayerType) => {
-    // e.stopPropagation();
-    // if (!selectedImage) return;
-    // const currentImageMeasurements = savedMeasurements ? savedMeasurements[selectedImage.id] || {} : {};
-    // const newMeasurements = {
-    //   ...currentImageMeasurements,
-    //   ...layer.measurements,
-    // };
-    // setSavedMeasurements({
-    //   ...savedMeasurements,
-    //   [selectedImage.id]: newMeasurements,
-    // });
+    e.stopPropagation();
+    if (!selectedImage) return;
+    const currentImageMeasurements = savedMeasurements ? savedMeasurements[selectedImage.id] || {} : {};
+
+    const scaledLayerMeasurements: Record<string, any> = {};
+    Object.keys(layer.measurements).forEach(key => {
+      switch (key) {
+        case 'lines': {
+          if (!Array.isArray(layer.measurements?.lines)) break;
+
+          const newLines: SavedLine[] = [];
+
+          for (const item of layer.measurements.lines) {
+            const savedLine = getSavedLine(item, scaleFactor, onMessage, savedMeasurements, selectedImage);
+
+            if (savedLine) {
+              newLines.push(savedLine);
+            }
+          }
+          scaledLayerMeasurements.lines = newLines;
+          break;
+        }
+        case 'brokenLines': {
+          if (!Array.isArray(layer.measurements?.brokenLines)) break;
+
+          const newBrokenLines: SavedBrokenLine[] = [];
+
+          for (const item of layer.measurements.brokenLines) {
+            const savedBrokenLine = getSavedBrokenLine(
+              item,
+              scaleFactor,
+              onMessage,
+              savedMeasurements,
+              selectedImage,
+            );
+
+            if (savedBrokenLine) {
+              newBrokenLines.push(savedBrokenLine);
+            }
+          }
+          scaledLayerMeasurements.brokenLines = newBrokenLines;
+          break;
+        }
+        case 'polygons': {
+          if (!Array.isArray(layer.measurements?.polygons)) break;
+
+          const newPolygons: SavedPolygon[] = [];
+
+          for (const item of layer.measurements.polygons) {
+            const savedPolygon = getSavedPolygon(
+              item,
+              scaleFactor,
+              onMessage,
+              savedMeasurements,
+              selectedImage,
+            );
+
+            if (savedPolygon) {
+              newPolygons.push(savedPolygon);
+            }
+          }
+          scaledLayerMeasurements.polygons = newPolygons;
+          break;
+        }
+        case 'rectangles': {
+          if (!Array.isArray(layer.measurements?.rectangles)) break;
+
+          const newRectangles: SavedRectangle[] = [];
+
+          for (const item of layer.measurements.rectangles) {
+            const savedRectangle = getSavedRectangle(
+              item,
+              scaleFactor,
+              onMessage,
+              savedMeasurements,
+              selectedImage,
+            );
+
+            if (savedRectangle) {
+              newRectangles.push(savedRectangle);
+            }
+          }
+          scaledLayerMeasurements.rectangles = newRectangles;
+          break;
+        }
+        case 'circles': {
+          if (!Array.isArray(layer.measurements?.circles)) break;
+
+          const newCircles: SavedCircle[] = [];
+
+          for (const item of layer.measurements.circles) {
+            const savedCircle = getSavedCircle(
+              item,
+              scaleFactor,
+              onMessage,
+              savedMeasurements,
+              selectedImage,
+            );
+
+            if (savedCircle) {
+              newCircles.push(savedCircle);
+            }
+          }
+          scaledLayerMeasurements.circles = newCircles;
+          break;
+        }
+        case 'ellipses': {
+          if (!Array.isArray(layer.measurements?.ellipses)) break;
+
+          const newEllipses: SavedEllipse[] = [];
+
+          for (const item of layer.measurements.ellipses) {
+            const savedEllipse = getSavedEllipse(
+              item,
+              scaleFactor,
+              onMessage,
+              savedMeasurements,
+              selectedImage,
+            );
+
+            if (savedEllipse) {
+              newEllipses.push(savedEllipse);
+            }
+          }
+          scaledLayerMeasurements.ellipses = newEllipses;
+          break;
+        }
+        default:
+          break;
+      }
+    });
+
+    const newSavedMeasurements = mergeMeasurements(currentImageMeasurements, scaledLayerMeasurements);
+    setSavedMeasurements({
+      ...savedMeasurements,
+      [selectedImage.id]: newSavedMeasurements,
+    });
   };
 
   const renderContextMenu = (item: LayerType) => {

@@ -1,38 +1,26 @@
-import _ from 'lodash';
-
 import useStore from 'services/zustand/store';
-import {
-  BrokenLine,
-  Circle,
-  Ellipse,
-  Line,
-  Point,
-  Polygon,
-  Rectangle,
-  SavedBrokenLine,
-  SavedCircle,
-  SavedEllipse,
-  SavedLine,
-  SavedPolygon,
-  SavedRectangle,
-  ZustandStoreStateType,
-} from 'services/zustand/types';
+import { Point, ZustandStoreStateType } from 'services/zustand/types';
 
 import {
   calculateCircleArea,
   calculateCircumference,
-  calculateDistance,
   calculateEllipseArea,
   calculateEllipseCircumference,
   calculatePolygonArea,
   calculatePolylineLength,
   calculateRectangleArea,
   calculateRectangleLength,
-  getScaledCoord,
-  getScaledNumber,
   getScaledParameter,
 } from 'components/MainPage/helpers';
 import { ChangeLayer } from 'pages/helpers';
+import {
+  getSavedBrokenLine,
+  getSavedCircle,
+  getSavedEllipse,
+  getSavedLine,
+  getSavedPolygon,
+  getSavedRectangle,
+} from 'utils/helpers';
 
 import useToast from 'utils/hooks/useToast';
 
@@ -93,35 +81,17 @@ export const ContextMenu = (props: Props) => {
   };
 
   const saveLine = () => {
-    const scaledLine: Line = contextMenu.currentObject.map((point: Point) =>
-      getScaledCoord(point, scaleFactor),
-    );
-
-    const isLineExists = savedMeasurements?.lines?.some((existingLine: SavedLine) => {
-      return (
-        _.isEqual(existingLine.line, scaledLine) || _.isEqual(existingLine.line, [...scaledLine].reverse())
-      );
-    });
-
-    if (isLineExists) {
-      onMessage('Линия с такими координатами уже существует', 'error', 'Дубликат линии');
-      closeContextMenu();
-      return;
-    }
-
-    const scaledDistance = calculateDistance(
-      contextMenu.currentObject[0],
-      contextMenu.currentObject[1],
-      scaleFactor,
-    );
-
-    const newLine: SavedLine = {
-      line: scaledLine,
-      distance: scaledDistance,
-      note: '',
-    };
-
     if (!selectedImage?.id) return;
+    const newLine = getSavedLine(
+      contextMenu.currentObject,
+      scaleFactor,
+      onMessage,
+      savedMeasurements,
+      selectedImage,
+      closeContextMenu,
+    );
+
+    if (!newLine) return;
 
     const newSavedLines = [...(savedMeasurements?.[selectedImage?.id]?.lines || []), newLine];
 
@@ -138,32 +108,18 @@ export const ContextMenu = (props: Props) => {
   };
 
   const saveBrokenLine = () => {
-    const scaledBrokenLine: BrokenLine = contextMenu.currentObject.map((point: Point) =>
-      getScaledCoord(point, scaleFactor),
+    if (!selectedImage?.id) return;
+
+    const newBrokenLine = getSavedBrokenLine(
+      contextMenu.currentObject,
+      scaleFactor,
+      onMessage,
+      savedMeasurements,
+      selectedImage,
+      closeContextMenu,
     );
 
-    const isBrokenLineExists = savedMeasurements?.brokenLines?.some((existingLine: SavedBrokenLine) => {
-      return (
-        _.isEqual(existingLine.brokenLine, scaledBrokenLine) ||
-        _.isEqual(existingLine.brokenLine, [...scaledBrokenLine].reverse())
-      );
-    });
-
-    if (isBrokenLineExists) {
-      onMessage('Ломаная с такими координатами уже существует', 'error', 'Дубликат ломаной');
-      closeContextMenu();
-      return;
-    }
-
-    const scaledDistance = calculatePolylineLength(contextMenu.currentObject, scaleFactor);
-
-    const newBrokenLine: SavedBrokenLine = {
-      brokenLine: scaledBrokenLine,
-      distance: scaledDistance,
-      note: '',
-    };
-
-    if (!selectedImage?.id) return;
+    if (!newBrokenLine) return;
 
     const newSavedBrokenLines = [
       ...(savedMeasurements?.[selectedImage?.id]?.brokenLines || []),
@@ -183,33 +139,18 @@ export const ContextMenu = (props: Props) => {
   };
 
   const savePolygon = () => {
-    const scaledPolygon: Polygon = contextMenu.currentObject.map((point: Point) =>
-      getScaledCoord(point, scaleFactor),
+    if (!selectedImage?.id) return;
+
+    const newPolygon = getSavedPolygon(
+      contextMenu.currentObject,
+      scaleFactor,
+      onMessage,
+      savedMeasurements,
+      selectedImage,
+      closeContextMenu,
     );
 
-    const isPolygonExists = savedMeasurements?.polygons?.some((existItem: SavedPolygon) => {
-      return (
-        _.isEqual(existItem.polygon, scaledPolygon) ||
-        _.isEqual(existItem.polygon, [...scaledPolygon].reverse())
-      );
-    });
-
-    if (isPolygonExists) {
-      onMessage('Многоугольник с такими координатами уже существует', 'error', 'Дубликат многоугольника');
-      closeContextMenu();
-      return;
-    }
-
-    const scaledDistance = calculatePolylineLength(contextMenu.currentObject, scaleFactor);
-
-    const newPolygon: SavedPolygon = {
-      polygon: scaledPolygon,
-      perimeter: scaledDistance,
-      area: calculatePolygonArea(contextMenu.currentObject, scaleFactor),
-      note: '',
-    };
-
-    if (!selectedImage?.id) return;
+    if (!newPolygon) return;
 
     const newSavedPolygons = [...(savedMeasurements?.[selectedImage?.id]?.polygons || []), newPolygon];
 
@@ -226,31 +167,18 @@ export const ContextMenu = (props: Props) => {
   };
 
   const saveRectangle = () => {
-    const scaledRectangle: Rectangle = {
-      x: getScaledNumber(contextMenu.currentObject.x, scaleFactor),
-      y: getScaledNumber(contextMenu.currentObject.y, scaleFactor),
-      width: getScaledNumber(contextMenu.currentObject.width, scaleFactor),
-      height: getScaledNumber(contextMenu.currentObject.height, scaleFactor),
-    };
-
-    const isRectangleExists = savedMeasurements?.rectangles?.some((existItem: SavedRectangle) => {
-      return _.isEqual(existItem.rectangle, scaledRectangle);
-    });
-
-    if (isRectangleExists) {
-      onMessage('Прямоугольник с такими координатами уже существует', 'error', 'Дубликат прямоугольника');
-      closeContextMenu();
-      return;
-    }
-
-    const newRectangle: SavedRectangle = {
-      rectangle: scaledRectangle,
-      area: calculateRectangleLength(contextMenu.currentObject, scaleFactor),
-      perimeter: calculateRectangleArea(contextMenu.currentObject, scaleFactor),
-      note: '',
-    };
-
     if (!selectedImage?.id) return;
+
+    const newRectangle = getSavedRectangle(
+      contextMenu.currentObject,
+      scaleFactor,
+      onMessage,
+      savedMeasurements,
+      selectedImage,
+      closeContextMenu,
+    );
+
+    if (!newRectangle) return;
 
     const newSavedRectangles = [...(savedMeasurements?.[selectedImage?.id]?.rectangles || []), newRectangle];
 
@@ -267,30 +195,18 @@ export const ContextMenu = (props: Props) => {
   };
 
   const saveCircle = () => {
-    const scaledCircle: Circle = {
-      x: getScaledNumber(contextMenu.currentObject.x, scaleFactor),
-      y: getScaledNumber(contextMenu.currentObject.y, scaleFactor),
-      radius: getScaledNumber(contextMenu.currentObject.radius, scaleFactor),
-    };
-
-    const isCircleExists = savedMeasurements?.circles?.some((existItem: SavedCircle) => {
-      return _.isEqual(existItem.circle, scaledCircle);
-    });
-
-    if (isCircleExists) {
-      onMessage('Окружность с такими координатами уже существует', 'error', 'Дубликат окружности');
-      closeContextMenu();
-      return;
-    }
-
-    const newCircle: SavedCircle = {
-      circle: scaledCircle,
-      area: calculateCircleArea(contextMenu.currentObject.radius, scaleFactor),
-      length: calculateCircumference(contextMenu.currentObject.radius, scaleFactor),
-      note: '',
-    };
-
     if (!selectedImage?.id) return;
+
+    const newCircle = getSavedCircle(
+      contextMenu.currentObject,
+      scaleFactor,
+      onMessage,
+      savedMeasurements,
+      selectedImage,
+      closeContextMenu,
+    );
+
+    if (!newCircle) return;
 
     const newSavedCircles = [...(savedMeasurements?.[selectedImage?.id]?.circles || []), newCircle];
 
@@ -307,39 +223,18 @@ export const ContextMenu = (props: Props) => {
   };
 
   const saveEllipse = () => {
-    const scaledEllipse: Ellipse = {
-      x: getScaledNumber(contextMenu.currentObject.x, scaleFactor),
-      y: getScaledNumber(contextMenu.currentObject.y, scaleFactor),
-      radiusX: getScaledNumber(contextMenu.currentObject.radiusX, scaleFactor),
-      radiusY: getScaledNumber(contextMenu.currentObject.radiusY, scaleFactor),
-    };
-
-    const isEllipseExists = savedMeasurements?.ellipses?.some((existItem: SavedEllipse) => {
-      return _.isEqual(existItem.ellipse, scaledEllipse);
-    });
-
-    if (isEllipseExists) {
-      onMessage('Эллипс с такими координатами уже существует', 'error', 'Дубликат эллипса');
-      closeContextMenu();
-      return;
-    }
-
-    const newEllipse: SavedEllipse = {
-      ellipse: scaledEllipse,
-      area: calculateEllipseArea(
-        contextMenu.currentObject.radiusX,
-        contextMenu.currentObject.radiusY,
-        scaleFactor,
-      ),
-      length: calculateEllipseCircumference(
-        contextMenu.currentObject.radiusX,
-        contextMenu.currentObject.radiusY,
-        scaleFactor,
-      ),
-      note: '',
-    };
-
     if (!selectedImage?.id) return;
+
+    const newEllipse = getSavedEllipse(
+      contextMenu.currentObject,
+      scaleFactor,
+      onMessage,
+      savedMeasurements,
+      selectedImage,
+      closeContextMenu,
+    );
+
+    if (!newEllipse) return;
 
     const newSavedEllipses = [...(savedMeasurements?.[selectedImage?.id]?.ellipses || []), newEllipse];
 

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 
 import { IconArrowBarToLeft, IconArrowBarToRight, IconInfoCircle } from '@tabler/icons-react';
-import { handleDownloadCSVByType, handleDownloadCSVInZIP } from 'utils/csvConverter/convertToCSV';
+import { handleDownloadCSVInZIP } from 'utils/csvConverter/convertToCSV';
 
 import useStore from 'services/zustand/store';
 import { ZustandStoreStateType } from 'services/zustand/types';
@@ -70,7 +70,7 @@ export const MetricsBar = () => {
         </div>
       </div>
       <div className={`metrics-bar__container__content ${open ? '' : 'collapsed'}`}>
-        {!savedMeasurements ? (
+        {!selectedImage?.id || !savedMeasurements?.[selectedImage?.id] ? (
           <div className={`metrics-bar__content__empty ${open ? '' : 'collapsed'}`}>
             Пока не добавлено измерений...
           </div>
