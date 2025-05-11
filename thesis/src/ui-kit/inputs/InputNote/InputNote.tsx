@@ -1,7 +1,6 @@
 import React, { CSSProperties, ReactElement } from 'react';
 
 import { Input as InputTextAntd, ConfigProvider } from 'antd';
-import { valueType } from 'antd/es/statistic/utils';
 
 import { Tooltip } from 'ui-kit/tooltip';
 
@@ -10,8 +9,8 @@ import { InputTextChangeValueType } from 'components/types';
 type Props = {
   label?: string | ReactElement;
   placeholder?: string | undefined;
-  value: valueType | undefined;
-  onChange: (e: InputTextChangeValueType) => void;
+  value: string | undefined;
+  onChange: (value: string) => void;
   status?: 'warning' | 'error' | undefined;
   height?: number;
   isOutlined?: boolean;
@@ -36,7 +35,7 @@ export const InputNote = (props: Props) => {
 
   const handleChange = (e: InputTextChangeValueType) => {
     if (!disabled) {
-      onChange(e);
+      onChange(e.target.value);
     }
   };
 

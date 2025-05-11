@@ -6,6 +6,8 @@ import { AUTH_API } from 'services/API/AUTH_API';
 import useStore from 'services/zustand/store';
 import { ZustandStoreStateType } from 'services/zustand/types';
 
+import { Loader } from 'ui-kit/loader';
+
 import { MetricsBar } from 'common/MetricsBar';
 import { Navbar } from 'common/Navbar';
 import { ProjectsBar } from 'common/ProjectsBar';
@@ -16,7 +18,7 @@ export const RouteLayout = () => {
   const navigate = useNavigate();
   const { onMessage } = useToast();
   const location = useLocation();
-  const { userInfo, setUserInfo } = useStore((state: ZustandStoreStateType) => state);
+  const { userInfo, setUserInfo, isGeneratingObjects } = useStore((state: ZustandStoreStateType) => state);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
@@ -58,6 +60,7 @@ export const RouteLayout = () => {
   return (
     <div className='route-layout__container'>
       <Navbar />
+      {isGeneratingObjects && <Loader title={'Загрузка...'} size='large' />}
       <ProjectsBar />
       <MetricsBar />
       <Outlet />

@@ -1,4 +1,10 @@
-import { IconAlertTriangle, IconExclamationCircle, IconInfoCircle, IconX } from '@tabler/icons-react';
+import {
+  IconAlertTriangle,
+  IconCircleCheck,
+  IconExclamationCircle,
+  IconInfoCircle,
+  IconX,
+} from '@tabler/icons-react';
 
 import { Toast } from './types';
 import './toast.css';
@@ -13,6 +19,8 @@ export const ToastContainer = (props: Props) => {
 
   const getColor = (type: string) => {
     switch (type) {
+      case 'success':
+        return 'var(--color-green-main)';
       case 'warning':
         return 'var(--color-gold)';
       case 'error':
@@ -26,6 +34,8 @@ export const ToastContainer = (props: Props) => {
     const color = getColor(toast.type);
 
     switch (toast.type) {
+      case 'success':
+        return <IconCircleCheck stroke={1.5} color={color} />;
       case 'warning':
         return <IconAlertTriangle stroke={1.5} color={color} />;
       case 'error':

@@ -121,10 +121,16 @@ export const ContextMenu = (props: Props) => {
       note: '',
     };
 
-    const newSavedLines = [...(savedMeasurements?.lines || []), newLine];
+    if (!selectedImage?.id) return;
+
+    const newSavedLines = [...(savedMeasurements?.[selectedImage?.id]?.lines || []), newLine];
+
     const newMeasurements = {
       ...savedMeasurements,
-      lines: newSavedLines,
+      [selectedImage?.id]: {
+        ...savedMeasurements?.[selectedImage?.id],
+        lines: newSavedLines,
+      },
     };
 
     setSavedMeasurements(newMeasurements);
@@ -157,14 +163,22 @@ export const ContextMenu = (props: Props) => {
       note: '',
     };
 
-    const newSavedBrokenLines = [...(savedMeasurements?.brokenLines || []), newBrokenLine];
+    if (!selectedImage?.id) return;
+
+    const newSavedBrokenLines = [
+      ...(savedMeasurements?.[selectedImage?.id]?.brokenLines || []),
+      newBrokenLine,
+    ];
+
     const newMeasurements = {
       ...savedMeasurements,
-      brokenLines: newSavedBrokenLines,
+      [selectedImage?.id]: {
+        ...savedMeasurements?.[selectedImage?.id],
+        brokenLines: newSavedBrokenLines,
+      },
     };
 
     setSavedMeasurements(newMeasurements);
-    closeContextMenu();
     closeContextMenu();
   };
 
@@ -195,14 +209,19 @@ export const ContextMenu = (props: Props) => {
       note: '',
     };
 
-    const newSavedPolygons = [...(savedMeasurements?.polygons || []), newPolygon];
+    if (!selectedImage?.id) return;
+
+    const newSavedPolygons = [...(savedMeasurements?.[selectedImage?.id]?.polygons || []), newPolygon];
+
     const newMeasurements = {
       ...savedMeasurements,
-      polygons: newSavedPolygons,
+      [selectedImage?.id]: {
+        ...savedMeasurements?.[selectedImage?.id],
+        polygons: newSavedPolygons,
+      },
     };
 
     setSavedMeasurements(newMeasurements);
-    closeContextMenu();
     closeContextMenu();
   };
 
@@ -231,14 +250,19 @@ export const ContextMenu = (props: Props) => {
       note: '',
     };
 
-    const newSavedRectangles = [...(savedMeasurements?.rectangles || []), newRectangle];
+    if (!selectedImage?.id) return;
+
+    const newSavedRectangles = [...(savedMeasurements?.[selectedImage?.id]?.rectangles || []), newRectangle];
+
     const newMeasurements = {
       ...savedMeasurements,
-      rectangles: newSavedRectangles,
+      [selectedImage?.id]: {
+        ...savedMeasurements?.[selectedImage?.id],
+        rectangles: newSavedRectangles,
+      },
     };
 
     setSavedMeasurements(newMeasurements);
-    closeContextMenu();
     closeContextMenu();
   };
 
@@ -266,14 +290,19 @@ export const ContextMenu = (props: Props) => {
       note: '',
     };
 
-    const newSavedCircles = [...(savedMeasurements?.circles || []), newCircle];
+    if (!selectedImage?.id) return;
+
+    const newSavedCircles = [...(savedMeasurements?.[selectedImage?.id]?.circles || []), newCircle];
+
     const newMeasurements = {
       ...savedMeasurements,
-      circles: newSavedCircles,
+      [selectedImage?.id]: {
+        ...savedMeasurements?.[selectedImage?.id],
+        circles: newSavedCircles,
+      },
     };
 
     setSavedMeasurements(newMeasurements);
-    closeContextMenu();
     closeContextMenu();
   };
 
@@ -310,14 +339,19 @@ export const ContextMenu = (props: Props) => {
       note: '',
     };
 
-    const newSavedEllipses = [...(savedMeasurements?.ellipses || []), newEllipse];
+    if (!selectedImage?.id) return;
+
+    const newSavedEllipses = [...(savedMeasurements?.[selectedImage?.id]?.ellipses || []), newEllipse];
+
     const newMeasurements = {
       ...savedMeasurements,
-      ellipses: newSavedEllipses,
+      [selectedImage?.id]: {
+        ...savedMeasurements?.[selectedImage?.id],
+        ellipses: newSavedEllipses,
+      },
     };
 
     setSavedMeasurements(newMeasurements);
-    closeContextMenu();
     closeContextMenu();
   };
 

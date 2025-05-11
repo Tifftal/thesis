@@ -175,7 +175,7 @@ export const ProjectParameters = () => {
       )}
       {selectedImage && !generatedObjects?.[selectedImage.id] && (
         <Button size='s' onClick={handleGenerateObjects}>
-          Сгенерировать объекты
+          Найти объекты
         </Button>
       )}
     </div>

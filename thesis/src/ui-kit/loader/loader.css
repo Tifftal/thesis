@@ -1,10 +1,10 @@
 .loader {
   position: fixed;
-  top: 90;
+  top: 0;
   left: 0;
   width: 100%;
-  height: calc(100% - 90px);
-  z-index: 9;
+  height: 100%;
+  z-index: 100;
 
   display: flex;
   align-items: center;

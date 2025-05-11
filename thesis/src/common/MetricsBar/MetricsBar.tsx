@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { useEffect, useState } from 'react';
 
 import { IconArrowBarToLeft, IconArrowBarToRight, IconInfoCircle } from '@tabler/icons-react';
@@ -26,12 +27,8 @@ export const MetricsBar = () => {
     (state: ZustandStoreStateType) => state,
   );
 
-  useEffect(() => {
-    setSavedMeasurements(null);
-  }, [selectedImage]);
-
   const handleClearMetrics = () => {
-    setSavedMeasurements(null);
+    setSavedMeasurements({ ...(savedMeasurements || []), [`${selectedImage?.id}`]: null });
   };
 
   return (
@@ -59,18 +56,18 @@ export const MetricsBar = () => {
         ) : (
           <div className='metrics-bar__content'>
             <div className='metrics-bar__content__tables'>
-              {savedMeasurements.lines && (
+              {selectedImage?.id && savedMeasurements[selectedImage?.id]?.lines && (
                 <MeasurementTable
                   type='lines'
-                  measurement={savedMeasurements.lines}
+                  measurement={savedMeasurements[selectedImage?.id].lines}
                   name='Прямые'
                   defaultColumns={defaultLineTableColumns}
                 />
               )}
-              {savedMeasurements.brokenLines && (
+              {selectedImage?.id && savedMeasurements[selectedImage?.id]?.brokenLines && (
                 <MeasurementTable
                   type='brokenLines'
-                  measurement={savedMeasurements.brokenLines}
+                  measurement={savedMeasurements[selectedImage?.id].brokenLines}
                   name={
                     <div className='metrics-bar__table__label'>
                       Ломаные
@@ -85,10 +82,10 @@ export const MetricsBar = () => {
                   defaultColumns={defaultBrokenLineTableColumns}
                 />
               )}
-              {savedMeasurements.polygons && (
+              {selectedImage?.id && savedMeasurements[selectedImage?.id]?.polygons && (
                 <MeasurementTable
                   type='polygons'
-                  measurement={savedMeasurements.polygons}
+                  measurement={savedMeasurements[selectedImage?.id].polygons}
                   name={
                     <div className='metrics-bar__table__label'>
                       Многоугольники
@@ -103,26 +100,26 @@ export const MetricsBar = () => {
                   defaultColumns={defaultPolygonTableColumns}
                 />
               )}
-              {savedMeasurements.rectangles && (
+              {selectedImage?.id && savedMeasurements[selectedImage?.id]?.rectangles && (
                 <MeasurementTable
                   type='rectangles'
-                  measurement={savedMeasurements.rectangles}
+                  measurement={savedMeasurements[selectedImage?.id].rectangles}
                   name='Прямоугольники'
                   defaultColumns={defaultRectanglesTableColumns}
                 />
               )}
-              {savedMeasurements.circles && (
+              {selectedImage?.id && savedMeasurements[selectedImage?.id]?.circles && (
                 <MeasurementTable
                   type='circles'
-                  measurement={savedMeasurements.circles}
+                  measurement={savedMeasurements[selectedImage?.id].circles}
                   name='Окружности'
                   defaultColumns={defaultCirclesTableColumns}
                 />
               )}
-              {savedMeasurements.ellipses && (
+              {selectedImage?.id && savedMeasurements[selectedImage?.id]?.ellipses && (
                 <MeasurementTable
                   type='ellipses'
-                  measurement={savedMeasurements.ellipses}
+                  measurement={savedMeasurements[selectedImage?.id].ellipses}
                   name='Эллипсы'
                   defaultColumns={defaultEllipsesTableColumns}
                 />
