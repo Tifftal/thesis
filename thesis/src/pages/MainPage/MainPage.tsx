@@ -96,7 +96,7 @@ export const MainPage = () => {
         setScaleFactor(selectedImage?.width / image.width);
       }
     }
-  }, [image, windowSize.height, windowSize.width]);
+  }, [image, windowSize.height, windowSize.width, selectedImage]);
 
   useEffect(() => {
     const handleClickOutside = () => {

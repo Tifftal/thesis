@@ -2,8 +2,13 @@
   height: 30px;
   display: flex;
   flex-flow: row;
-  align-items: center;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 20px;
+  width: calc(100% - var(--sidebar-width) - 16px);
+
+  position: absolute;
+  left: var(--sidebar-width);
 }
 
 .project-parameters__container button {
@@ -17,5 +22,24 @@
 .project-parameters__container__scale {
   display: flex;
   flex-direction: row;
+  align-items: flex-end;
   gap: 3px;
+  max-width: 280px;
+}
+
+.project-parameters__container__scale .input-text__label {
+  font-size: 12px;
+  margin-bottom: 2px;
+  line-height: 100%;
+}
+
+.project-parameters__content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.project-parameters__container__detect-objects-btn {
+  min-width: 200px;
 }

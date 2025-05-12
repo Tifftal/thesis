@@ -4,7 +4,6 @@ import {
   IconLine,
   IconPolygon,
   IconRectangle,
-  IconRulerMeasure as IconRuler,
   IconTimeline as IconBrokenLine,
   IconOvalVertical,
 } from '@tabler/icons-react';
@@ -44,10 +43,5 @@ export const NAVBAR_TOOL_ITEMS = [
     key: 'angle',
     IconComponent: IconAngle,
     tooltip: 'Абсолютный угол',
-  },
-  {
-    key: 'ruler',
-    IconComponent: IconRuler,
-    tooltip: 'Линейка',
   },
 ];

@@ -29,7 +29,7 @@ export const Navbar = () => {
         </div>
         <div className='navbar__container__user'>
           {`${userInfo.lastName} ${userInfo.firstName[0]}. ${userInfo.patronymic ? userInfo.patronymic[0] + '.' : ''}`}
-          <Button size='s' onClick={handleLogout}>
+          <Button size='s' type='red' onClick={handleLogout}>
             Выйти
           </Button>
         </div>

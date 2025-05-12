@@ -96,13 +96,13 @@ export const ProjectsBar = () => {
   const renderBarContent = () => {
     if (!selectedProject) {
       return (
-        <div className='projects-bar__container__content'>
+        <div className={`projects-bar__container__content ${open ? '' : 'collapsed'}`}>
           {!projects.length ? (
             <div className={`projects-bar__content__empty ${open ? '' : 'collapsed'}`}>
               Пока не создано проектов...
             </div>
           ) : (
-            <div className='projects-bar__content'>
+            <div className={`projects-bar__content ${open ? '' : 'collapsed'}`}>
               {projects?.map((item, index) => (
                 <div
                   className={`projects-bar__content__item ${open ? '' : 'collapsed'}`}
@@ -135,7 +135,7 @@ export const ProjectsBar = () => {
     }
     return (
       <>
-        <div className='projects-bar__content'>
+        <div className={`projects-bar__image-content ${open ? '' : 'collapsed'}`}>
           <ImagesBar
             setOpenModal={setOpenModal}
             handleOpenEditModal={handleOpenEditModal}
@@ -150,7 +150,7 @@ export const ProjectsBar = () => {
 
   return (
     <div className={`projects-bar__container ${open ? 'open' : 'collapsed'}`}>
-      <div className='projects-bar__header'>
+      <div className={`projects-bar__header ${open ? '' : 'collapsed'}`}>
         <div className='projects-bar__header__left'>
           <div className='projects-bar__icon-wrapper' onClick={() => setOpen(state => !state)}>
             <IconArrowBarToLeft

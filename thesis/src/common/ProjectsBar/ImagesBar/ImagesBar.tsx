@@ -41,7 +41,6 @@ export const ImagesBar = (props: Props) => {
           Добавить изображение
         </div>
       </UploadFiles>
-
       {selectedProject?.images?.map((item, index) => (
         <ImageItem
           key={index}

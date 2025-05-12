@@ -46,6 +46,7 @@ export const PolygonLayer = (props: Props) => {
   const [isDraggingAll, setIsDraggingAll] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [editingPolygonIndex, setEditingPolygonIndex] = useState<number | null>(null);
+  const [cacheLayer, setCacheLayer] = useState(selectedLayer);
 
   useEffect(() => {
     if (selectedLayer?.measurements?.polygons) {
@@ -53,13 +54,33 @@ export const PolygonLayer = (props: Props) => {
       const excessOfObjects = selectedLayer?.measurements?.polygons.length < 15;
       if (!excessOfObjects && excessOfObjects !== isEditMode) {
         onMessage(
-          'Режим редактирование объектов выключен, т.к. превышено кол-во объектов на слое (включить можно через контектное меню)',
+          'Режим редактирования объектов выключен, т.к. превышено кол-во объектов на слое (включить можно через контектное меню объекта)',
           'warning',
-          'Режим редактирование отключен',
+          'Режим редактирования выключен',
         );
       }
       setEditingPolygonIndex(null);
       setIsEditMode(excessOfObjects);
+      setCacheLayer(selectedLayer);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedLayer?.measurements?.polygons) {
+      setTempLines([...selectedLayer.measurements.polygons]);
+      const excessOfObjects = selectedLayer?.measurements?.polygons.length < 15;
+      if (!excessOfObjects && excessOfObjects !== isEditMode) {
+        onMessage(
+          'Режим редактирования объектов выключен, т.к. превышено кол-во объектов на слое (включить можно через контектное меню объекта)',
+          'warning',
+          'Режим редактирования выключен',
+        );
+      }
+      if (selectedLayer.id !== cacheLayer?.id) {
+        setEditingPolygonIndex(null);
+        setIsEditMode(excessOfObjects);
+      }
+      setCacheLayer(selectedLayer);
     }
   }, [selectedLayer]);
 

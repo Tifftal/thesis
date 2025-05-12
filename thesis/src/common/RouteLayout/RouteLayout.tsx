@@ -60,7 +60,7 @@ export const RouteLayout = () => {
   return (
     <div className='route-layout__container'>
       <Navbar />
-      {isGeneratingObjects && <Loader title={'Загрузка...'} size='large' />}
+      {isGeneratingObjects && <Loader title='Идет распознавание объектов...' size='large' />}
       <ProjectsBar />
       <MetricsBar />
       <Outlet />

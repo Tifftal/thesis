@@ -152,30 +152,42 @@ export const ProjectParameters = () => {
 
   return (
     <div className='project-parameters__container'>
-      {selectedLayer && (
-        <Button size='s' type='secondary' onClick={handleClearLayer}>
-          Очистить слой
-        </Button>
-      )}
-      {selectedImage && (
-        <div className='project-parameters__container__scale'>
-          <InputText
-            value={width}
-            onChange={value => handleChangeImageScale('width', value)}
-            height={32}
-            status={!width.length ? 'error' : undefined}
-          />
-          <InputText
-            value={units}
-            onChange={value => handleChangeImageScale('units', value)}
-            height={32}
-            status={!units.length ? 'error' : undefined}
-          />
-        </div>
-      )}
-      {selectedImage && !generatedObjects?.[selectedImage.id] && (
-        <Button size='s' onClick={handleGenerateObjects}>
-          Найти объекты
+      <div className='project-parameters__content'>
+        {selectedImage && !generatedObjects?.[selectedImage.id] && (
+          <Button
+            size='s'
+            onClick={handleGenerateObjects}
+            className='project-parameters__container__detect-objects-btn'>
+            Найти объекты
+          </Button>
+        )}
+        {selectedImage && (
+          <div className='project-parameters__container__scale'>
+            <InputText
+              label={'Ширина изображения'}
+              placeholder='100'
+              value={width}
+              onChange={value => handleChangeImageScale('width', value)}
+              height={32}
+              status={!width.length ? 'error' : undefined}
+            />
+            <InputText
+              label={'Единицы измерения'}
+              placeholder='нм'
+              value={units}
+              onChange={value => handleChangeImageScale('units', value)}
+              height={32}
+              status={!units.length ? 'error' : undefined}
+            />
+          </div>
+        )}
+      </div>
+      {selectedLayer && !!selectedLayer.measurements && !!Object.keys(selectedLayer.measurements).length && (
+        <Button
+          size='s'
+          onClick={handleClearLayer}
+          className='project-parameters__container__clean-layer-btn'>
+          Очистить выбранный слой
         </Button>
       )}
     </div>
