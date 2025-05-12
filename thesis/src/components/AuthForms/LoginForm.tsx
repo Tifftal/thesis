@@ -33,7 +33,7 @@ export const LoginForm = (props: Props) => {
           Войти
         </Button>
         <div className='auth-page__container__actions__no-account'>
-          Нет аккаунта? <button onClick={handleChangeTypeOfAuthForm}>Зарегестрироваться</button>
+          Нет аккаунта? <button onClick={handleChangeTypeOfAuthForm}>Зарегистрироваться</button>
         </div>
       </div>
     </>

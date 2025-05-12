@@ -49,7 +49,7 @@ export const RegisterForm = (props: Props) => {
       {/* <InputText placeholder='Повторите пароль' type='password' value={undefined} onChange={() => {}} /> */}
       <div className='auth-page__container__actions'>
         <Button stretched onClick={handleRegister}>
-          Зарегестрироваться
+          Зарегистрироваться
         </Button>
         <div className='auth-page__container__actions__no-account'>
           Уже есть аккаунт? <button onClick={handleChangeTypeOfAuthForm}>Войти</button>
