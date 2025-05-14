@@ -43,3 +43,16 @@
 .project-parameters__container__detect-objects-btn {
   min-width: 200px;
 }
+
+.project-parameters__container__layer-settings {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+}
+
+.project-parameters__container__layer-settings .ant-color-picker-trigger.ant-color-picker-trigger-active,
+.project-parameters__container__layer-settings .ant-color-picker-trigger:hover {
+  border-color: #74b200;
+  box-shadow: none;
+}

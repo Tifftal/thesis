@@ -62,7 +62,6 @@ export const AddModal = (props: Props) => {
       })
         .then(response => {
           let newImage = response.data;
-          setSelectedImage(newImage);
 
           LAYER_API.CreateLayer({
             imageID: newImage.id,
@@ -82,6 +81,7 @@ export const AddModal = (props: Props) => {
 
               setSelectedLayer(response.data);
               setVisibleLayers([response.data]);
+              setSelectedImage({ ...newImage, layers: [response.data] });
             })
             .catch(e => {
               onMessage(`${e}`, 'error', 'Ошибка добавления слоя');

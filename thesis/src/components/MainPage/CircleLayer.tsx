@@ -34,6 +34,9 @@ export const CircleLayer = (props: Props) => {
   const [disabledCircles, setDisabledCircles] = useState<CircleType[]>([]);
   const [tempCircles, setTempCircles] = useState<CircleType[]>([]);
   const [selectedCircleIndex, setSelectedCircleIndex] = useState<number | null>(null);
+  const [primaryColor, setPrimaryColor] = useState<string>(
+    selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600',
+  );
 
   useEffect(() => {
     const disabledLayers = visibleLayers.filter(layer => layer.id !== selectedLayer?.id);
@@ -45,6 +48,7 @@ export const CircleLayer = (props: Props) => {
     if (selectedLayer?.measurements?.circles) {
       setTempCircles([...selectedLayer.measurements.circles]);
     }
+    setPrimaryColor(selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600');
   }, [selectedLayer]);
 
   const handleDragStart = (e: any, index: number) => {
@@ -153,8 +157,8 @@ export const CircleLayer = (props: Props) => {
           x={screenX}
           y={screenY}
           radius={screenRadius}
-          fill='rgba(255, 0, 0, 0.5)'
-          stroke='rgb(255, 0, 0)'
+          fill={`${primaryColor}80`}
+          stroke={primaryColor}
           strokeWidth={2}
           onContextMenu={e => handleRightClick(e, 'CIRCLE', circle)}
         />
@@ -163,8 +167,8 @@ export const CircleLayer = (props: Props) => {
           x={screenX}
           y={screenY}
           radius={4}
-          fill='red'
-          stroke='darkred'
+          fill={primaryColor}
+          stroke='#333333'
           strokeWidth={1}
           draggable={isActive}
           onDragStart={e => handleDragStart(e, index)}
@@ -178,8 +182,8 @@ export const CircleLayer = (props: Props) => {
             x={controlPointX}
             y={controlPointY}
             radius={4}
-            fill='red'
-            stroke='darkred'
+            fill={primaryColor}
+            stroke='#333333'
             strokeWidth={1}
             draggable
             onDragStart={e => handleResizeStart(e, index)}
@@ -202,9 +206,10 @@ export const CircleLayer = (props: Props) => {
             x={circle.x * scale + imagePosition.x}
             y={circle.y * scale + imagePosition.y}
             radius={circle.radius * scale}
-            fill='rgba(255, 0, 0, 0.3)'
-            stroke='rgba(255, 0, 0, 0.5)'
+            fill={`${primaryColor}80`}
+            stroke={primaryColor}
             strokeWidth={2}
+            opacity={0.6}
           />
         </React.Fragment>
       ))}
@@ -219,14 +224,14 @@ export const CircleLayer = (props: Props) => {
             x={currentCircle.x * scale + imagePosition.x}
             y={currentCircle.y * scale + imagePosition.y}
             radius={4}
-            fill='rgb(0, 255, 0)'
+            fill={primaryColor}
           />
           <Circle
             x={currentCircle.x * scale + imagePosition.x}
             y={currentCircle.y * scale + imagePosition.y}
             radius={currentCircle.radius * scale}
-            stroke='rgb(0, 255, 0)'
-            fill='rgba(0, 255, 0, 0.4)'
+            fill={`${primaryColor}80`}
+            stroke={primaryColor}
             strokeWidth={2}
             dash={[5, 5]}
           />

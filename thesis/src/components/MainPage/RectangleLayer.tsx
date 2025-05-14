@@ -34,6 +34,9 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
   const [tempRectangles, setTempRectangles] = useState<Rectangle[]>([]);
   const [selectedRectIndex, setSelectedRectIndex] = useState<number | null>(null);
   const [selectedCorner, setSelectedCorner] = useState<string | null>(null);
+  const [primaryColor, setPrimaryColor] = useState<string>(
+    selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600',
+  );
 
   useEffect(() => {
     const disabledLayers = visibleLayers.filter(layer => layer.id !== selectedLayer?.id);
@@ -45,6 +48,7 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
     if (selectedLayer?.measurements?.rectangles) {
       setTempRectangles([...selectedLayer.measurements.rectangles]);
     }
+    setPrimaryColor(selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600');
   }, [selectedLayer]);
 
   const handleDragStart = (e: any, index: number) => {
@@ -195,6 +199,7 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
           stroke={color}
           strokeWidth={2}
           fill={`${color}60`}
+          opacity={isActive ? 1 : 0.6}
           onContextMenu={isActive ? e => handleRightClick(e, 'RECTANGLE', rect) : undefined}
         />
 
@@ -204,8 +209,8 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
               x={centerX}
               y={centerY}
               radius={4}
-              fill='red'
-              stroke='darkred'
+              fill={primaryColor}
+              stroke='#333333'
               strokeWidth={1}
               draggable
               onDragStart={e => handleDragStart(e, index)}
@@ -216,8 +221,8 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
               x={screenX}
               y={screenY}
               radius={4}
-              fill='red'
-              stroke='darkred'
+              fill={primaryColor}
+              stroke='#333333'
               strokeWidth={1}
               draggable
               onDragStart={e => handleCornerDragStart(e, index, 'top-left')}
@@ -228,8 +233,8 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
               x={screenX + screenWidth}
               y={screenY}
               radius={4}
-              fill='red'
-              stroke='darkred'
+              fill={primaryColor}
+              stroke='#333333'
               strokeWidth={1}
               draggable
               onDragStart={e => handleCornerDragStart(e, index, 'top-right')}
@@ -240,8 +245,8 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
               x={screenX}
               y={screenY + screenHeight}
               radius={4}
-              fill='red'
-              stroke='darkred'
+              fill={primaryColor}
+              stroke='#333333'
               strokeWidth={1}
               draggable
               onDragStart={e => handleCornerDragStart(e, index, 'bottom-left')}
@@ -252,8 +257,8 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
               x={screenX + screenWidth}
               y={screenY + screenHeight}
               radius={4}
-              fill='red'
-              stroke='darkred'
+              fill={primaryColor}
+              stroke='#333333'
               strokeWidth={1}
               draggable
               onDragStart={e => handleCornerDragStart(e, index, 'bottom-right')}
@@ -271,9 +276,9 @@ export const RectangleLayer = ({ scale, imagePosition, currentRectangle, handleR
 
   return (
     <Layer>
-      {disabledRectangles.map((rect, index) => renderRectangle(rect, '#e85050', false, index))}
-      {rectanglesToRender.map((rect: any, index: number) => renderRectangle(rect, '#ff0000', true, index))}
-      {currentRectangle && renderRectangle(currentRectangle, '#a6ea43', false, -1)}
+      {disabledRectangles.map((rect, index) => renderRectangle(rect, primaryColor, false, index))}
+      {rectanglesToRender.map((rect: any, index: number) => renderRectangle(rect, primaryColor, true, index))}
+      {currentRectangle && renderRectangle(currentRectangle, primaryColor, false, -1)}
     </Layer>
   );
 };

@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 
+import { ColorPicker } from 'antd';
+import { Color } from 'antd/es/color-picker';
 import { convertContoursToPolygons } from 'utils/parsers/convertContoursToPolygons';
 
 import { IMAGE_API } from 'services/API/IMAGE_API';
+import { LAYER_API } from 'services/API/LAYER_API';
+import { PROJECT_API } from 'services/API/PROJECT_API';
 import useStore from 'services/zustand/store';
 import { ZustandStoreStateType } from 'services/zustand/types';
 
@@ -150,6 +154,37 @@ export const ProjectParameters = () => {
     }
   };
 
+  const handleChangeLayerColor = (color: Color) => {
+    if (!selectedLayer) return;
+    LAYER_API.ChangeLayer(selectedLayer.id, {
+      name: selectedLayer.name,
+      measurements: selectedLayer.measurements,
+      color: color.toHex(),
+    })
+      .then(response => {
+        const newLayer = response.data;
+        setSelectedLayer(newLayer);
+
+        const newVisibleLayers = visibleLayers.map(item => {
+          if (item.id === newLayer.id) return { ...item, measurements: newLayer.measurements };
+          return item;
+        });
+        setVisibleLayers(newVisibleLayers);
+
+        if (!selectedProject) return;
+        PROJECT_API.GetProject(selectedProject.id)
+          .then(response => {
+            setSelectedProject(response.data);
+          })
+          .catch(e => {
+            onMessage(`${e}`, 'error', 'Ошибка получения проекта');
+          });
+      })
+      .catch(e => {
+        onMessage(`${e}`, 'error', 'Ошибка изменения цвета');
+      });
+  };
+
   return (
     <div className='project-parameters__container'>
       <div className='project-parameters__content'>
@@ -183,12 +218,16 @@ export const ProjectParameters = () => {
         )}
       </div>
       {selectedLayer && !!selectedLayer.measurements && !!Object.keys(selectedLayer.measurements).length && (
-        <Button
-          size='s'
-          onClick={handleClearLayer}
-          className='project-parameters__container__clean-layer-btn'>
-          Очистить выбранный слой
-        </Button>
+        <div className='project-parameters__container__layer-settings'>
+          <ColorPicker
+            value={selectedLayer.color || '#a0f600'}
+            onChangeComplete={color => handleChangeLayerColor(color)}
+            disabledAlpha
+          />
+          <Button size='s' onClick={handleClearLayer}>
+            Очистить выбранный слой
+          </Button>
+        </div>
       )}
     </div>
   );

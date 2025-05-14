@@ -41,11 +41,15 @@ export const LineLayer = (props: Props) => {
   const [tempLines, setTempLines] = useState<LineType[]>([]); //нужно для редактирования линии в реальном времени
   const [isDraggingLine, setIsDraggingLine] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [primaryColor, setPrimaryColor] = useState<string>(
+    selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600',
+  );
 
   useEffect(() => {
     if (selectedLayer?.measurements?.lines) {
       setTempLines([...selectedLayer.measurements.lines]);
     }
+    setPrimaryColor(selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600');
   }, [selectedLayer]);
 
   useEffect(() => {
@@ -191,7 +195,7 @@ export const LineLayer = (props: Props) => {
                   end.x * scale + imagePosition.x,
                   end.y * scale + imagePosition.y,
                 ]}
-                stroke='red'
+                stroke={primaryColor}
                 strokeWidth={2}
                 draggable
               />
@@ -200,8 +204,8 @@ export const LineLayer = (props: Props) => {
                 x={start.x * scale + imagePosition.x}
                 y={start.y * scale + imagePosition.y}
                 radius={4}
-                fill='red'
-                stroke='darkred'
+                fill={primaryColor}
+                stroke='#333333'
                 strokeWidth={1}
                 draggable
                 onDragStart={e => handlePointDragStart(e, lineIndex, 0)}
@@ -213,8 +217,8 @@ export const LineLayer = (props: Props) => {
                 x={end.x * scale + imagePosition.x}
                 y={end.y * scale + imagePosition.y}
                 radius={4}
-                fill='red'
-                stroke='darkred'
+                fill={primaryColor}
+                stroke='#333333'
                 strokeWidth={1}
                 draggable
                 onDragStart={e => handlePointDragStart(e, lineIndex, 1)}
@@ -227,7 +231,7 @@ export const LineLayer = (props: Props) => {
                 y={centerY * scale + imagePosition.y - 20}
                 text={distance}
                 fontSize={14}
-                fill='red'
+                fill={primaryColor}
                 draggable
                 onDragStart={e => handleLineDragStart(e, lineIndex)}
                 onDragMove={handleLineDragMove}
@@ -250,7 +254,7 @@ export const LineLayer = (props: Props) => {
                   end.x * scale + imagePosition.x,
                   end.y * scale + imagePosition.y,
                 ]}
-                stroke='#ff000099'
+                stroke={`${primaryColor}80`}
                 strokeWidth={2}
               />
             </React.Fragment>
@@ -263,7 +267,7 @@ export const LineLayer = (props: Props) => {
               x={currentLinePoints[0].x * scale + imagePosition.x}
               y={currentLinePoints[0].y * scale + imagePosition.y}
               radius={4}
-              fill='red'
+              fill={primaryColor}
             />
             {currentLinePoints.length === 1 && (
               <Line
@@ -273,7 +277,7 @@ export const LineLayer = (props: Props) => {
                   (currentLinePoints[0].x + 1) * scale + imagePosition.x,
                   (currentLinePoints[0].y + 1) * scale + imagePosition.y,
                 ]}
-                stroke='red'
+                stroke={primaryColor}
                 strokeWidth={2}
                 dash={[5, 5]}
               />

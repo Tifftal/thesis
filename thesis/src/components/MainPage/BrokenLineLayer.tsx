@@ -41,6 +41,9 @@ export const BrokenLineLayer = (props: Props) => {
   const [tempLines, setTempLines] = useState<BrokenLine[]>([]); //нужно для редактирования линии в реальном времени
   const [isDraggingAll, setIsDraggingAll] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [primaryColor, setPrimaryColor] = useState<string>(
+    selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600',
+  );
 
   useEffect(() => {
     const disabledLayers = visibleLayers.filter(layer => layer.id !== selectedLayer?.id);
@@ -52,6 +55,7 @@ export const BrokenLineLayer = (props: Props) => {
     if (selectedLayer?.measurements?.brokenLines) {
       setTempLines([...selectedLayer.measurements.brokenLines]);
     }
+    setPrimaryColor(selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600');
   }, [selectedLayer]);
 
   const handleTextDragStart = (e: any, lineIndex: number) => {
@@ -214,7 +218,7 @@ export const BrokenLineLayer = (props: Props) => {
                   point.x * scale + imagePosition.x,
                   point.y * scale + imagePosition.y,
                 ])}
-                stroke='red'
+                stroke={primaryColor}
                 strokeWidth={2}
               />
               {line.map((point, pointIndex) => (
@@ -223,8 +227,8 @@ export const BrokenLineLayer = (props: Props) => {
                   x={point.x * scale + imagePosition.x}
                   y={point.y * scale + imagePosition.y}
                   radius={4}
-                  fill='red'
-                  stroke='darkred'
+                  fill={primaryColor}
+                  stroke='#333333'
                   strokeWidth={1}
                   draggable
                   onDragStart={e => handlePointDragStart(e, lineIndex, pointIndex)}
@@ -241,7 +245,7 @@ export const BrokenLineLayer = (props: Props) => {
                     y={((line[segmentIndex].y + line[segmentIndex + 1].y) / 2) * scale + imagePosition.y - 20}
                     text={getDistance(line[segmentIndex], line[segmentIndex + 1])}
                     fontSize={14}
-                    fill='red'
+                    fill={primaryColor}
                     draggable
                     onDragStart={e => handleTextDragStart(e, lineIndex)}
                     onDragMove={handleTextDragMove}
@@ -260,7 +264,7 @@ export const BrokenLineLayer = (props: Props) => {
                 point.x * scale + imagePosition.x,
                 point.y * scale + imagePosition.y,
               ])}
-              stroke='#ff000099'
+              stroke={`${primaryColor}80`}
               strokeWidth={2}
             />
           </React.Fragment>
@@ -273,7 +277,7 @@ export const BrokenLineLayer = (props: Props) => {
                 point.x * scale + imagePosition.x,
                 point.y * scale + imagePosition.y,
               ])}
-              stroke='red'
+              stroke={primaryColor}
               strokeWidth={2}
             />
             {currentBrokenLine.map((point, index) => (
@@ -282,7 +286,7 @@ export const BrokenLineLayer = (props: Props) => {
                 x={point.x * scale + imagePosition.x}
                 y={point.y * scale + imagePosition.y}
                 radius={4}
-                fill='red'
+                fill={primaryColor}
               />
             ))}
 
@@ -303,7 +307,7 @@ export const BrokenLineLayer = (props: Props) => {
                   }
                   text={getDistance(currentBrokenLine[segmentIndex], currentBrokenLine[segmentIndex + 1])}
                   fontSize={14}
-                  fill='red'
+                  fill={primaryColor}
                 />
               ))}
           </>

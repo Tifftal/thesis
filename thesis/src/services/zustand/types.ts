@@ -10,6 +10,7 @@ export type LayerType = {
   id: number;
   imageID: number;
   name: string;
+  color: string;
   measurements: Record<string, any>;
 };
 

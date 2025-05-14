@@ -47,6 +47,9 @@ export const PolygonLayer = (props: Props) => {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [editingPolygonIndex, setEditingPolygonIndex] = useState<number | null>(null);
   const [cacheLayer, setCacheLayer] = useState(selectedLayer);
+  const [primaryColor, setPrimaryColor] = useState<string>(
+    selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600',
+  );
 
   useEffect(() => {
     if (selectedLayer?.measurements?.polygons) {
@@ -82,6 +85,7 @@ export const PolygonLayer = (props: Props) => {
       }
       setCacheLayer(selectedLayer);
     }
+    setPrimaryColor(selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600');
   }, [selectedLayer]);
 
   const linesToRender = selectedLineIndex !== null ? tempLines : selectedLayer?.measurements?.polygons || [];
@@ -254,6 +258,7 @@ export const PolygonLayer = (props: Props) => {
           closed={true}
           fill={`${color}80`}
           onContextMenu={isActive ? e => handleRightClick(e, 'POLYGON', points) : undefined}
+          opacity={isActive ? 1 : 0.6}
         />
         {isActive && (isEditMode || editingPolygonIndex === polygonIndex) && (
           <>
@@ -264,7 +269,7 @@ export const PolygonLayer = (props: Props) => {
               y={center.y * scale + imagePosition.y}
               radius={4}
               fill={color}
-              stroke='darkred'
+              stroke='#333333'
               strokeWidth={1}
               draggable={true}
               onDragStart={e => handleCenterDragStart(e, polygonIndex)}
@@ -279,7 +284,7 @@ export const PolygonLayer = (props: Props) => {
                 y={point.y * scale + imagePosition.y}
                 radius={4}
                 fill={color}
-                stroke='darkred'
+                stroke='#333333'
                 strokeWidth={1}
                 onContextMenu={e => handleRightClick(e, 'POLYGON', points)}
                 draggable={true}
@@ -316,13 +321,13 @@ export const PolygonLayer = (props: Props) => {
     <Layer>
       {linesToRender.map((polygon: Polygon, index: number) => (
         <React.Fragment key={`polygon-${index}`}>
-          {renderPolygon(polygon, '#ff0000', true, index)}
+          {renderPolygon(polygon, primaryColor, true, index)}
         </React.Fragment>
       ))}
 
       {disabledPolygons.map((polygon, index) => (
         <React.Fragment key={`polygon-${index}`}>
-          {renderPolygon(polygon, '#e85050', false, index)}
+          {renderPolygon(polygon, primaryColor, false, index)}
         </React.Fragment>
       ))}
 
@@ -331,10 +336,10 @@ export const PolygonLayer = (props: Props) => {
         selectedImage &&
         generatedObjects[selectedImage.id] &&
         generatedObjects[selectedImage.id].map((polygon: Point[], index: number) =>
-          renderGeneratedPolygons(polygon, '#26f704', index),
+          renderGeneratedPolygons(polygon, primaryColor, index),
         )}
 
-      {currentPolygon.length > 0 && <>{renderPolygon(currentPolygon, '#26f704', true, 0)}</>}
+      {currentPolygon.length > 0 && <>{renderPolygon(currentPolygon, primaryColor, true, 0)}</>}
     </Layer>
   );
 };

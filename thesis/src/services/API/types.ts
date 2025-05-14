@@ -33,8 +33,9 @@ export type ChangeImageScaleVariablesType = {
 };
 
 export type ChangeLayerVariablesType = {
-  name: string;
   measurements: Record<string, any> | undefined;
+  name?: string;
+  color?: string;
 };
 
 export type CreateLayerType = {

@@ -35,6 +35,9 @@ export const EllipseLayer = (props: Props) => {
   const [tempEllipses, setTempEllipses] = useState<Ellipse[]>([]);
   const [selectedEllipseIndex, setSelectedEllipseIndex] = useState<number | null>(null);
   const [selectedControlPoint, setSelectedControlPoint] = useState<'radiusX' | 'radiusY' | null>(null);
+  const [primaryColor, setPrimaryColor] = useState<string>(
+    selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600',
+  );
 
   useEffect(() => {
     const disabledLayers = visibleLayers.filter(layer => layer.id !== selectedLayer?.id);
@@ -46,6 +49,7 @@ export const EllipseLayer = (props: Props) => {
     if (selectedLayer?.measurements?.ellipses) {
       setTempEllipses([...selectedLayer.measurements.ellipses]);
     }
+    setPrimaryColor(selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600');
   }, [selectedLayer]);
 
   const handleDragStart = (e: any, index: number) => {
@@ -164,8 +168,8 @@ export const EllipseLayer = (props: Props) => {
           y={screenY}
           radiusX={screenRadiusX}
           radiusY={screenRadiusY}
-          fill='rgba(255, 0, 0, 0.5)'
-          stroke='rgb(255, 0, 0)'
+          fill={`${primaryColor}80`}
+          stroke={primaryColor}
           strokeWidth={2}
           onContextMenu={e => handleRightClick(e, 'ELLIPSE', ellipse)}
         />
@@ -174,8 +178,8 @@ export const EllipseLayer = (props: Props) => {
           x={screenX}
           y={screenY}
           radius={4}
-          fill='red'
-          stroke='darkred'
+          fill={primaryColor}
+          stroke='#333333'
           strokeWidth={1}
           draggable={isActive}
           onDragStart={e => handleDragStart(e, index)}
@@ -190,8 +194,8 @@ export const EllipseLayer = (props: Props) => {
               x={controlPointX}
               y={screenY}
               radius={4}
-              fill='red'
-              stroke='darkred'
+              fill={primaryColor}
+              stroke='#333333'
               strokeWidth={1}
               draggable
               dragBoundFunc={pos => {
@@ -208,8 +212,8 @@ export const EllipseLayer = (props: Props) => {
               x={screenX}
               y={controlPointY}
               radius={4}
-              fill='red'
-              stroke='darkred'
+              fill={primaryColor}
+              stroke='#333333'
               strokeWidth={1}
               draggable
               dragBoundFunc={pos => {
@@ -235,13 +239,14 @@ export const EllipseLayer = (props: Props) => {
     <Layer>
       {disabledEllipses.map((ellipse, index) => (
         <KonvaEllipse
+          opacity={0.6}
           key={`disabled-ellipse-${index}`}
           x={ellipse.x * scale + imagePosition.x}
           y={ellipse.y * scale + imagePosition.y}
           radiusX={ellipse.radiusX * scale}
           radiusY={ellipse.radiusY * scale}
-          fill='rgba(255, 0, 0, 0.3)'
-          stroke='rgba(255, 0, 0, 0.5)'
+          fill={`${primaryColor}80`}
+          stroke={primaryColor}
           strokeWidth={2}
         />
       ))}
@@ -257,17 +262,16 @@ export const EllipseLayer = (props: Props) => {
             y={currentEllipse.y * scale + imagePosition.y}
             radiusX={currentEllipse.radiusX * scale}
             radiusY={currentEllipse.radiusY * scale}
-            stroke='rgb(0, 255, 0)'
-            fill='rgba(0, 255, 0, 0.4)'
+            fill={`${primaryColor}80`}
+            stroke={primaryColor}
             strokeWidth={2}
             dash={[5, 5]}
           />
-          <KonvaEllipse
+          <Circle
             x={currentEllipse.x * scale + imagePosition.x}
             y={currentEllipse.y * scale + imagePosition.y}
-            radiusX={4 / scale}
-            radiusY={4 / scale}
-            fill='rgb(0, 255, 0)'
+            radius={4}
+            fill={primaryColor}
           />
         </Group>
       )}
