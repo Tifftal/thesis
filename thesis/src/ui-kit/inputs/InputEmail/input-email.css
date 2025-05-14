@@ -32,10 +32,7 @@
 }
 
 .input-email__error {
-  position: absolute;
   color: var(--color-red);
   font-size: 12px;
-  top: 100%;
-  left: 0;
   margin-top: 4px;
 }

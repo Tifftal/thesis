@@ -6,6 +6,7 @@
 .input-text .ant-input {
   font-family: 'Inter Regular';
   border-radius: 16px;
+  cursor: text;
 }
 
 .input-text .ant-input-status-error:not(.ant-input-disabled):focus,

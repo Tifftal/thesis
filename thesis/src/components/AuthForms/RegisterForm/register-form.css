@@ -1,0 +1,53 @@
+.register-form__container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  min-width: 700px;
+  width: 70vw;
+  max-width: 900px;
+}
+
+.register-form__container__content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.create-new-password__hints-list {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.create-new-password__hint-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.create-new-password__hint-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.create-new-password__hint_text {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter Light';
+  font-size: 14px;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: -0.176px;
+  color: var(--color-grey7);
+}
+
+.create-new-password__sublabel {
+  font-family: 'Inter Light';
+  font-size: 14px;
+  font-style: normal;
+  line-height: 20px;
+  letter-spacing: -0.176px;
+  color: var(--color-grey4);
+}

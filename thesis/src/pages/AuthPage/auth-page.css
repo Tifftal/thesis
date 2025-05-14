@@ -6,7 +6,6 @@
 }
 
 .auth-page__container {
-  width: 35%;
   background-color: var(--color-white1);
   padding: 32px;
   border-radius: 16px;
@@ -48,7 +47,7 @@
 }
 
 .auth-page__container__actions__no-account {
-  color: var(--color-grey5)
+  color: var(--color-grey5);
 }
 
 .auth-page__container__actions__no-account button {

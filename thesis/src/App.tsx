@@ -14,7 +14,7 @@ const App = () => {
   };
 
   const ProtectedRoute = ({ element }: { element: React.ReactElement }) => {
-    return isAuthenticated() ? element : <Navigate to='/auth' replace />;
+    return isAuthenticated() ? element : <Navigate to='/auth/login' replace />;
   };
 
   const PublicRoute = ({ element }: { element: React.ReactElement }) => {
@@ -26,8 +26,10 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<RouteLayout />}>
-            <Route index element={<Navigate to={isAuthenticated() ? '/main' : '/auth'} replace />} />
-            <Route path='/auth' element={<PublicRoute element={<AuthPage />} />} />
+            <Route index element={<Navigate to={isAuthenticated() ? '/main' : '/auth/login'} replace />} />
+            <Route path='/auth/login' element={<PublicRoute element={<AuthPage />} />} />
+            <Route path='/auth/registration' element={<PublicRoute element={<AuthPage />} />} />
+            <Route path='/auth/*' element={<Navigate to='/auth/login' replace />} />
             <Route path='/main' element={<ProtectedRoute element={<MainPage />} />} />
           </Route>
         </Routes>

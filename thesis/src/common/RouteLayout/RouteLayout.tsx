@@ -22,16 +22,21 @@ export const RouteLayout = () => {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
+    if (location.pathname.startsWith('/auth')) {
+      setIsCheckingAuth(false);
+      return;
+    }
+
     const checkAuth = async () => {
       try {
-        if (location.pathname !== '/auth' && !userInfo.id) {
+        if (!location.pathname.startsWith('/auth') && !userInfo.id) {
           const response = await AUTH_API.GetMe();
           setUserInfo(response.data);
         }
       } catch (e) {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
-        navigate('/auth');
+        navigate('/auth/login');
         onMessage('Сессия истекла. Пожалуйста, войдите снова', 'error', 'Ошибка авторизации');
       } finally {
         setIsCheckingAuth(false);
@@ -43,17 +48,17 @@ export const RouteLayout = () => {
       checkAuth();
     } else {
       setIsCheckingAuth(false);
-      if (location.pathname !== '/auth') {
-        navigate('/auth');
+      if (!location.pathname.startsWith('/auth')) {
+        navigate('/auth/login');
       }
     }
   }, [location.pathname, navigate, onMessage, setUserInfo, userInfo.id]);
 
   if (isCheckingAuth) {
-    return <div>Загрузка...</div>;
+    return <Loader title='Проверка пользователя...' size='large' />;
   }
 
-  if (location.pathname === '/auth') {
+  if (location.pathname.startsWith('/auth')) {
     return <Outlet />;
   }
 

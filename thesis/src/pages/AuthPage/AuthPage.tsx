@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { AUTH_API } from 'services/API/AUTH_API';
 import useStore from 'services/zustand/store';
 import { ZustandStoreStateType } from 'services/zustand/types';
 
-import { LoginForm } from 'components/AuthForms/LoginForm';
-import { RegisterForm } from 'components/AuthForms/RegisterForm';
+import { LoginForm } from 'components/AuthForms/LoginForm/LoginForm';
+import { RegisterForm } from 'components/AuthForms/RegisterForm/RegisterForm';
 
 import { LoginDataType, RegisterDataType } from './types';
 
@@ -18,10 +18,11 @@ import useToast from 'hooks/useToast';
 export const AuthPage = () => {
   const navigate = useNavigate();
   const { onMessage } = useToast();
+  const { pathname } = useLocation();
 
-  const { typeOfAuthForm, setTypeOfAuthForm, setUserInfo } = useStore(
-    (state: ZustandStoreStateType) => state,
-  );
+  const isLoginForm = useMemo(() => pathname.includes('/auth/login'), [pathname]);
+
+  const { setUserInfo } = useStore((state: ZustandStoreStateType) => state);
 
   const [registerData, setRegisterData] = useState<RegisterDataType>({
     firstName: '',
@@ -36,25 +37,29 @@ export const AuthPage = () => {
     password: '',
   });
 
-  const handleChangeTypeOfAuthForm = (type: 'login' | 'registration') => {
-    setTypeOfAuthForm(type);
+  const switchForm = (type: 'login' | 'registration') => {
+    navigate(`/auth/${type}`);
+    setRegisterData({
+      firstName: '',
+      lastName: '',
+      password: '',
+      patronymic: '',
+      username: '',
+    });
+    setLoginData({
+      username: '',
+      password: '',
+    });
   };
 
   const handleChangeData = (key: string, value: string) => {
-    switch (typeOfAuthForm) {
-      case 'registration': {
-        const newData = { ...registerData, [key]: value };
-        setRegisterData(newData as RegisterDataType);
-        break;
-      }
-      case 'login': {
-        const newData = { ...loginData, [key]: value };
-        setLoginData(newData as LoginDataType);
-        break;
-      }
-      default:
-        return null;
+    if (isLoginForm) {
+      const newData = { ...loginData, [key]: value };
+      setLoginData(newData as LoginDataType);
+      return;
     }
+    const newData = { ...registerData, [key]: value };
+    setRegisterData(newData as RegisterDataType);
   };
 
   const handleLogin = async (data?: LoginDataType) => {
@@ -84,28 +89,24 @@ export const AuthPage = () => {
   };
 
   const renderForm = () => {
-    switch (typeOfAuthForm) {
-      case 'login':
-        return (
-          <LoginForm
-            loginData={loginData}
-            handleChangeData={handleChangeData}
-            handleLogin={() => handleLogin()}
-            handleChangeTypeOfAuthForm={() => handleChangeTypeOfAuthForm('registration')}
-          />
-        );
-      case 'registration':
-        return (
-          <RegisterForm
-            registerData={registerData}
-            handleChangeData={handleChangeData}
-            handleRegister={handleRegister}
-            handleChangeTypeOfAuthForm={() => handleChangeTypeOfAuthForm('login')}
-          />
-        );
-      default:
-        return null;
+    if (isLoginForm) {
+      return (
+        <LoginForm
+          loginData={loginData}
+          handleChangeData={handleChangeData}
+          handleLogin={() => handleLogin()}
+          handleChangeTypeOfAuthForm={() => switchForm('registration')}
+        />
+      );
     }
+    return (
+      <RegisterForm
+        registerData={registerData}
+        handleChangeData={handleChangeData}
+        handleRegister={handleRegister}
+        handleChangeTypeOfAuthForm={() => switchForm('login')}
+      />
+    );
   };
 
   return (
@@ -117,7 +118,7 @@ export const AuthPage = () => {
             СИРОГС
           </div>
           <div className='auth-page__container__title'>
-            {typeOfAuthForm === 'registration' ? 'Регистрация в системе' : 'Вход в систему'}
+            {isLoginForm ? 'Вход в систему' : 'Регистрация в системе'}
           </div>
         </div>
         {renderForm()}
