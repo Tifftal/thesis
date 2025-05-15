@@ -31,10 +31,19 @@ type Props = {
   setCurrentBrokenLine: (value: Point[]) => void;
   onCompleteBrokenLine: () => void;
   onCompletePolygon: () => void;
+  onClearCurrentPolygon: () => void;
+  onClearCurrentBrokenLine: () => void;
 };
 
 export const ContextMenu = (props: Props) => {
-  const { contextMenu, closeContextMenu, onCompleteBrokenLine, onCompletePolygon } = props;
+  const {
+    contextMenu,
+    closeContextMenu,
+    onCompleteBrokenLine,
+    onCompletePolygon,
+    onClearCurrentPolygon,
+    onClearCurrentBrokenLine,
+  } = props;
 
   const {
     selectedLayer,
@@ -48,8 +57,6 @@ export const ContextMenu = (props: Props) => {
     scaleFactor,
     selectedImage,
     setIsOpenAddObjectModal,
-    isEditMode,
-    setEditModeForPolygon,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -79,11 +86,6 @@ export const ContextMenu = (props: Props) => {
       error,
     );
 
-    closeContextMenu();
-  };
-
-  const handleOnEditModeForPolygon = () => {
-    setEditModeForPolygon(contextMenu.currentObject);
     closeContextMenu();
   };
 
@@ -275,9 +277,19 @@ export const ContextMenu = (props: Props) => {
         return (
           <>
             {!contextMenu.currentObject && (
-              <div className='context-menu__item' onClick={onCompleteBrokenLine}>
-                Завершить ломаную
-              </div>
+              <>
+                <div className='context-menu__item' onClick={onCompleteBrokenLine}>
+                  Завершить ломаную
+                </div>
+                <div
+                  className='context-menu__item'
+                  onClick={() => {
+                    onClearCurrentBrokenLine();
+                    closeContextMenu();
+                  }}>
+                  Удалить ломаную
+                </div>
+              </>
             )}
             {contextMenu.currentObject && (
               <>
@@ -288,23 +300,32 @@ export const ContextMenu = (props: Props) => {
                 <div className='context-menu__item' onClick={saveBrokenLine}>
                   Сохранить измерение
                 </div>
+                <div
+                  className='context-menu__item'
+                  onClick={() => handleClear('brokenLines', 'Ошибка удаления ломаной')}>
+                  Удалить ломаную
+                </div>
               </>
             )}
-
-            <div
-              className='context-menu__item'
-              onClick={() => handleClear('brokenLines', 'Ошибка удаления ломаной')}>
-              Удалить ломаную
-            </div>
           </>
         );
       case 'POLYGON':
         return (
           <>
             {!contextMenu.currentObject && (
-              <div className='context-menu__item' onClick={onCompletePolygon}>
-                Завершить многоугольник
-              </div>
+              <>
+                <div className='context-menu__item' onClick={onCompletePolygon}>
+                  Завершить многоугольник
+                </div>
+                <div
+                  className='context-menu__item'
+                  onClick={() => {
+                    onClearCurrentPolygon();
+                    closeContextMenu();
+                  }}>
+                  Удалить многоугольник
+                </div>
+              </>
             )}
             {contextMenu.currentObject && (
               <>
@@ -316,22 +337,16 @@ export const ContextMenu = (props: Props) => {
                   Площадь:{' '}
                   {calculatePolygonArea(contextMenu.currentObject, scaleFactor, selectedImage?.units)}
                 </div>
-                {!isEditMode && (
-                  <div className='context-menu__item' onClick={handleOnEditModeForPolygon}>
-                    Включить режим редактирования
-                  </div>
-                )}
                 <div className='context-menu__item' onClick={savePolygon}>
                   Сохранить измерение
                 </div>
+                <div
+                  className='context-menu__item'
+                  onClick={() => handleClear('polygons', 'Ошибка удаления многоугольника')}>
+                  Удалить многоугольник
+                </div>
               </>
             )}
-
-            <div
-              className='context-menu__item'
-              onClick={() => handleClear('polygons', 'Ошибка удаления многоугольника')}>
-              Удалить многоугольник
-            </div>
           </>
         );
 

@@ -513,7 +513,9 @@ export const MainPage = () => {
           setCurrentLinePoints={setCurrentLinePoints}
           onCompleteBrokenLine={completeCurrentBrokenLine}
           setCurrentBrokenLine={setCurrentBrokenLine}
+          onClearCurrentBrokenLine={() => setCurrentBrokenLine([])}
           onCompletePolygon={completeCurrentPolygon}
+          onClearCurrentPolygon={() => setCurrentPolygon([])}
         />
       )}
 

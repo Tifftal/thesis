@@ -13,10 +13,24 @@ import { ProjectParameters } from './ProjectParameters/ProjectParameters';
 export const Navbar = () => {
   const navigate = useNavigate();
 
-  const { userInfo } = useStore((state: ZustandStoreStateType) => state);
+  const {
+    userInfo,
+    setProjects,
+    setSelectedImage,
+    setSelectedLayer,
+    setSelectedTool,
+    setSelectedProject,
+    setVisibleLayers,
+  } = useStore((state: ZustandStoreStateType) => state);
 
   const handleLogout = () => {
     localStorage.clear();
+    setProjects([]);
+    setSelectedProject(null);
+    setSelectedImage(null);
+    setSelectedLayer(null);
+    setSelectedTool(null);
+    setVisibleLayers([]);
     navigate('/auth');
   };
 

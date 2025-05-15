@@ -39,9 +39,9 @@ export const NAVBAR_TOOL_ITEMS = [
     IconComponent: IconOvalVertical,
     tooltip: 'Эллипс',
   },
-  {
-    key: 'angle',
-    IconComponent: IconAngle,
-    tooltip: 'Абсолютный угол',
-  },
+  // {
+  //   key: 'angle',
+  //   IconComponent: IconAngle,
+  //   tooltip: 'Абсолютный угол',
+  // },
 ];

@@ -1,7 +1,6 @@
 /* eslint-disable no-mixed-operators */
 import React, { useEffect, useState } from 'react';
 
-import _ from 'lodash';
 import { Layer, Line, Circle } from 'react-konva';
 
 import useStore from 'services/zustand/store';
@@ -32,9 +31,6 @@ export const PolygonLayer = (props: Props) => {
     generatedObjects,
     selectedImage,
     isVisibleGeneratedLayer,
-    isEditMode,
-    setIsEditMode,
-    editModeForPolygon,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -46,56 +42,39 @@ export const PolygonLayer = (props: Props) => {
   const [isDraggingAll, setIsDraggingAll] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [editingPolygonIndex, setEditingPolygonIndex] = useState<number | null>(null);
-  const [cacheLayer, setCacheLayer] = useState(selectedLayer);
   const [primaryColor, setPrimaryColor] = useState<string>(
     selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600',
   );
+  const [editMode, setEditMode] = useState<boolean>(true);
 
   useEffect(() => {
     if (selectedLayer?.measurements?.polygons) {
       setTempLines([...selectedLayer.measurements.polygons]);
-      const excessOfObjects = selectedLayer?.measurements?.polygons.length < 15;
-      if (!excessOfObjects && excessOfObjects !== isEditMode) {
-        onMessage(
-          'Режим редактирования объектов выключен, т.к. превышено кол-во объектов на слое (включить можно через контектное меню объекта)',
-          'warning',
-          'Режим редактирования выключен',
-        );
-      }
-      setEditingPolygonIndex(null);
-      setIsEditMode(excessOfObjects);
-      setCacheLayer(selectedLayer);
     }
   }, []);
 
   useEffect(() => {
     if (selectedLayer?.measurements?.polygons) {
       setTempLines([...selectedLayer.measurements.polygons]);
-      const excessOfObjects = selectedLayer?.measurements?.polygons.length < 15;
-      if (!excessOfObjects && excessOfObjects !== isEditMode) {
-        onMessage(
-          'Режим редактирования объектов выключен, т.к. превышено кол-во объектов на слое (включить можно через контектное меню объекта)',
-          'warning',
-          'Режим редактирования выключен',
-        );
-      }
-      if (selectedLayer.id !== cacheLayer?.id) {
-        setEditingPolygonIndex(null);
-        setIsEditMode(excessOfObjects);
-      }
-      setCacheLayer(selectedLayer);
     }
-    setPrimaryColor(selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600');
   }, [selectedLayer]);
 
-  const linesToRender = selectedLineIndex !== null ? tempLines : selectedLayer?.measurements?.polygons || [];
-
   useEffect(() => {
-    const editModeForPolygonIndex = linesToRender?.findIndex((item: Polygon) =>
-      _.isEqual(item, editModeForPolygon),
-    );
-    editModeForPolygonIndex ? setEditingPolygonIndex(editModeForPolygonIndex) : setEditingPolygonIndex(null);
-  }, [editModeForPolygon]);
+    if (!selectedLayer?.measurements?.polygons) return;
+    const excessOfObjects = selectedLayer?.measurements?.polygons.length < 15;
+    if (!excessOfObjects && excessOfObjects !== editMode) {
+      onMessage(
+        'Режим редактирования объектов выключен, т.к. превышено кол-во объектов на слое (включить можно кликнув на объект)',
+        'warning',
+        'Режим редактирования выключен',
+      );
+    }
+    setEditingPolygonIndex(null);
+    setEditMode(excessOfObjects);
+    setPrimaryColor(selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600');
+  }, [selectedLayer?.id]);
+
+  const linesToRender = selectedLineIndex !== null ? tempLines : selectedLayer?.measurements?.polygons || [];
 
   useEffect(() => {
     const disabledLayers = visibleLayers.filter(layer => layer.id !== selectedLayer?.id);
@@ -257,10 +236,18 @@ export const PolygonLayer = (props: Props) => {
           strokeWidth={2}
           closed={true}
           fill={`${color}80`}
+          onClick={
+            !editMode
+              ? (e: any) => {
+                  e.cancelBubble = true;
+                  setEditingPolygonIndex(polygonIndex);
+                }
+              : undefined
+          }
           onContextMenu={isActive ? e => handleRightClick(e, 'POLYGON', points) : undefined}
           opacity={isActive ? 1 : 0.6}
         />
-        {isActive && (isEditMode || editingPolygonIndex === polygonIndex) && (
+        {isActive && (editMode || editingPolygonIndex === polygonIndex) && (
           <>
             {/* Центральная точка для перемещения всего полигона */}
             <Circle
