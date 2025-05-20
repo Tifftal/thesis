@@ -483,7 +483,8 @@ export const ContextMenu = (props: Props) => {
     <div
       className='context-menu__container'
       style={{ top: contextMenu.y, left: contextMenu.x }}
-      onClick={e => e.stopPropagation()}>
+      onClick={e => e.stopPropagation()}
+      onContextMenu={e => e.preventDefault()}>
       {renderContent()}
     </div>
   );

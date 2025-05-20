@@ -34,7 +34,6 @@ export const EllipseLayer = (props: Props) => {
   const [disabledEllipses, setDisabledEllipses] = useState<Ellipse[]>([]);
   const [tempEllipses, setTempEllipses] = useState<Ellipse[]>([]);
   const [selectedEllipseIndex, setSelectedEllipseIndex] = useState<number | null>(null);
-  const [selectedControlPoint, setSelectedControlPoint] = useState<'radiusX' | 'radiusY' | null>(null);
   const [primaryColor, setPrimaryColor] = useState<string>(
     selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600',
   );
@@ -82,17 +81,16 @@ export const EllipseLayer = (props: Props) => {
     [selectedEllipseIndex, scale, imagePosition, stagePosition],
   );
 
-  const handleResizeStart = (e: any, index: number, controlPoint: 'radiusX' | 'radiusY') => {
+  const handleResizeStart = (e: any, index: number) => {
     e.cancelBubble = true;
     setSelectedEllipseIndex(index);
-    setSelectedControlPoint(controlPoint);
   };
 
   const handleResizeMove = useCallback(
     (e: any) => {
       e.cancelBubble = true;
 
-      if (selectedEllipseIndex === null || selectedControlPoint === null) return;
+      if (selectedEllipseIndex === null) return;
 
       const stage = e.target.getStage();
       const pointer = stage.getPointerPosition();
@@ -104,22 +102,16 @@ export const EllipseLayer = (props: Props) => {
         const updated = [...prev];
         const ellipse = updated[selectedEllipseIndex];
 
-        if (selectedControlPoint === 'radiusX') {
-          updated[selectedEllipseIndex] = {
-            ...ellipse,
-            radiusX: Math.abs(x - ellipse.x),
-          };
-        } else {
-          updated[selectedEllipseIndex] = {
-            ...ellipse,
-            radiusY: Math.abs(y - ellipse.y),
-          };
-        }
+        updated[selectedEllipseIndex] = {
+          ...ellipse,
+          radiusX: Math.abs(x - ellipse.x),
+          radiusY: Math.abs(y - ellipse.y),
+        };
 
         return updated;
       });
     },
-    [selectedEllipseIndex, selectedControlPoint, scale, imagePosition, stagePosition],
+    [selectedEllipseIndex, scale, imagePosition],
   );
 
   const handleResizeEnd = useCallback(
@@ -144,7 +136,6 @@ export const EllipseLayer = (props: Props) => {
         'Ошибка редактирования эллипса',
         () => {
           setSelectedEllipseIndex(null);
-          setSelectedControlPoint(null);
         },
       );
     },
@@ -157,7 +148,6 @@ export const EllipseLayer = (props: Props) => {
     const screenRadiusX = ellipse.radiusX * scale;
     const screenRadiusY = ellipse.radiusY * scale;
 
-    // Точки для изменения radiusX и radiusY
     const controlPointX = screenX + screenRadiusX;
     const controlPointY = screenY + screenRadiusY;
 
@@ -189,44 +179,18 @@ export const EllipseLayer = (props: Props) => {
         />
 
         {isActive && (
-          <>
-            <Circle
-              x={controlPointX}
-              y={screenY}
-              radius={4}
-              fill={primaryColor}
-              stroke='#333333'
-              strokeWidth={1}
-              draggable
-              dragBoundFunc={pos => {
-                return {
-                  x: pos.x,
-                  y: screenY,
-                };
-              }}
-              onDragStart={e => handleResizeStart(e, index, 'radiusX')}
-              onDragMove={handleResizeMove}
-              onDragEnd={handleResizeEnd}
-            />
-            <Circle
-              x={screenX}
-              y={controlPointY}
-              radius={4}
-              fill={primaryColor}
-              stroke='#333333'
-              strokeWidth={1}
-              draggable
-              dragBoundFunc={pos => {
-                return {
-                  x: screenX,
-                  y: pos.y,
-                };
-              }}
-              onDragStart={e => handleResizeStart(e, index, 'radiusY')}
-              onDragMove={handleResizeMove}
-              onDragEnd={handleResizeEnd}
-            />
-          </>
+          <Circle
+            x={controlPointX}
+            y={controlPointY}
+            radius={4}
+            fill={primaryColor}
+            stroke='#333333'
+            strokeWidth={1}
+            draggable
+            onDragStart={e => handleResizeStart(e, index)}
+            onDragMove={handleResizeMove}
+            onDragEnd={handleResizeEnd}
+          />
         )}
       </Group>
     );

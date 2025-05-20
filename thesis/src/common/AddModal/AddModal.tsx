@@ -32,6 +32,8 @@ export const AddModal = (props: Props) => {
     setSelectedProject,
     setVisibleLayers,
     setSelectedLayer,
+    setSelectedTool,
+    selectedTool,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const [name, setName] = useState<string>('');
@@ -82,6 +84,7 @@ export const AddModal = (props: Props) => {
               setSelectedLayer(response.data);
               setVisibleLayers([response.data]);
               setSelectedImage({ ...newImage, layers: [response.data] });
+              !selectedTool && setSelectedTool('line');
             })
             .catch(e => {
               onMessage(`${e}`, 'error', 'Ошибка добавления слоя');

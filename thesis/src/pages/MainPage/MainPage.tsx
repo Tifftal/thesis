@@ -37,6 +37,7 @@ export const MainPage = () => {
     stagePosition,
     setStagePosition,
     setScaleFactor,
+    isVisibleGeneratedLayer,
   } = useStore((state: ZustandStoreStateType) => state);
 
   const { onMessage } = useToast();
@@ -155,7 +156,7 @@ export const MainPage = () => {
 
   // Обработчик клика для создания точек TODO: вынести и отрефакторить
   const handleStageClick = (e: any) => {
-    if (e.evt.button !== 0) return;
+    if (e.evt.button !== 0 || isVisibleGeneratedLayer) return;
     if (contextMenu.visible && !currentBrokenLine.length && !currentPolygon.length) {
       setContextMenu(defaultContextMenu);
       return;

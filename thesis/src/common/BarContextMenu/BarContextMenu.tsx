@@ -13,7 +13,11 @@ export const BarContextMenu = (props: Props) => {
   const { renderContextMenu, children } = props;
 
   const renderBarContextMenu = () => {
-    return <div className='context_menu__container'>{renderContextMenu()}</div>;
+    return (
+      <div className='context_menu__container' onContextMenu={e => e.preventDefault()}>
+        {renderContextMenu()}
+      </div>
+    );
   };
 
   return (

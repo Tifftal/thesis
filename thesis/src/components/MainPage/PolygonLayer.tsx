@@ -57,6 +57,7 @@ export const PolygonLayer = (props: Props) => {
     if (selectedLayer?.measurements?.polygons) {
       setTempLines([...selectedLayer.measurements.polygons]);
     }
+    setPrimaryColor(selectedLayer?.color ? `#${selectedLayer?.color}` : '#a0f600');
   }, [selectedLayer]);
 
   useEffect(() => {
@@ -300,6 +301,7 @@ export const PolygonLayer = (props: Props) => {
         closed={true}
         fill={`${color}80`}
         onContextMenu={e => handleRightClick(e, 'GENERATED_POLYGON', points)}
+        onClick={e => (e.cancelBubble = true)}
       />
     );
   };
@@ -323,7 +325,7 @@ export const PolygonLayer = (props: Props) => {
         selectedImage &&
         generatedObjects[selectedImage.id] &&
         generatedObjects[selectedImage.id].map((polygon: Point[], index: number) =>
-          renderGeneratedPolygons(polygon, primaryColor, index),
+          renderGeneratedPolygons(polygon, '#a0f600', index),
         )}
 
       {currentPolygon.length > 0 && <>{renderPolygon(currentPolygon, primaryColor, true, 0)}</>}

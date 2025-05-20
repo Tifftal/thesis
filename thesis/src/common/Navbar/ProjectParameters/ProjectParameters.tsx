@@ -47,6 +47,10 @@ export const ProjectParameters = () => {
     }
   }, [selectedImage?.id]);
 
+  const isMeasurementsEmpty = (measurements: Record<string, any>) => {
+    return Object.values(measurements).every(array => !array.length);
+  };
+
   const handleClearLayer = () => {
     if (selectedLayer?.measurements) {
       ChangeLayer(
@@ -217,18 +221,21 @@ export const ProjectParameters = () => {
           </div>
         )}
       </div>
-      {selectedLayer && !!selectedLayer.measurements && !!Object.keys(selectedLayer.measurements).length && (
-        <div className='project-parameters__container__layer-settings'>
-          <ColorPicker
-            value={selectedLayer.color || '#a0f600'}
-            onChangeComplete={color => handleChangeLayerColor(color)}
-            disabledAlpha
-          />
-          <Button size='s' onClick={handleClearLayer}>
-            Очистить выбранный слой
-          </Button>
-        </div>
-      )}
+      {selectedLayer &&
+        !!selectedLayer.measurements &&
+        !!Object.keys(selectedLayer.measurements).length &&
+        !isMeasurementsEmpty(selectedLayer.measurements) && (
+          <div className='project-parameters__container__layer-settings'>
+            <ColorPicker
+              value={selectedLayer.color || '#a0f600'}
+              onChangeComplete={color => handleChangeLayerColor(color)}
+              disabledAlpha
+            />
+            <Button size='s' onClick={handleClearLayer}>
+              Очистить выбранный слой
+            </Button>
+          </div>
+        )}
     </div>
   );
 };
